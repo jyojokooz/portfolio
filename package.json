@@ -1,0 +1,11 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "description": "Portfolio site",
+  "main": "index.js",
+  "scripts": {
+    "build": "node create-env.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,6 +1,0 @@
-[build]
-  # This section tells Netlify how to process your files after the build.
-  [build.processing]
-    # We are telling Netlify to skip all processing for these file types.
-    # This will prevent it from breaking our snippet injection.
-    skip_processing = true
