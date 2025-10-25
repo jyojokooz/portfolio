@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Name | Portfolio</title>
+    <!-- Google Fonts: Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Lottie Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <style>
+      /* --- 1. SETUP & CSS VARIABLES --- */
+      :root {
+        /* Light Mode */
+        --bg-color: #f0f0f0;
+        --card-bg-color: #ffffff;
+        --text-color: #1a1a1a;
+        --border-color: #1a1a1a;
+        --shadow-color: #1a1a1a;
+        --sidebar-bg: #1a1a1a;
+        --sidebar-icon: #ffffff;
+        --sidebar-icon-active: #f0f0f0;
+        --sidebar-active-bg: #444444;
+        --font-family: "Montserrat", sans-serif;
+      }
+
+      body.dark-mode {
+        /* Dark Mode */
+        --bg-color: #1a1a1a;
+        --card-bg-color: #2c2c2c;
+        --text-color: #f0f0f0;
+        --border-color: #f0f0f0;
+        --shadow-color: #000000;
+        --sidebar-bg: #f0f0f0;
+        --sidebar-icon: #1a1a1a;
+        --sidebar-icon-active: #000000;
+        --sidebar-active-bg: #bbbbbb;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-family);
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+          color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+      }
+
+      /* Loading Screen */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: var(--bg-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+
+      .loading-screen.hide {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .loading-animation {
+        width: 300px;
+        height: 300px;
+      }
+
+      .portfolio-container {
+        opacity: 0;
+        transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .portfolio-container.show {
+        opacity: 1;
+      }
+
+      @keyframes fadeInBody {
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* --- 2. MAIN LAYOUT --- */
+      .portfolio-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      .sidebar {
+        width: 80px;
+        background-color: var(--sidebar-bg);
+        padding: 2rem 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .sidebar-top,
+      .sidebar-bottom {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.5rem;
+        color: var(--sidebar-icon);
+        margin-bottom: 2rem;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      .nav-links li {
+        margin: 1rem 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+
+      .nav-link {
+        color: var(--sidebar-icon);
+        font-size: 1.4rem;
+        text-decoration: none;
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+      }
+
+      .nav-link:hover {
+        background-color: var(--sidebar-active-bg);
+        transform: scale(1.1);
+      }
+
+      .nav-link.active {
+        color: var(--sidebar-icon-active);
+        background-color: var(--sidebar-active-bg);
+      }
+
+      .nav-link i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #theme-toggle {
+        background: none;
+        border: none;
+        color: var(--sidebar-icon);
+        font-size: 1.4rem;
+        cursor: pointer;
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #theme-toggle:hover {
+        background-color: var(--sidebar-active-bg);
+        transform: scale(1.1) rotate(15deg);
+      }
+
+      .main-content {
+        flex-grow: 1;
+        padding: 4rem;
+        overflow-y: auto;
+        position: relative;
+        scroll-behavior: smooth;
+      }
+
+      /* Custom scrollbar */
+      .main-content::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .main-content::-webkit-scrollbar-track {
+        background: var(--bg-color);
+      }
+
+      .main-content::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+      }
+
+      .main-content::-webkit-scrollbar-thumb:hover {
+        background: var(--sidebar-active-bg);
+      }
+
+      /* --- 3. CONTENT SECTIONS --- */
+      .content-section {
+        display: none;
+        animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .content-section.active {
+        display: block;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        text-align: center;
+        margin-bottom: 3rem;
+        font-style: italic;
+        letter-spacing: -1px;
+      }
+
+      /* --- 4. CARD & BUTTON STYLES --- */
+      .home-card,
+      .item-card,
+      .contact-card {
+        background-color: var(--card-bg-color);
+        border: 3px solid var(--border-color);
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 8px 8px 0 var(--shadow-color);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: center;
+      }
+
+      .home-card:hover,
+      .item-card:hover,
+      .contact-card:hover {
+        transform: translate(-4px, -4px);
+        box-shadow: 12px 12px 0 var(--shadow-color);
+      }
+
+      .btn {
+        display: inline-block;
+        background-color: var(--card-bg-color);
+        border: 3px solid var(--border-color);
+        padding: 0.75rem 1.5rem;
+        margin: 0 0.5rem;
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 700;
+        box-shadow: 4px 4px 0 var(--shadow-color);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.9rem;
+      }
+
+      .btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--shadow-color);
+      }
+
+      .btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--shadow-color);
+      }
+
+      /* --- 5. SPECIFIC SECTION STYLES --- */
+
+      /* Home Section */
+      .home-card {
+        max-width: 500px;
+        margin: 4rem auto;
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+        animation: fadeInScaleHome 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      }
+
+      @keyframes fadeInScaleHome {
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .home-card.loaded {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        animation: none;
+      }
+
+      .profile-image-container {
+        background-color: var(--card-bg-color);
+        border: 3px solid var(--border-color);
+        border-radius: 10px;
+        padding: 1rem;
+        width: 150px;
+        height: 150px;
+        margin: -6rem auto 1.5rem;
+        box-shadow: 8px 8px 0 var(--shadow-color);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+        transform: translateY(-30px) scale(0.8);
+        animation: bounceInProfile 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s
+          forwards;
+        position: relative;
+        overflow: hidden;
+      }
+
+      @keyframes bounceInProfile {
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .profile-image-container.loaded {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        animation: none;
+      }
+
+      .lottie-background {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 180%;
+        height: 180%;
+        opacity: 0.15;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .profile-pic {
+        position: relative;
+        z-index: 1;
+      }
+
+      .lottie-decoration {
+        width: 80px;
+        height: 80px;
+        position: absolute;
+        opacity: 0.3;
+        pointer-events: none;
+      }
+
+      .lottie-top-left {
+        top: 20px;
+        left: 20px;
+      }
+
+      .lottie-top-right {
+        top: 20px;
+        right: 20px;
+      }
+
+      .lottie-bottom-left {
+        bottom: 20px;
+        left: 20px;
+      }
+
+      .lottie-bottom-right {
+        bottom: 20px;
+        right: 20px;
+      }
+
+      .profile-image-container:hover {
+        transform: translate(-2px, -2px) rotate(-2deg);
+        box-shadow: 10px 10px 0 var(--shadow-color);
+      }
+
+      .profile-pic {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .name-title {
+        font-size: 2rem;
+        font-weight: 900;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s
+          forwards;
+      }
+
+      .name-title.loaded {
+        opacity: 1;
+        transform: translateY(0);
+        animation: none;
+      }
+
+      .job-title {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        opacity: 0;
+        letter-spacing: 2px;
+        transform: translateY(20px);
+        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s
+          forwards;
+      }
+
+      .job-title.loaded {
+        opacity: 1;
+        transform: translateY(0);
+        animation: none;
+      }
+
+      .bio-description {
+        font-size: 0.95rem;
+        font-weight: 400;
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        color: var(--text-color);
+        line-height: 1.6;
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        transform: translateY(20px);
+        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.6s
+          forwards;
+      }
+
+      .bio-description.loaded {
+        opacity: 1;
+        transform: translateY(0);
+        animation: none;
+      }
+
+      .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.7s
+          forwards;
+      }
+
+      .social-links.loaded {
+        opacity: 1;
+        transform: translateY(0);
+        animation: none;
+      }
+
+      @keyframes fadeInUpElement {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .social-links a {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--card-bg-color);
+        border: 2px solid var(--border-color);
+        border-radius: 50%;
+        color: var(--text-color);
+        font-size: 1.2rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 3px 3px 0 var(--shadow-color);
+      }
+
+      .social-links a:hover {
+        transform: translate(-2px, -2px) scale(1.1);
+        box-shadow: 5px 5px 0 var(--shadow-color);
+      }
+
+      .social-links a:active {
+        transform: translate(1px, 1px);
+        box-shadow: 2px 2px 0 var(--shadow-color);
+      }
+
+      .button-group {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.8s
+          forwards;
+      }
+
+      .button-group.loaded {
+        opacity: 1;
+        transform: translateY(0);
+        animation: none;
+      }
+
+      .button-group .btn {
+        margin: 0;
+      }
+
+      /* Projects & Certificates */
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 3rem;
+      }
+
+      .item-card {
+        cursor: pointer;
+        opacity: 0;
+        animation: smoothFadeInUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)
+          forwards;
+      }
+
+      .item-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .item-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .item-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .item-card:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+      .item-card:nth-child(5) {
+        animation-delay: 0.5s;
+      }
+      .item-card:nth-child(6) {
+        animation-delay: 0.6s;
+      }
+
+      @keyframes smoothFadeInUp {
+        0% {
+          opacity: 0;
+          transform: translateY(50px) scale(0.9);
+        }
+        60% {
+          transform: translateY(-10px) scale(1.02);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .item-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-bottom: 1rem;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .item-card:hover img {
+        transform: scale(1.05);
+      }
+
+      .item-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+      }
+
+      .item-card p {
+        color: var(--text-color);
+        opacity: 0.8;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+      }
+
+      .btn-small {
+        display: inline-block;
+        background-color: var(--bg-color);
+        border: 2px solid var(--border-color);
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 700;
+        border-radius: 5px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-small:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Contact Section */
+      .contact-card {
+        max-width: 600px;
+        margin: 2rem auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        opacity: 0;
+        animation: smoothPopIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s
+          forwards;
+      }
+
+      @keyframes smoothPopIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.8) translateY(30px);
+        }
+        60% {
+          transform: scale(1.05) translateY(-5px);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      .contact-card p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      .email-link {
+        display: inline-block;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 1.5rem 0;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        word-break: break-all;
+        text-align: center;
+      }
+
+      .email-link:hover {
+        transform: scale(1.05);
+        opacity: 0.8;
+      }
+
+      .social-icons {
+        background-color: var(--sidebar-bg);
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        display: inline-flex;
+        gap: 1.5rem;
+        margin-top: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .social-icons:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .social-icons a {
+        color: var(--sidebar-icon);
+        font-size: 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        min-height: 40px;
+      }
+
+      .social-icons a:hover {
+        transform: scale(1.2) rotate(5deg);
+      }
+
+      /* --- 6. RESPONSIVENESS --- */
+      @media (max-width: 768px) {
+        .portfolio-container {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          height: 70px;
+          flex-direction: row;
+          padding: 0 1rem;
+          justify-content: space-between;
+        }
+
+        .sidebar-top {
+          flex-direction: row;
+          align-items: center;
+        }
+
+        .logo {
+          margin-bottom: 0;
+          margin-right: 1rem;
+        }
+
+        .nav-links {
+          flex-direction: row;
+          gap: 0.5rem;
+        }
+
+        .nav-links li {
+          margin: 0;
+        }
+
+        .nav-link,
+        #theme-toggle {
+          width: 45px;
+          height: 45px;
+          font-size: 1.2rem;
+        }
+
+        .main-content {
+          padding: 2rem;
+          height: calc(100vh - 70px);
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+
+        .home-card {
+          margin: 2rem auto;
+        }
+
+        .profile-image-container {
+          margin-top: -4rem;
+        }
+
+        .grid-container {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .button-group {
+          flex-direction: row;
+          justify-content: center;
+        }
+
+        .btn {
+          width: auto;
+          min-width: 110px;
+          white-space: nowrap;
+          padding: 0.6rem 1rem;
+          font-size: 0.85rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .main-content {
+          padding: 1.5rem;
+        }
+
+        .section-title {
+          font-size: 1.75rem;
+        }
+
+        .name-title {
+          font-size: 1.75rem;
+        }
+
+        .job-title {
+          font-size: 0.9rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+      <div id="loading-animation" class="loading-animation"></div>
+    </div>
+
+    <div class="portfolio-container" id="portfolio-container">
+      <!-- 1. Sidebar Navigation -->
+      <nav class="sidebar">
+        <div class="sidebar-top">
+          <div class="logo">JSR</div>
+          <ul class="nav-links">
+            <li>
+              <a
+                href="#home"
+                class="nav-link active"
+                data-target="home"
+                title="Home"
+                ><i class="fas fa-home"></i
+              ></a>
+            </li>
+            <li>
+              <a
+                href="#projects"
+                class="nav-link"
+                data-target="projects"
+                title="Projects"
+                ><i class="fas fa-briefcase"></i
+              ></a>
+            </li>
+            <li>
+              <a
+                href="#certificates"
+                class="nav-link"
+                data-target="certificates"
+                title="Certificates"
+                ><i class="fas fa-certificate"></i
+              ></a>
+            </li>
+            <li>
+              <a
+                href="#contact"
+                class="nav-link"
+                data-target="contact"
+                title="Contact"
+                ><i class="fas fa-envelope"></i
+              ></a>
+            </li>
+          </ul>
+        </div>
+        <div class="sidebar-bottom">
+          <button id="theme-toggle" title="Toggle Theme">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
+      </nav>
+
+      <!-- 2. Main Content Area -->
+      <main class="main-content">
+        <!-- Home Section - DYNAMIC CONTENT -->
+        <section id="home" class="content-section active">
+          <div
+            id="lottie-top-left"
+            class="lottie-decoration lottie-top-left"
+          ></div>
+          <div
+            id="lottie-top-right"
+            class="lottie-decoration lottie-top-right"
+          ></div>
+          <div
+            id="lottie-bottom-left"
+            class="lottie-decoration lottie-bottom-left"
+          ></div>
+          <div
+            id="lottie-bottom-right"
+            class="lottie-decoration lottie-bottom-right"
+          ></div>
+
+          <div class="home-card">
+            <div class="profile-image-container">
+              <div id="lottie-bg" class="lottie-background"></div>
+              <img
+                src=""
+                alt="Profile Picture"
+                class="profile-pic"
+                id="profile-pic"
+              />
+            </div>
+            <h1 class="name-title" id="profile-name"></h1>
+            <p class="job-title" id="profile-job-title"></p>
+            <p class="bio-description" id="profile-bio"></p>
+            <div class="social-links" id="social-links">
+              <!-- Social links will be inserted here by JS -->
+            </div>
+            <div class="button-group">
+              <a
+                href="#"
+                class="btn"
+                id="resume-button"
+                target="_blank"
+                rel="noopener"
+                >RESUME</a
+              >
+              <a href="#contact" class="btn" data-section="contact">CONTACT</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Projects Section - DYNAMIC CONTENT -->
+        <section id="projects" class="content-section">
+          <h2 class="section-title">PROJECTS</h2>
+          <!-- Projects will be inserted here by JS -->
+          <div class="grid-container" id="projects-grid"></div>
+        </section>
+
+        <!-- Certificates Section - DYNAMIC CONTENT -->
+        <section id="certificates" class="content-section">
+          <h2 class="section-title">CERTIFICATES</h2>
+          <!-- Certificates will be inserted here by JS -->
+          <div class="grid-container" id="certificates-grid"></div>
+        </section>
+
+        <!-- Contact Section - STATIC CONTENT -->
+        <section id="contact" class="content-section">
+          <h2 class="section-title">CONTACT ME</h2>
+          <div class="contact-card">
+            <p>
+              Feel free to reach out through email or connect with me on social
+              media.
+            </p>
+            <a href="mailto:joelraphael6425@gmail.com" class="email-link"
+              >joelraphael6425@gmail.com</a
+            >
+            <div class="social-icons">
+              <a href="#" title="GitHub" target="_blank" rel="noopener"
+                ><i class="fab fa-github"></i
+              ></a>
+              <a href="#" title="LinkedIn" target="_blank" rel="noopener"
+                ><i class="fab fa-linkedin"></i
+              ></a>
+              <a href="#" title="Twitter" target="_blank" rel="noopener"
+                ><i class="fab fa-twitter"></i
+              ></a>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- External scripts for Firebase, environment variables, and main logic -->
+    <script src="env.js"></script>
+    <script type="module" src="./scripts/main.js"></script>
+  </body>
+</html>
