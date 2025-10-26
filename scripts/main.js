@@ -12,10 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function populateHomePage() {
     try {
+      console.log("Attempting to fetch profile data...");
       const docRef = doc(db, "portfolio", "profile");
+      console.log("Document reference created for portfolio/profile");
       const docSnap = await getDoc(docRef);
+      console.log("Document snapshot retrieved");
 
       if (docSnap.exists()) {
+        console.log("Profile document exists");
         const data = docSnap.data();
         document.getElementById("profile-pic").src =
           data.profilePicUrl || "https://via.placeholder.com/150";
@@ -919,10 +923,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fetch all data, then hide loading screen
   Promise.all([
-    populateHomePage(),
-    populateProjects(),
-    populateCertificates(),
-  ]).then(() => {
+    populateHomePage().catch((error) => {
+      console.error("Error populating home page:", error);
+      return null;
+    }),
+    populateProjects().catch((error) => {
+      console.error("Error populating projects:", error);
+      return null;
+    }),
+    populateCertificates().catch((error) => {
+      console.error("Error populating certificates:", error);
+      return null;
+    }),
+  ]).then((results) => {
+    const [homeData, projectsData, certificatesData] = results;
+    console.log("Data loading completed:", {
+      homeLoaded: !!homeData,
+      projectsLoaded: !!projectsData,
+      certificatesLoaded: !!certificatesData,
+    });
+
     setTimeout(() => {
       loadingScreen.classList.add("hide");
       portfolioContainer.classList.add("show");

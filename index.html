@@ -965,6 +965,10 @@
 
     <!-- External scripts for Firebase, environment variables, and main logic -->
     <script src="env.js"></script>
-    <script type="module" defer src="./scripts/main.js"></script>
+    <script type="module">
+      // Ensure config is available in the module scope
+      window.portfolioConfig = config;
+    </script>
+    <script type="module" src="./scripts/main.js"></script>
   </body>
 </html>
