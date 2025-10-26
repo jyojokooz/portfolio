@@ -7,6 +7,8 @@ import {
   getDocs,
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
+let projectsData = new Map();
+
 document.addEventListener("DOMContentLoaded", () => {
   // --- 1. DATA FETCHING & POPULATING FUNCTIONS ---
 
@@ -57,32 +59,50 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const projectsGrid = document.getElementById("projects-grid");
       projectsGrid.innerHTML = ""; // Clear placeholders
+      projectsData.clear(); // Clear old data on re-populate
+
       const querySnapshot = await getDocs(collection(db, "projects"));
       let animationDelay = 0;
+
+      const truncateText = (text, maxLength) => {
+        if (!text || text.length <= maxLength) return text;
+        // Find the last space within the limit
+        const lastSpace = text.lastIndexOf(" ", maxLength);
+        return text.substring(0, lastSpace > 0 ? lastSpace : maxLength) + "...";
+      };
+
       querySnapshot.forEach((doc) => {
         const project = doc.data();
+        projectsData.set(doc.id, project); // Store full project data for modal
+
         animationDelay += 0.1;
+        const shortDescription = truncateText(project.description, 100);
+
         const projectCard = `
-                    <div class="item-card" style="animation-delay: ${animationDelay}s">
-                        <img src="${
-                          project.imageUrl ||
-                          "https://via.placeholder.com/400x180"
-                        }" alt="${project.title}" />
-                        <h3>${project.title}</h3>
-                        <p>${project.description}</p>
-                        <div class="button-group">
-                            ${
-                              project.liveUrl
-                                ? `<a href="${project.liveUrl}" class="btn-small" target="_blank" rel="noopener">Live</a>`
-                                : ""
-                            }
-                            ${
-                              project.codeUrl
-                                ? `<a href="${project.codeUrl}" class="btn-small" target="_blank" rel="noopener">Code</a>`
-                                : ""
-                            }
-                        </div>
-                    </div>`;
+              <div class="item-card" style="animation-delay: ${animationDelay}s">
+                  <img src="${
+                    project.imageUrl || "https://via.placeholder.com/400x180"
+                  }" alt="${project.title}" />
+                  <div class="item-card-content">
+                    <h3>${project.title}</h3>
+                    <p>${shortDescription}</p>
+                  </div>
+                  <div class="button-group">
+                      ${
+                        project.liveUrl
+                          ? `<a href="${project.liveUrl}" class="btn-small" target="_blank" rel="noopener">Live</a>`
+                          : ""
+                      }
+                      ${
+                        project.codeUrl
+                          ? `<a href="${project.codeUrl}" class="btn-small" target="_blank" rel="noopener">Code</a>`
+                          : ""
+                      }
+                      <button class="btn-small view-details-btn" data-project-id="${
+                        doc.id
+                      }">Details</button>
+                  </div>
+              </div>`;
         projectsGrid.innerHTML += projectCard;
       });
     } catch (error) {
@@ -1085,5 +1105,56 @@ document.addEventListener("DOMContentLoaded", () => {
       // Scroll to top of main content area
       document.querySelector(".main-content").scrollTop = 0;
     });
+  });
+
+  // --- E. PROJECT MODAL LOGIC ---
+  const projectModal = document.getElementById("project-modal");
+  const projectsGridContainer = document.getElementById("projects-grid");
+  const closeModalBtn = projectModal.querySelector(".modal-close");
+
+  function showProjectDetails(projectId) {
+    const project = projectsData.get(projectId);
+    if (!project) {
+      console.error("Project data not found for ID:", projectId);
+      return;
+    }
+
+    document.getElementById("modal-project-image").src =
+      project.imageUrl || "https://via.placeholder.com/400x180";
+    document.getElementById("modal-project-image").alt = project.title;
+    document.getElementById("modal-project-title").textContent = project.title;
+    document.getElementById("modal-project-description").textContent =
+      project.description;
+
+    projectModal.style.display = "flex";
+  }
+
+  function closeProjectModal() {
+    projectModal.style.display = "none";
+  }
+
+  // Event listener for opening the modal (using event delegation)
+  projectsGridContainer.addEventListener("click", (e) => {
+    const detailsButton = e.target.closest(".view-details-btn");
+    if (detailsButton) {
+      const projectId = detailsButton.dataset.projectId;
+      showProjectDetails(projectId);
+    }
+  });
+
+  // Event listeners for closing the modal
+  closeModalBtn.addEventListener("click", closeProjectModal);
+  projectModal.addEventListener("click", (e) => {
+    // Closes modal if the outer overlay is clicked
+    if (e.target === projectModal) {
+      closeProjectModal();
+    }
+  });
+
+  // Close modal on 'Escape' key press
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && projectModal.style.display === "flex") {
+      closeProjectModal();
+    }
   });
 });

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JOEL S RAPHAEL | Portfolio</title>
+    <title>Your Name | Portfolio</title>
     <!-- Google Fonts: Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -553,10 +553,16 @@
       }
 
       .item-card {
-        cursor: pointer;
+        cursor: default;
         opacity: 0;
         animation: smoothFadeInUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)
           forwards;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .item-card-content {
+        flex-grow: 1; /* Pushes the button group to the bottom */
       }
 
       .item-card:nth-child(1) {
@@ -632,6 +638,7 @@
         text-transform: uppercase;
         font-size: 0.85rem;
         letter-spacing: 0.5px;
+        cursor: pointer;
       }
 
       .btn-small:hover {
@@ -813,6 +820,107 @@
           font-size: 0.9rem;
         }
       }
+
+      /* --- 7. MODAL STYLES --- */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        animation: fadeInModal 0.3s ease;
+      }
+
+      @keyframes fadeInModal {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal-content {
+        position: relative;
+        background-color: var(--card-bg-color);
+        border: 3px solid var(--border-color);
+        padding: 2rem;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 700px;
+        box-shadow: 10px 10px 0 var(--shadow-color);
+        animation: slideInModal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        max-height: 85vh;
+        overflow-y: auto;
+        text-align: left;
+      }
+
+      @keyframes slideInModal {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-close {
+        color: var(--text-color);
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .modal-close:hover,
+      .modal-close:focus {
+        transform: scale(1.2);
+      }
+
+      .modal-content img {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-content h3 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .modal-content p {
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        white-space: pre-wrap; /* Respect newlines from textarea */
+        text-align: left;
+      }
+
+      .modal-content .button-group {
+        justify-content: flex-start;
+      }
+
+      /* Custom scrollbar for modal */
+      .modal-content::-webkit-scrollbar {
+        width: 6px;
+      }
+      .modal-content::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 3px;
+      }
     </style>
   </head>
   <body>
@@ -961,6 +1069,16 @@
             </div>
           </div>
         </section>
+
+        <!-- Project Details Modal -->
+        <div id="project-modal" class="modal">
+          <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <img src="" alt="Project Image" id="modal-project-image" />
+            <h3 id="modal-project-title"></h3>
+            <p id="modal-project-description"></p>
+          </div>
+        </div>
       </main>
     </div>
 
