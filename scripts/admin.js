@@ -47,8 +47,6 @@ document
   .addEventListener("click", () => signOut(auth));
 
 // --- CLOUDINARY UPLOAD WIDGETS ---
-
-// 1. WIDGET FOR IMAGES (jpg, png, etc.)
 let currentImageInput = null;
 const imageWidget = cloudinary.createUploadWidget(
   {
@@ -64,19 +62,17 @@ const imageWidget = cloudinary.createUploadWidget(
   }
 );
 
-// 2. NEW WIDGET FOR RESUME (PDF only)
 const resumeWidget = cloudinary.createUploadWidget(
   {
     cloudName: config.cloudinary.cloudName,
     uploadPreset: config.cloudinary.uploadPreset,
-    sources: ["local"], // only allow upload from computer
-    multiple: false, // only one file
-    clientAllowedFormats: ["pdf"], // IMPORTANT: only allow PDF files
-    resource_type: "raw", // Treat as a generic file
+    sources: ["local"],
+    multiple: false,
+    clientAllowedFormats: ["pdf"],
+    resource_type: "raw",
   },
   (error, result) => {
     if (!error && result && result.event === "success") {
-      // When PDF upload is successful, populate the resume URL input
       document.getElementById("resume-url").value = result.info.secure_url;
       alert("Resume uploaded successfully!");
     }
@@ -84,8 +80,6 @@ const resumeWidget = cloudinary.createUploadWidget(
 );
 
 // --- SETUP UPLOAD BUTTONS ---
-
-// Function to open the IMAGE widget for a specific input
 function setupImageUploadButton(buttonId, inputId) {
   document.getElementById(buttonId).addEventListener(
     "click",
@@ -97,12 +91,10 @@ function setupImageUploadButton(buttonId, inputId) {
   );
 }
 
-// Setup buttons that should open the image widget
 setupImageUploadButton("upload-profile-pic", "profile-pic-url");
 setupImageUploadButton("upload-project-image", "project-image-url");
 setupImageUploadButton("upload-certificate-image", "certificate-image-url");
 
-// NEW: Setup the button that opens the PDF/resume widget
 document.getElementById("upload-resume-button").addEventListener(
   "click",
   function () {
@@ -111,11 +103,12 @@ document.getElementById("upload-resume-button").addEventListener(
   false
 );
 
-// --- DATA LOADING & SAVING (No changes below this line, but included for completeness) ---
+// --- DATA LOADING & SAVING ---
 function loadAllData() {
   loadProfileData();
   loadItems("projects", "projects-list", populateProjectForm);
   loadItems("certificates", "certificates-list", populateCertificateForm);
+  loadItems("skills", "skills-list", () => {}); // Skills don't need an edit form for now
 }
 
 // Profile
@@ -130,7 +123,7 @@ async function loadProfileData() {
       document.getElementById("profile-bio").value = data.bio || "";
       document.getElementById("profile-pic-url").value =
         data.profilePicUrl || "";
-      document.getElementById("resume-url").value = data.resumeUrl || ""; // This will now show the PDF URL
+      document.getElementById("resume-url").value = data.resumeUrl || "";
       document.getElementById("github-url").value = data.socials?.github || "";
       document.getElementById("instagram-url").value =
         data.socials?.instagram || "";
@@ -151,7 +144,7 @@ document
       jobTitle: document.getElementById("profile-job-title").value,
       bio: document.getElementById("profile-bio").value,
       profilePicUrl: document.getElementById("profile-pic-url").value,
-      resumeUrl: document.getElementById("resume-url").value, // Saves the new PDF URL
+      resumeUrl: document.getElementById("resume-url").value,
       socials: {
         github: document.getElementById("github-url").value,
         instagram: document.getElementById("instagram-url").value,
@@ -167,10 +160,10 @@ document
     }
   });
 
-// Generic Item Loader (for projects and certificates)
+// Generic Item Loader
 async function loadItems(collectionName, listElementId, editItemCallback) {
   const listElement = document.getElementById(listElementId);
-  listElement.innerHTML = ""; // Clear current list
+  listElement.innerHTML = "";
   try {
     const querySnapshot = await getDocs(collection(db, collectionName));
     if (querySnapshot.empty) {
@@ -180,18 +173,27 @@ async function loadItems(collectionName, listElementId, editItemCallback) {
     }
     querySnapshot.forEach((doc) => {
       const item = doc.data();
+      const itemTitle = item.title || item.name; // Use 'name' for skills, 'title' for others
       const itemDiv = document.createElement("div");
       itemDiv.className = "item";
       itemDiv.innerHTML = `
-                <span>${item.title}</span>
-                <div class="item-buttons">
-                    <button class="btn-edit" data-id="${doc.id}"><i class="fas fa-edit"></i> Edit</button>
-                    <button class="btn-delete" data-id="${doc.id}"><i class="fas fa-trash"></i> Delete</button>
-                </div>
-            `;
-      itemDiv
-        .querySelector(".btn-edit")
-        .addEventListener("click", () => editItemCallback(doc.id, item));
+        <span>${itemTitle}</span>
+        <div class="item-buttons">
+            ${
+              collectionName !== "skills" // Skills don't have an edit button for now
+                ? `<button class="btn-edit" data-id="${doc.id}"><i class="fas fa-edit"></i> Edit</button>`
+                : ""
+            }
+            <button class="btn-delete" data-id="${
+              doc.id
+            }"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+      `;
+      if (collectionName !== "skills") {
+        itemDiv
+          .querySelector(".btn-edit")
+          .addEventListener("click", () => editItemCallback(doc.id, item));
+      }
       itemDiv
         .querySelector(".btn-delete")
         .addEventListener("click", () =>
@@ -208,11 +210,7 @@ async function loadItems(collectionName, listElementId, editItemCallback) {
 
 // Generic Item Deleter
 async function deleteItem(collectionName, id, listElementId, editItemCallback) {
-  if (
-    confirm(
-      "Are you sure you want to delete this item? This action cannot be undone."
-    )
-  ) {
+  if (confirm("Are you sure you want to delete this item?")) {
     try {
       await deleteDoc(doc(db, collectionName, id));
       alert("Item deleted successfully.");
@@ -313,3 +311,23 @@ document
     certificateFormTitle.textContent = "Add New Certificate";
     document.getElementById("certificate-id").value = "";
   });
+
+// --- SKILLS ---
+const skillForm = document.getElementById("skill-form");
+
+skillForm.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const data = {
+    name: document.getElementById("skill-name").value,
+    iconClass: document.getElementById("skill-icon-class").value,
+  };
+  try {
+    await addDoc(collection(db, "skills"), data);
+    alert("Skill saved successfully!");
+    skillForm.reset();
+    loadItems("skills", "skills-list", () => {});
+  } catch (error) {
+    console.error("Error saving skill:", error);
+    alert("Error saving skill.");
+  }
+});

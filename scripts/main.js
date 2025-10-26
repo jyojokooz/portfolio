@@ -16,12 +16,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       console.log("Attempting to fetch profile data...");
       const docRef = doc(db, "portfolio", "profile");
-      console.log("Document reference created for portfolio/profile");
       const docSnap = await getDoc(docRef);
-      console.log("Document snapshot retrieved");
 
       if (docSnap.exists()) {
-        console.log("Profile document exists");
         const data = docSnap.data();
         document.getElementById("profile-pic").src =
           data.profilePicUrl || "https://via.placeholder.com/150";
@@ -63,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
           contactSocialContainer.innerHTML += `<a href="${data.socials.discord}" title="Discord" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>`;
         }
       } else {
-        console.log("No profile document found! Using placeholder data.");
+        console.log("No profile document found!");
       }
     } catch (error) {
       console.error("Error fetching profile data:", error);
@@ -73,51 +70,46 @@ document.addEventListener("DOMContentLoaded", () => {
   async function populateProjects() {
     try {
       const projectsGrid = document.getElementById("projects-grid");
-      projectsGrid.innerHTML = ""; // Clear placeholders
-      projectsData.clear(); // Clear old data on re-populate
-
+      projectsGrid.innerHTML = "";
+      projectsData.clear();
       const querySnapshot = await getDocs(collection(db, "projects"));
-      let animationDelay = 0;
 
       const truncateText = (text, maxLength) => {
         if (!text || text.length <= maxLength) return text;
-        // Find the last space within the limit
         const lastSpace = text.lastIndexOf(" ", maxLength);
         return text.substring(0, lastSpace > 0 ? lastSpace : maxLength) + "...";
       };
 
       querySnapshot.forEach((doc) => {
         const project = doc.data();
-        projectsData.set(doc.id, project); // Store full project data for modal
-
-        animationDelay += 0.1;
+        projectsData.set(doc.id, project);
         const shortDescription = truncateText(project.description, 100);
 
         const projectCard = `
-              <div class="item-card" style="animation-delay: ${animationDelay}s">
-                  <img src="${
-                    project.imageUrl || "https://via.placeholder.com/400x180"
-                  }" alt="${project.title}" />
-                  <div class="item-card-content">
-                    <h3>${project.title}</h3>
-                    <p>${shortDescription}</p>
-                  </div>
-                  <div class="button-group">
-                      ${
-                        project.liveUrl
-                          ? `<a href="${project.liveUrl}" class="btn-small" target="_blank" rel="noopener">Live</a>`
-                          : ""
-                      }
-                      ${
-                        project.codeUrl
-                          ? `<a href="${project.codeUrl}" class="btn-small" target="_blank" rel="noopener">Code</a>`
-                          : ""
-                      }
-                      <button class="btn-small view-details-btn" data-project-id="${
-                        doc.id
-                      }">Details</button>
-                  </div>
-              </div>`;
+          <div class="item-card">
+              <img src="${
+                project.imageUrl || "https://via.placeholder.com/400x180"
+              }" alt="${project.title}" />
+              <div class="item-card-content">
+                <h3>${project.title}</h3>
+                <p>${shortDescription}</p>
+              </div>
+              <div class="button-group">
+                  ${
+                    project.liveUrl
+                      ? `<a href="${project.liveUrl}" class="btn-small" target="_blank" rel="noopener">Live</a>`
+                      : ""
+                  }
+                  ${
+                    project.codeUrl
+                      ? `<a href="${project.codeUrl}" class="btn-small" target="_blank" rel="noopener">Code</a>`
+                      : ""
+                  }
+                  <button class="btn-small view-details-btn" data-project-id="${
+                    doc.id
+                  }">Details</button>
+              </div>
+          </div>`;
         projectsGrid.innerHTML += projectCard;
       });
     } catch (error) {
@@ -125,38 +117,54 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  async function populateSkills() {
+    try {
+      const skillsGrid = document.getElementById("skills-grid");
+      skillsGrid.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "skills"));
+      querySnapshot.forEach((doc) => {
+        const skill = doc.data();
+        const skillCard = `
+          <div class="skill-card">
+              <i class="${skill.iconClass}"></i>
+              <span>${skill.name}</span>
+          </div>
+        `;
+        skillsGrid.innerHTML += skillCard;
+      });
+    } catch (error) {
+      console.error("Error fetching skills:", error);
+    }
+  }
+
   async function populateCertificates() {
     try {
       const certificatesGrid = document.getElementById("certificates-grid");
-      certificatesGrid.innerHTML = ""; // Clear placeholders
+      certificatesGrid.innerHTML = "";
       const querySnapshot = await getDocs(collection(db, "certificates"));
-      let animationDelay = 0;
       querySnapshot.forEach((doc) => {
         const cert = doc.data();
-        animationDelay += 0.1;
         const certCard = `
-                    <div class="item-card" style="animation-delay: ${animationDelay}s">
-                        <img src="${
-                          cert.imageUrl || "https://via.placeholder.com/400x180"
-                        }" alt="${cert.title}" />
-                        <h3>${cert.title}</h3>
-                        <p>Issued by: ${cert.issuer}</p>
-                        <div class="button-group">
-                            ${
-                              cert.verifyUrl
-                                ? `<a href="${cert.verifyUrl}" class="btn-small" target="_blank" rel="noopener">Verify</a>`
-                                : ""
-                            }
-                        </div>
-                    </div>`;
+          <div class="item-card">
+              <img src="${
+                cert.imageUrl || "https://via.placeholder.com/400x180"
+              }" alt="${cert.title}" />
+              <h3>${cert.title}</h3>
+              <p>Issued by: ${cert.issuer}</p>
+              <div class="button-group">
+                  ${
+                    cert.verifyUrl
+                      ? `<a href="${cert.verifyUrl}" class="btn-small" target="_blank" rel="noopener">Verify</a>`
+                      : ""
+                  }
+              </div>
+          </div>`;
         certificatesGrid.innerHTML += certCard;
       });
     } catch (error) {
       console.error("Error fetching certificates:", error);
     }
   }
-
-  // --- ORIGINAL PORTFOLIO JAVASCRIPT LOGIC ---
 
   // --- A. LOADING SCREEN & DATA INITIALIZATION ---
   const loadingScreen = document.getElementById("loading-screen");
@@ -956,48 +964,28 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   });
 
-  // Fetch all data, then hide loading screen
   Promise.all([
-    populateHomePage().catch((error) => {
-      console.error("Error populating home page:", error);
-      return null;
-    }),
-    populateProjects().catch((error) => {
-      console.error("Error populating projects:", error);
-      return null;
-    }),
-    populateCertificates().catch((error) => {
-      console.error("Error populating certificates:", error);
-      return null;
-    }),
-  ]).then((results) => {
-    const [homeData, projectsData, certificatesData] = results;
-    console.log("Data loading completed:", {
-      homeLoaded: !!homeData,
-      projectsLoaded: !!projectsData,
-      certificatesLoaded: !!certificatesData,
-    });
-
+    populateHomePage(),
+    populateProjects(),
+    populateSkills(),
+    populateCertificates(),
+  ]).then(() => {
+    console.log("All data loaded successfully.");
     setTimeout(() => {
       loadingScreen.classList.add("hide");
       portfolioContainer.classList.add("show");
-
-      // Stop loading animation after transition
-      setTimeout(() => {
-        loadingAnimation.destroy();
-      }, 500);
-    }, 1500); // Keep a minimum delay for aesthetic reasons
+      setTimeout(() => loadingAnimation.destroy(), 500);
+    }, 1500);
   });
 
   // --- B. LOTTIE ANIMATIONS (DECORATIVE) ---
-  const lottieBg = lottie.loadAnimation({
+  lottie.loadAnimation({
     container: document.getElementById("lottie-bg"),
     renderer: "svg",
     loop: true,
     autoplay: true,
     path: "https://lottie.host/4c6da31c-2eee-4597-80e5-2c29d2d3f3ef/YEdkZGPzrr.json",
   });
-
   setTimeout(() => {
     lottie.loadAnimation({
       container: document.getElementById("lottie-top-left"),
@@ -1034,71 +1022,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   const sunIcon = '<i class="fas fa-sun"></i>';
   const moonIcon = '<i class="fas fa-moon"></i>';
-
   const applyTheme = (theme) => {
-    if (theme === "dark") {
-      body.classList.add("dark-mode");
-      themeToggle.innerHTML = sunIcon;
-    } else {
-      body.classList.remove("dark-mode");
-      themeToggle.innerHTML = moonIcon;
-    }
+    body.classList.toggle("dark-mode", theme === "dark");
+    themeToggle.innerHTML = theme === "dark" ? sunIcon : moonIcon;
   };
-
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);
-
   themeToggle.addEventListener("click", () => {
     const newTheme = body.classList.contains("dark-mode") ? "light" : "dark";
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
   });
 
-  // --- D. SECTION NAVIGATION ---
+  // --- D. SECTION NAVIGATION WITH PAGE TRANSITIONS ---
   const navLinks = document.querySelectorAll(".nav-link, .btn[data-section]");
   const contentSections = document.querySelectorAll(".content-section");
-
-  const resetItemAnimations = (sectionId) => {
-    const grid = document.getElementById(`${sectionId}-grid`);
-    if (!grid) return;
-
-    const itemCards = grid.querySelectorAll(".item-card");
-    itemCards.forEach((card) => {
-      card.style.animation = "none";
-      // The following line forces a reflow, which is necessary for the animation to restart
-      void card.offsetWidth;
-      card.style.animation = "";
-    });
-  };
-
-  let homeAnimated = false;
-  const markHomeAsLoaded = () => {
-    if (!homeAnimated) {
-      homeAnimated = true;
-      setTimeout(() => {
-        document.querySelector(".home-card")?.classList.add("loaded");
-        document
-          .querySelector(".profile-image-container")
-          ?.classList.add("loaded");
-        document.querySelector(".name-title")?.classList.add("loaded");
-        document.querySelector(".job-title")?.classList.add("loaded");
-        document.querySelector(".bio-description")?.classList.add("loaded");
-        document.querySelector(".social-links")?.classList.add("loaded");
-        document.querySelector(".button-group")?.classList.add("loaded");
-      }, 1500);
-    }
-  };
-
-  markHomeAsLoaded();
 
   navLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
-
       const targetId = link.dataset.target || link.dataset.section;
-      if (!targetId) return;
+      const currentActiveSection = document.querySelector(
+        ".content-section.active"
+      );
 
-      // Update active link styling
+      if (currentActiveSection.id === targetId) return; // Don't re-animate if it's the same section
+
+      // Update nav link styles
       document
         .querySelectorAll(".nav-link")
         .forEach((l) => l.classList.remove("active"));
@@ -1106,19 +1056,13 @@ document.addEventListener("DOMContentLoaded", () => {
         .querySelectorAll(`.nav-link[data-target="${targetId}"]`)
         .forEach((l) => l.classList.add("active"));
 
-      // Switch active content section
-      contentSections.forEach((section) => {
-        section.classList.remove("active");
-      });
-      document.getElementById(targetId)?.classList.add("active");
+      currentActiveSection.classList.add("fade-out");
 
-      // Reset animations for project/certificate cards when their section becomes active
-      if (targetId === "projects" || targetId === "certificates") {
-        resetItemAnimations(targetId);
-      }
-
-      // Scroll to top of main content area
-      document.querySelector(".main-content").scrollTop = 0;
+      setTimeout(() => {
+        currentActiveSection.classList.remove("active", "fade-out");
+        document.getElementById(targetId)?.classList.add("active");
+        document.querySelector(".main-content").scrollTop = 0;
+      }, 500); // Match animation duration
     });
   });
 
@@ -1129,18 +1073,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showProjectDetails(projectId) {
     const project = projectsData.get(projectId);
-    if (!project) {
-      console.error("Project data not found for ID:", projectId);
-      return;
-    }
-
+    if (!project) return;
     document.getElementById("modal-project-image").src =
       project.imageUrl || "https://via.placeholder.com/400x180";
     document.getElementById("modal-project-image").alt = project.title;
     document.getElementById("modal-project-title").textContent = project.title;
     document.getElementById("modal-project-description").textContent =
       project.description;
-
     projectModal.style.display = "flex";
   }
 
@@ -1148,25 +1087,17 @@ document.addEventListener("DOMContentLoaded", () => {
     projectModal.style.display = "none";
   }
 
-  // Event listener for opening the modal (using event delegation)
   projectsGridContainer.addEventListener("click", (e) => {
     const detailsButton = e.target.closest(".view-details-btn");
     if (detailsButton) {
-      const projectId = detailsButton.dataset.projectId;
-      showProjectDetails(projectId);
+      showProjectDetails(detailsButton.dataset.projectId);
     }
   });
 
-  // Event listeners for closing the modal
   closeModalBtn.addEventListener("click", closeProjectModal);
   projectModal.addEventListener("click", (e) => {
-    // Closes modal if the outer overlay is clicked
-    if (e.target === projectModal) {
-      closeProjectModal();
-    }
+    if (e.target === projectModal) closeProjectModal();
   });
-
-  // Close modal on 'Escape' key press
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && projectModal.style.display === "flex") {
       closeProjectModal();

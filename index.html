@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JOEL S RAPHAEL | Portfolio</title>
+    <title>Your Name | Portfolio</title>
     <!-- Google Fonts: Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,6 +15,11 @@
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Devicon for Skills -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css"
     />
     <!-- Lottie Animation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
@@ -32,6 +37,8 @@
         --sidebar-icon-active: #f0f0f0;
         --sidebar-active-bg: #444444;
         --font-family: "Montserrat", sans-serif;
+        --gradient-start: #e0c3fc;
+        --gradient-end: #8ec5fc;
       }
 
       body.dark-mode {
@@ -45,6 +52,8 @@
         --sidebar-icon: #1a1a1a;
         --sidebar-icon-active: #000000;
         --sidebar-active-bg: #bbbbbb;
+        --gradient-start: #232526;
+        --gradient-end: #414345;
       }
 
       * {
@@ -55,11 +64,32 @@
 
       body {
         font-family: var(--font-family);
-        background-color: var(--bg-color);
         color: var(--text-color);
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-          color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
+
+        /* Animated Gradient Background */
+        background: linear-gradient(
+          -45deg,
+          var(--gradient-start),
+          var(--gradient-end),
+          var(--gradient-start),
+          var(--gradient-end)
+        );
+        background-size: 400% 400%;
+        animation: gradientBG 25s ease infinite;
+        transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
       }
 
       /* Loading Screen */
@@ -219,7 +249,7 @@
       }
 
       .main-content::-webkit-scrollbar-track {
-        background: var(--bg-color);
+        background: rgba(0, 0, 0, 0.1);
       }
 
       .main-content::-webkit-scrollbar-thumb {
@@ -234,21 +264,35 @@
       /* --- 3. CONTENT SECTIONS --- */
       .content-section {
         display: none;
-        animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       .content-section.active {
         display: block;
+        animation: page-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      @keyframes fadeInUp {
+      .content-section.fade-out {
+        animation: page-fade-out 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      @keyframes page-fade-in {
         from {
           opacity: 0;
-          transform: translateY(30px);
+          transform: translateY(20px);
         }
         to {
           opacity: 1;
           transform: translateY(0);
+        }
+      }
+      @keyframes page-fade-out {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-20px);
         }
       }
 
@@ -264,7 +308,8 @@
       /* --- 4. CARD & BUTTON STYLES --- */
       .home-card,
       .item-card,
-      .contact-card {
+      .contact-card,
+      .skill-card {
         background-color: var(--card-bg-color);
         border: 3px solid var(--border-color);
         border-radius: 10px;
@@ -276,7 +321,8 @@
 
       .home-card:hover,
       .item-card:hover,
-      .contact-card:hover {
+      .contact-card:hover,
+      .skill-card:hover {
         transform: translate(-4px, -4px);
         box-shadow: 12px 12px 0 var(--shadow-color);
       }
@@ -313,22 +359,6 @@
       .home-card {
         max-width: 500px;
         margin: 4rem auto;
-        opacity: 0;
-        transform: translateY(50px) scale(0.9);
-        animation: fadeInScaleHome 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-      }
-
-      @keyframes fadeInScaleHome {
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-
-      .home-card.loaded {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        animation: none;
       }
 
       .profile-image-container {
@@ -341,25 +371,13 @@
         margin: -6rem auto 1.5rem;
         box-shadow: 8px 8px 0 var(--shadow-color);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        opacity: 0;
-        transform: translateY(-30px) scale(0.8);
-        animation: bounceInProfile 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s
-          forwards;
         position: relative;
         overflow: hidden;
       }
 
-      @keyframes bounceInProfile {
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-
-      .profile-image-container.loaded {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        animation: none;
+      .profile-image-container:hover {
+        transform: translate(-2px, -2px) rotate(-2deg);
+        box-shadow: 10px 10px 0 var(--shadow-color);
       }
 
       .lottie-background {
@@ -375,6 +393,10 @@
       }
 
       .profile-pic {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
         position: relative;
         z-index: 1;
       }
@@ -391,32 +413,17 @@
         top: 20px;
         left: 20px;
       }
-
       .lottie-top-right {
         top: 20px;
         right: 20px;
       }
-
       .lottie-bottom-left {
         bottom: 20px;
         left: 20px;
       }
-
       .lottie-bottom-right {
         bottom: 20px;
         right: 20px;
-      }
-
-      .profile-image-container:hover {
-        transform: translate(-2px, -2px) rotate(-2deg);
-        box-shadow: 10px 10px 0 var(--shadow-color);
-      }
-
-      .profile-pic {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        object-fit: cover;
       }
 
       .name-title {
@@ -424,54 +431,24 @@
         font-weight: 900;
         margin-bottom: 0.5rem;
         letter-spacing: -0.5px;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s
-          forwards;
-      }
-
-      .name-title.loaded {
-        opacity: 1;
-        transform: translateY(0);
-        animation: none;
       }
 
       .job-title {
         font-size: 1rem;
         font-weight: 500;
         margin-bottom: 1rem;
-        opacity: 0;
         letter-spacing: 2px;
-        transform: translateY(20px);
-        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s
-          forwards;
-      }
-
-      .job-title.loaded {
-        opacity: 1;
-        transform: translateY(0);
-        animation: none;
       }
 
       .bio-description {
         font-size: 0.95rem;
         font-weight: 400;
         margin-bottom: 1.5rem;
-        opacity: 0;
         color: var(--text-color);
         line-height: 1.6;
         max-width: 90%;
         margin-left: auto;
         margin-right: auto;
-        transform: translateY(20px);
-        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.6s
-          forwards;
-      }
-
-      .bio-description.loaded {
-        opacity: 1;
-        transform: translateY(0);
-        animation: none;
       }
 
       .social-links {
@@ -479,23 +456,6 @@
         justify-content: center;
         gap: 1rem;
         margin-bottom: 1.5rem;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.7s
-          forwards;
-      }
-
-      .social-links.loaded {
-        opacity: 1;
-        transform: translateY(0);
-        animation: none;
-      }
-
-      @keyframes fadeInUpElement {
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
       }
 
       .social-links a {
@@ -529,16 +489,6 @@
         justify-content: center;
         flex-wrap: wrap;
         gap: 1rem;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUpElement 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.8s
-          forwards;
-      }
-
-      .button-group.loaded {
-        opacity: 1;
-        transform: translateY(0);
-        animation: none;
       }
 
       .button-group .btn {
@@ -554,48 +504,12 @@
 
       .item-card {
         cursor: default;
-        opacity: 0;
-        animation: smoothFadeInUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)
-          forwards;
         display: flex;
         flex-direction: column;
       }
 
       .item-card-content {
         flex-grow: 1; /* Pushes the button group to the bottom */
-      }
-
-      .item-card:nth-child(1) {
-        animation-delay: 0.1s;
-      }
-      .item-card:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-      .item-card:nth-child(3) {
-        animation-delay: 0.3s;
-      }
-      .item-card:nth-child(4) {
-        animation-delay: 0.4s;
-      }
-      .item-card:nth-child(5) {
-        animation-delay: 0.5s;
-      }
-      .item-card:nth-child(6) {
-        animation-delay: 0.6s;
-      }
-
-      @keyframes smoothFadeInUp {
-        0% {
-          opacity: 0;
-          transform: translateY(50px) scale(0.9);
-        }
-        60% {
-          transform: translateY(-10px) scale(1.02);
-        }
-        100% {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
       }
 
       .item-card img {
@@ -646,6 +560,31 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
 
+      /* Skills Section */
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .skill-card {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+      .skill-card i {
+        font-size: 3.5rem;
+        color: var(--text-color);
+      }
+      .skill-card span {
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
       /* Contact Section */
       .contact-card {
         max-width: 600px;
@@ -653,23 +592,6 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        opacity: 0;
-        animation: smoothPopIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s
-          forwards;
-      }
-
-      @keyframes smoothPopIn {
-        0% {
-          opacity: 0;
-          transform: scale(0.8) translateY(30px);
-        }
-        60% {
-          transform: scale(1.05) translateY(-5px);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1) translateY(0);
-        }
       }
 
       .contact-card p {
@@ -817,6 +739,13 @@
         .item-card .button-group {
           gap: 0.75rem;
         }
+        .skills-grid {
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+          gap: 1.5rem;
+        }
+        .skill-card i {
+          font-size: 3rem;
+        }
       }
 
       @media (max-width: 480px) {
@@ -849,6 +778,13 @@
         .btn-small {
           padding: 0.4rem 0.8rem;
           font-size: 0.8rem;
+        }
+        .skills-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+        }
+        .skill-card {
+          padding: 1rem;
         }
       }
 
@@ -939,7 +875,7 @@
         white-space: pre-wrap; /* Respect newlines from textarea */
         text-align: left;
       }
-
+      
       .modal-content .button-group {
         justify-content: flex-start;
       }
@@ -982,6 +918,15 @@
                 data-target="projects"
                 title="Projects"
                 ><i class="fas fa-briefcase"></i
+              ></a>
+            </li>
+            <li>
+              <a
+                href="#skills"
+                class="nav-link"
+                data-target="skills"
+                title="Skills"
+                ><i class="fas fa-code"></i
               ></a>
             </li>
             <li>
@@ -1065,14 +1010,18 @@
         <!-- Projects Section - DYNAMIC CONTENT -->
         <section id="projects" class="content-section">
           <h2 class="section-title">PROJECTS</h2>
-          <!-- Projects will be inserted here by JS -->
           <div class="grid-container" id="projects-grid"></div>
+        </section>
+
+        <!-- Skills Section - DYNAMIC CONTENT -->
+        <section id="skills" class="content-section">
+          <h2 class="section-title">SKILLS</h2>
+          <div class="skills-grid" id="skills-grid"></div>
         </section>
 
         <!-- Certificates Section - DYNAMIC CONTENT -->
         <section id="certificates" class="content-section">
           <h2 class="section-title">CERTIFICATES</h2>
-          <!-- Certificates will be inserted here by JS -->
           <div class="grid-container" id="certificates-grid"></div>
         </section>
 
