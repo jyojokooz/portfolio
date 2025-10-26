@@ -62,7 +62,7 @@
         color: var(--text-color);
         background-color: var(--bg-color);
         overflow: hidden;
-        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: background-color 0.4s cubic-bezier(0.4, 0.2, 1);
       }
 
       /* Loading Screen */
@@ -173,29 +173,25 @@
         background-color: var(--sidebar-active-bg);
       }
 
-      /* --- MODIFICATION START: Fix Page Collision --- */
       .main-content {
         flex-grow: 1;
-        overflow: hidden; /* Prevent this container from scrolling */
-        position: relative; /* Positioning context for children */
+        overflow: hidden;
+        position: relative;
       }
 
       .content-section {
         display: none;
-        /* Position sections on top of each other */
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        /* Make each section individually scrollable */
         overflow-y: auto;
         scroll-behavior: smooth;
-        /* Move padding from main-content to here */
         padding: 4rem;
+        background-color: var(--bg-color); /* THIS IS THE FIX */
       }
 
-      /* Move scrollbar styles to target the sections */
       .content-section::-webkit-scrollbar {
         width: 8px;
       }
@@ -209,7 +205,6 @@
       .content-section::-webkit-scrollbar-thumb:hover {
         background: #555;
       }
-      /* --- MODIFICATION END --- */
 
       /* --- 3. CONTENT SECTIONS --- */
       .content-section.active {
@@ -608,7 +603,6 @@
           transform: translateY(-4px);
         }
 
-        /* MODIFICATION: Responsive padding moved to content-section */
         .content-section {
           padding: 4rem 1.5rem 6rem 1.5rem;
           height: 100%;
@@ -658,7 +652,6 @@
       }
 
       @media (max-width: 480px) {
-        /* MODIFICATION: Responsive padding moved to content-section */
         .content-section {
           padding: 4rem 1rem 5rem 1rem;
         }
