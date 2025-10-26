@@ -245,11 +245,10 @@ env.js
             <input
               type="text"
               id="resume-url"
-              placeholder="Upload a PDF to generate the URL"
-              readonly
+              placeholder="Paste your public Google Drive link here"
             />
             <button type="button" class="btn-upload" id="upload-resume-button">
-              Upload Resume (PDF)
+              Upload with Cloudinary (Optional)
             </button>
 
             <label for="github-url">GitHub URL</label>
@@ -405,6 +404,40 @@ text_box.pack(pady=10, padx=10)
 root_window.mainloop()
 
 
+----- C:/hello/portfolio\create-env.js -----
+
+const fs = require("fs");
+
+// The content that will be written to env.js
+const envContent = `
+// This file is generated automatically by create-env.js during the build process
+window.config = {
+  firebaseConfig: {
+    apiKey: "${process.env.FIREBASE_API_KEY}",
+    authDomain: "${process.env.FIREBASE_AUTH_DOMAIN}",
+    projectId: "${process.env.FIREBASE_PROJECT_ID}",
+    storageBucket: "${process.env.FIREBASE_STORAGE_BUCKET}",
+    messagingSenderId: "${process.env.FIREBASE_MESSAGING_SENDER_ID}",
+    appId: "${process.env.FIREBASE_APP_ID}",
+    measurementId: "${process.env.FIREBASE_MEASUREMENT_ID}",
+  },
+  cloudinary: {
+    cloudName: "${process.env.CLOUDINARY_CLOUD_NAME}",
+    uploadPreset: "${process.env.CLOUDINARY_UPLOAD_PRESET}",
+  },
+};
+`;
+
+// Write the content to the env.js file
+fs.writeFile("env.js", envContent, (err) => {
+  if (err) {
+    console.error("Error creating env.js file:", err);
+    process.exit(1); // Exit with an error code
+  }
+  console.log("Successfully created env.js from environment variables.");
+});
+
+
 ----- C:/hello/portfolio\env.js -----
 
 // env.js - DO NOT COMMIT THIS FILE TO GIT
@@ -432,15 +465,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebas
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
 
-// Make sure config is defined in the global scope (from env.js)
-if (typeof window.portfolioConfig === "undefined") {
+// Check if window.config exists (it's created by env.js)
+if (typeof window.config === "undefined") {
   throw new Error(
-    "Firebase configuration is missing. Make sure env.js is loaded and config is properly set."
+    "Configuration is missing. Make sure env.js is loaded and the config object is defined."
   );
 }
 
-// Get the config from the window object
-const config = window.portfolioConfig;
+// Get the config directly from the window.config object
+const firebaseConfig = window.config.firebaseConfig;
 
 // Validate Firebase configuration
 const requiredFields = [
@@ -452,7 +485,7 @@ const requiredFields = [
   "appId",
 ];
 for (const field of requiredFields) {
-  if (!config.firebaseConfig[field]) {
+  if (!firebaseConfig[field]) {
     throw new Error(
       `Firebase configuration is missing required field: ${field}`
     );
@@ -464,7 +497,7 @@ let db;
 let auth;
 
 try {
-  firebaseApp = initializeApp(config.firebaseConfig);
+  firebaseApp = initializeApp(firebaseConfig);
   db = getFirestore(firebaseApp);
   auth = getAuth(firebaseApp);
   console.log("Firebase initialized successfully");
@@ -565,6 +598,7 @@ export { db, auth };
       .loading-animation {
         width: 300px;
         height: 300px;
+        transform: translateY(-60px); /* This line moves the animation up */
       }
 
       .portfolio-container {
@@ -1445,14 +1479,26 @@ export { db, auth };
 
     <!-- External scripts for Firebase, environment variables, and main logic -->
     <script src="env.js"></script>
-    <script type="module">
-      // Ensure config is available in the module scope
-      window.portfolioConfig = config;
-    </script>
     <script type="module" src="./scripts/main.js"></script>
   </body>
 </html>
 
+
+----- C:/hello/portfolio\netlify.toml -----
+
+# Netlify build configuration
+[build]
+  # This command runs your build script from package.json
+  # It will install dependencies and then run "node create-env.js"
+  command = "npm run build"
+  
+  # The directory to publish after the build is complete.
+  # Since your index.html is in the root, we use "."
+  publish = "."
+
+[build.environment]
+  # Specify the Node.js version to ensure compatibility
+  NODE_VERSION = "18"
 
 ----- C:/hello/portfolio\package.json -----
 
@@ -1471,7 +1517,7 @@ export { db, auth };
 
 ----- C:/hello/portfolio\.git\COMMIT_EDITMSG -----
 
-HA
+admin updated
 
 
 ----- C:/hello/portfolio\.git\config -----
@@ -1499,7 +1545,7 @@ Unnamed repository; edit this file 'description' to name the repository.
 
 ----- C:/hello/portfolio\.git\FETCH_HEAD -----
 
-2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f		branch 'master' of https://github.com/jyojokooz/portfolio
+9ca113d051320afec09f260721f3e68195272763		branch 'master' of https://github.com/jyojokooz/portfolio
 
 
 ----- C:/hello/portfolio\.git\HEAD -----
@@ -1509,7 +1555,7 @@ ref: refs/heads/master
 
 ----- C:/hello/portfolio\.git\ORIG_HEAD -----
 
-2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f
+9ca113d051320afec09f260721f3e68195272763
 
 
 ----- C:/hello/portfolio\.git\hooks\applypatch-msg.sample -----
@@ -2454,6 +2500,11 @@ f29620021a96729cc68f1e24cfdce93df79693cd 487ca016abb7c20b075d5d07ad211b409b85d60
 bfb1a45fa5eb6f20f8cafc65617279d017a3eae1 c666cb7b6608ff649c98d1579c0e91ea964959a2 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761419873 +0530	commit: added toml file
 c666cb7b6608ff649c98d1579c0e91ea964959a2 2742c6a9c2fc8d078696b8c26ee1dd911efbf2a5 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761421805 +0530	commit: done
 2742c6a9c2fc8d078696b8c26ee1dd911efbf2a5 2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761452795 +0530	commit: HA
+2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f 97188bf4956e60b481f9c3f55093826fe9961b5d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761454107 +0530	commit: ha
+97188bf4956e60b481f9c3f55093826fe9961b5d b3b9d2537ea70f50de6109fcc23611cbb383d145 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761454843 +0530	commit: Fix: Replace loading animation and resolve hang issue
+b3b9d2537ea70f50de6109fcc23611cbb383d145 4807970a2f737bbe14d4de372a42b51334c890e9 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761455113 +0530	commit: hi
+4807970a2f737bbe14d4de372a42b51334c890e9 48ad7884e8839fa979c0fa174c7fb3c3cbb1ca58 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761455469 +0530	commit: loading animation corrected
+48ad7884e8839fa979c0fa174c7fb3c3cbb1ca58 9ca113d051320afec09f260721f3e68195272763 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761456551 +0530	commit: admin updated
 
 
 ----- C:/hello/portfolio\.git\logs\refs\heads\master -----
@@ -2464,6 +2515,11 @@ f29620021a96729cc68f1e24cfdce93df79693cd 487ca016abb7c20b075d5d07ad211b409b85d60
 bfb1a45fa5eb6f20f8cafc65617279d017a3eae1 c666cb7b6608ff649c98d1579c0e91ea964959a2 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761419873 +0530	commit: added toml file
 c666cb7b6608ff649c98d1579c0e91ea964959a2 2742c6a9c2fc8d078696b8c26ee1dd911efbf2a5 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761421805 +0530	commit: done
 2742c6a9c2fc8d078696b8c26ee1dd911efbf2a5 2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761452795 +0530	commit: HA
+2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f 97188bf4956e60b481f9c3f55093826fe9961b5d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761454107 +0530	commit: ha
+97188bf4956e60b481f9c3f55093826fe9961b5d b3b9d2537ea70f50de6109fcc23611cbb383d145 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761454843 +0530	commit: Fix: Replace loading animation and resolve hang issue
+b3b9d2537ea70f50de6109fcc23611cbb383d145 4807970a2f737bbe14d4de372a42b51334c890e9 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761455113 +0530	commit: hi
+4807970a2f737bbe14d4de372a42b51334c890e9 48ad7884e8839fa979c0fa174c7fb3c3cbb1ca58 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761455469 +0530	commit: loading animation corrected
+48ad7884e8839fa979c0fa174c7fb3c3cbb1ca58 9ca113d051320afec09f260721f3e68195272763 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761456551 +0530	commit: admin updated
 
 
 ----- C:/hello/portfolio\.git\logs\refs\remotes\origin\HEAD -----
@@ -2479,11 +2535,16 @@ f29620021a96729cc68f1e24cfdce93df79693cd 487ca016abb7c20b075d5d07ad211b409b85d60
 bfb1a45fa5eb6f20f8cafc65617279d017a3eae1 c666cb7b6608ff649c98d1579c0e91ea964959a2 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761419878 +0530	update by push
 c666cb7b6608ff649c98d1579c0e91ea964959a2 2742c6a9c2fc8d078696b8c26ee1dd911efbf2a5 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761421811 +0530	update by push
 2742c6a9c2fc8d078696b8c26ee1dd911efbf2a5 2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761452804 +0530	update by push
+2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f 97188bf4956e60b481f9c3f55093826fe9961b5d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761454113 +0530	update by push
+97188bf4956e60b481f9c3f55093826fe9961b5d b3b9d2537ea70f50de6109fcc23611cbb383d145 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761454859 +0530	update by push
+b3b9d2537ea70f50de6109fcc23611cbb383d145 4807970a2f737bbe14d4de372a42b51334c890e9 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761455120 +0530	update by push
+4807970a2f737bbe14d4de372a42b51334c890e9 48ad7884e8839fa979c0fa174c7fb3c3cbb1ca58 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761455477 +0530	update by push
+48ad7884e8839fa979c0fa174c7fb3c3cbb1ca58 9ca113d051320afec09f260721f3e68195272763 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761456558 +0530	update by push
 
 
 ----- C:/hello/portfolio\.git\refs\heads\master -----
 
-2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f
+9ca113d051320afec09f260721f3e68195272763
 
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\HEAD -----
@@ -2493,7 +2554,7 @@ ref: refs/remotes/origin/master
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\master -----
 
-2e3fd5dfd9e6c71a150ae0dd2528621a8f3a905f
+9ca113d051320afec09f260721f3e68195272763
 
 
 ----- C:/hello/portfolio\.vscode\launch.json -----
