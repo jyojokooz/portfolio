@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function populateHomePage() {
     try {
-      console.log("Attempting to fetch profile data...");
       const docRef = doc(db, "portfolio", "profile");
       const docSnap = await getDoc(docRef);
 
@@ -32,33 +31,26 @@ document.addEventListener("DOMContentLoaded", () => {
           data.bio || "Your bio goes here.";
         document.getElementById("resume-button").href = data.resumeUrl || "#";
 
-        // Populate Social Links on Home Page
-        const socialContainer = document.getElementById("social-links");
-        socialContainer.innerHTML = ""; // Clear existing
-        if (data.socials?.github) {
-          socialContainer.innerHTML += `<a href="${data.socials.github}" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>`;
-        }
-        if (data.socials?.instagram) {
-          socialContainer.innerHTML += `<a href="${data.socials.instagram}" title="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>`;
-        }
-        if (data.socials?.discord) {
-          socialContainer.innerHTML += `<a href="${data.socials.discord}" title="Discord" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>`;
-        }
-
-        // Populate Social Icons on Contact Page
-        const contactSocialContainer = document.getElementById(
-          "contact-social-icons"
-        );
-        contactSocialContainer.innerHTML = ""; // Clear existing
-        if (data.socials?.github) {
-          contactSocialContainer.innerHTML += `<a href="${data.socials.github}" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>`;
-        }
-        if (data.socials?.instagram) {
-          contactSocialContainer.innerHTML += `<a href="${data.socials.instagram}" title="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>`;
-        }
-        if (data.socials?.discord) {
-          contactSocialContainer.innerHTML += `<a href="${data.socials.discord}" title="Discord" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>`;
-        }
+        const socialLinksHTML = `
+          ${
+            data.socials?.github
+              ? `<a href="${data.socials.github}" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>`
+              : ""
+          }
+          ${
+            data.socials?.instagram
+              ? `<a href="${data.socials.instagram}" title="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>`
+              : ""
+          }
+          ${
+            data.socials?.discord
+              ? `<a href="${data.socials.discord}" title="Discord" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>`
+              : ""
+          }
+        `;
+        document.getElementById("social-links").innerHTML = socialLinksHTML;
+        document.getElementById("contact-social-icons").innerHTML =
+          socialLinksHTML;
       } else {
         console.log("No profile document found!");
       }
@@ -73,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
       projectsGrid.innerHTML = "";
       projectsData.clear();
       const querySnapshot = await getDocs(collection(db, "projects"));
+      const placeholderImg = "https://via.placeholder.com/400x180";
 
       const truncateText = (text, maxLength) => {
         if (!text || text.length <= maxLength) return text;
@@ -88,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const projectCard = `
           <div class="item-card">
               <img src="${
-                project.imageUrl || "https://via.placeholder.com/400x180"
+                project.imageUrl ? project.imageUrl : placeholderImg
               }" alt="${project.title}" />
               <div class="item-card-content">
                 <h3>${project.title}</h3>
@@ -142,15 +135,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const certificatesGrid = document.getElementById("certificates-grid");
       certificatesGrid.innerHTML = "";
       const querySnapshot = await getDocs(collection(db, "certificates"));
+      const placeholderImg = "https://via.placeholder.com/400x180";
+
       querySnapshot.forEach((doc) => {
         const cert = doc.data();
         const certCard = `
           <div class="item-card">
               <img src="${
-                cert.imageUrl || "https://via.placeholder.com/400x180"
+                cert.imageUrl ? cert.imageUrl : placeholderImg
               }" alt="${cert.title}" />
-              <h3>${cert.title}</h3>
-              <p>Issued by: ${cert.issuer}</p>
+              <div class="item-card-content">
+                <h3>${cert.title}</h3>
+                <p>Issued by: ${cert.issuer}</p>
+              </div>
               <div class="button-group">
                   ${
                     cert.verifyUrl
@@ -169,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- A. LOADING SCREEN & DATA INITIALIZATION ---
   const loadingScreen = document.getElementById("loading-screen");
   const portfolioContainer = document.getElementById("portfolio-container");
-
   const loadingAnimation = lottie.loadAnimation({
     container: document.getElementById("loading-animation"),
     renderer: "svg",
@@ -1018,27 +1014,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 2000);
 
   // --- C. THEME TOGGLER ---
-  const themeToggle = document.getElementById("theme-toggle");
   const body = document.body;
+  const mobileThemeToggle = document.getElementById("mobile-theme-toggle");
   const sunIcon = '<i class="fas fa-sun"></i>';
   const moonIcon = '<i class="fas fa-moon"></i>';
+
   const applyTheme = (theme) => {
     body.classList.toggle("dark-mode", theme === "dark");
-    themeToggle.innerHTML = theme === "dark" ? sunIcon : moonIcon;
+    mobileThemeToggle.innerHTML = theme === "dark" ? sunIcon : moonIcon;
   };
+
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);
-  themeToggle.addEventListener("click", () => {
+
+  mobileThemeToggle.addEventListener("click", () => {
     const newTheme = body.classList.contains("dark-mode") ? "light" : "dark";
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
   });
 
   // --- D. SECTION NAVIGATION WITH PAGE TRANSITIONS ---
-  const navLinks = document.querySelectorAll(".nav-link, .btn[data-section]");
-  const contentSections = document.querySelectorAll(".content-section");
+  const allNavLinks = document.querySelectorAll(".nav-link");
 
-  navLinks.forEach((link) => {
+  allNavLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
       const targetId = link.dataset.target || link.dataset.section;
@@ -1046,23 +1044,28 @@ document.addEventListener("DOMContentLoaded", () => {
         ".content-section.active"
       );
 
-      if (currentActiveSection.id === targetId) return; // Don't re-animate if it's the same section
+      if (
+        !targetId ||
+        (currentActiveSection && currentActiveSection.id === targetId)
+      )
+        return;
 
-      // Update nav link styles
-      document
-        .querySelectorAll(".nav-link")
-        .forEach((l) => l.classList.remove("active"));
+      allNavLinks.forEach((l) => l.classList.remove("active"));
       document
         .querySelectorAll(`.nav-link[data-target="${targetId}"]`)
         .forEach((l) => l.classList.add("active"));
 
-      currentActiveSection.classList.add("fade-out");
-
-      setTimeout(() => {
-        currentActiveSection.classList.remove("active", "fade-out");
+      if (currentActiveSection) {
+        currentActiveSection.classList.add("fade-out");
+        setTimeout(() => {
+          currentActiveSection.classList.remove("active", "fade-out");
+          document.getElementById(targetId)?.classList.add("active");
+          document.querySelector(".main-content").scrollTop = 0;
+        }, 400);
+      } else {
         document.getElementById(targetId)?.classList.add("active");
         document.querySelector(".main-content").scrollTop = 0;
-      }, 500); // Match animation duration
+      }
     });
   });
 

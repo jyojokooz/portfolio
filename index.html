@@ -24,34 +24,31 @@
     <!-- Lottie Animation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <style>
-      /* --- 1. SETUP & CSS VARIABLES --- */
+      /* --- 1. SETUP & CSS VARIABLES (NEW THEME) --- */
       :root {
         /* Light Mode */
-        --bg-color: #f0f0f0;
+        --bg-color: #f7f8fc;
         --card-bg-color: #ffffff;
         --text-color: #1a1a1a;
         --border-color: #1a1a1a;
         --shadow-color: #1a1a1a;
+        --accent-color: #ffd400;
+        --sidebar-bg: #1a1a1a;
         --sidebar-icon: #ffffff;
-        --sidebar-icon-active: #f0f0f0;
-        --sidebar-active-bg: rgba(0, 0, 0, 0.2);
+        --sidebar-icon-active: var(--accent-color);
+        --sidebar-active-bg: rgba(255, 255, 255, 0.1);
         --font-family: "Montserrat", sans-serif;
-        --gradient-start: #e0c3fc;
-        --gradient-end: #8ec5fc;
       }
 
       body.dark-mode {
         /* Dark Mode */
-        --bg-color: #1a1a1a;
-        --card-bg-color: #2c2c2c;
+        --bg-color: #121212;
+        --card-bg-color: #1e1e1e;
         --text-color: #f0f0f0;
         --border-color: #f0f0f0;
         --shadow-color: #000000;
-        --sidebar-icon: #1a1a1a;
-        --sidebar-icon-active: #000000;
-        --sidebar-active-bg: rgba(255, 255, 255, 0.2);
-        --gradient-start: #232526;
-        --gradient-end: #414345;
+        --sidebar-icon: #f0f0f0;
+        --sidebar-active-bg: rgba(255, 255, 255, 0.15);
       }
 
       * {
@@ -63,31 +60,9 @@
       body {
         font-family: var(--font-family);
         color: var(--text-color);
+        background-color: var(--bg-color);
         overflow: hidden;
-
-        /* Animated Gradient Background */
-        background: linear-gradient(
-          -45deg,
-          var(--gradient-start),
-          var(--gradient-end),
-          var(--gradient-start),
-          var(--gradient-end)
-        );
-        background-size: 400% 400%;
-        animation: gradientBG 25s ease infinite;
-        transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      @keyframes gradientBG {
-        0% {
-          background-position: 0% 50%;
-        }
-        50% {
-          background-position: 100% 50%;
-        }
-        100% {
-          background-position: 0% 50%;
-        }
+        transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       /* Loading Screen */
@@ -104,31 +79,21 @@
         z-index: 9999;
         transition: opacity 0.5s ease, visibility 0.5s ease;
       }
-
       .loading-screen.hide {
         opacity: 0;
         visibility: hidden;
       }
-
       .loading-animation {
         width: 300px;
         height: 300px;
-        transform: translateY(-60px); /* This line moves the animation up */
+        transform: translateY(-60px);
       }
-
       .portfolio-container {
         opacity: 0;
         transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       }
-
       .portfolio-container.show {
         opacity: 1;
-      }
-
-      @keyframes fadeInBody {
-        to {
-          opacity: 1;
-        }
       }
 
       /* --- 2. MAIN LAYOUT --- */
@@ -145,10 +110,7 @@
         align-items: center;
         justify-content: space-between;
         flex-shrink: 0;
-        opacity: 1;
-        transform: translateX(0);
-        /* NEW: Sidebar Gradient */
-        background: linear-gradient(180deg, #2c3e50, #16222a);
+        background: var(--sidebar-bg);
       }
 
       .sidebar-top,
@@ -162,9 +124,12 @@
       .logo {
         font-weight: 900;
         font-size: 1.5rem;
-        color: #ffffff; /* White text for dark gradient */
-        margin-bottom: 2rem;
         transition: color 0.3s ease;
+      }
+
+      .sidebar .logo {
+        color: #ffffff;
+        margin-bottom: 2rem;
       }
 
       .nav-links {
@@ -174,7 +139,6 @@
         align-items: center;
         width: 100%;
       }
-
       .nav-links li {
         margin: 1rem 0;
         width: 100%;
@@ -183,7 +147,6 @@
       }
 
       .nav-link {
-        color: #bdc3c7; /* Lighter grey for inactive icons */
         font-size: 1.4rem;
         text-decoration: none;
         padding: 0.75rem;
@@ -196,43 +159,18 @@
         height: 50px;
       }
 
-      .nav-link:hover {
+      /* Sidebar specific link colors */
+      .sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .sidebar .nav-link:hover {
         background-color: var(--sidebar-active-bg);
         color: #ffffff;
         transform: scale(1.1);
       }
-
-      .nav-link.active {
-        color: #ffffff; /* Bright white for active icon */
+      .sidebar .nav-link.active {
+        color: var(--sidebar-icon-active);
         background-color: var(--sidebar-active-bg);
-      }
-
-      .nav-link i {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      #theme-toggle {
-        background: none;
-        border: none;
-        color: #bdc3c7; /* Lighter grey for theme icon */
-        font-size: 1.4rem;
-        cursor: pointer;
-        padding: 0.75rem;
-        border-radius: 8px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      #theme-toggle:hover {
-        background-color: var(--sidebar-active-bg);
-        color: #ffffff;
-        transform: scale(1.1) rotate(15deg);
       }
 
       .main-content {
@@ -243,38 +181,31 @@
         scroll-behavior: smooth;
       }
 
-      /* Custom scrollbar */
       .main-content::-webkit-scrollbar {
         width: 8px;
       }
-
       .main-content::-webkit-scrollbar-track {
         background: rgba(0, 0, 0, 0.1);
       }
-
       .main-content::-webkit-scrollbar-thumb {
         background: var(--border-color);
         border-radius: 4px;
       }
-
       .main-content::-webkit-scrollbar-thumb:hover {
-        background: var(--sidebar-active-bg);
+        background: #555;
       }
 
       /* --- 3. CONTENT SECTIONS --- */
       .content-section {
         display: none;
       }
-
       .content-section.active {
         display: block;
         animation: page-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       }
-
       .content-section.fade-out {
         animation: page-fade-out 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       }
-
       @keyframes page-fade-in {
         from {
           opacity: 0;
@@ -295,7 +226,6 @@
           transform: translateY(-20px);
         }
       }
-
       .section-title {
         font-size: 2.5rem;
         font-weight: 900;
@@ -305,7 +235,7 @@
         letter-spacing: -1px;
       }
 
-      /* --- 4. CARD & BUTTON STYLES --- */
+      /* --- 4. CARD & BUTTON STYLES (NEW THEME) --- */
       .home-card,
       .item-card,
       .contact-card,
@@ -327,74 +257,54 @@
         box-shadow: 12px 12px 0 var(--shadow-color);
       }
 
-      .btn {
+      .btn,
+      .btn-small {
         display: inline-block;
-        background-color: var(--card-bg-color);
+        background-color: var(--accent-color);
         border: 3px solid var(--border-color);
         padding: 0.75rem 1.5rem;
         margin: 0 0.5rem;
         text-decoration: none;
-        color: var(--text-color);
+        color: var(--border-color);
         font-weight: 700;
-        box-shadow: 4px 4px 0 var(--shadow-color);
+        box-shadow: 4px 4px 0 var(--border-color);
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         text-transform: uppercase;
         letter-spacing: 0.5px;
         font-size: 0.9rem;
+        cursor: pointer;
       }
 
-      .btn:hover {
+      .btn:hover,
+      .btn-small:hover {
         transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 var(--shadow-color);
+        box-shadow: 6px 6px 0 var(--border-color);
       }
 
-      .btn:active {
+      .btn:active,
+      .btn-small:active {
         transform: translate(2px, 2px);
-        box-shadow: 2px 2px 0 var(--shadow-color);
+        box-shadow: 2px 2px 0 var(--border-color);
       }
 
-      /* NEW: Gradient Button Styles */
-      .btn.btn-resume,
-      .btn.btn-contact {
-        color: white;
-        border: none;
-        background-size: 200% auto;
-        transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      .btn-small {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        border-width: 2px;
+        box-shadow: 3px 3px 0 var(--border-color);
       }
-
-      .btn.btn-resume {
-        background-image: linear-gradient(
-          to right,
-          #ff416c 0%,
-          #ff4b2b 51%,
-          #ff416c 100%
-        );
+      .btn-small:hover {
+        box-shadow: 5px 5px 0 var(--border-color);
       }
-
-      .btn.btn-contact {
-        background-image: linear-gradient(
-          to right,
-          #833ab4 0%,
-          #4f5bd5 51%,
-          #833ab4 100%
-        );
-      }
-
-      .btn.btn-resume:hover,
-      .btn.btn-contact:hover {
-        background-position: right center; /* Slide effect on hover */
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 var(--shadow-color);
+      .btn-small:active {
+        box-shadow: 1px 1px 0 var(--border-color);
       }
 
       /* --- 5. SPECIFIC SECTION STYLES --- */
-
-      /* Home Section */
       .home-card {
         max-width: 500px;
         margin: 4rem auto;
       }
-
       .profile-image-container {
         background-color: var(--card-bg-color);
         border: 3px solid var(--border-color);
@@ -408,24 +318,10 @@
         position: relative;
         overflow: hidden;
       }
-
       .profile-image-container:hover {
         transform: translate(-2px, -2px) rotate(-2deg);
         box-shadow: 10px 10px 0 var(--shadow-color);
       }
-
-      .lottie-background {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 180%;
-        height: 180%;
-        opacity: 0.15;
-        pointer-events: none;
-        z-index: 0;
-      }
-
       .profile-pic {
         width: 100%;
         height: 100%;
@@ -434,46 +330,18 @@
         position: relative;
         z-index: 1;
       }
-
-      .lottie-decoration {
-        width: 80px;
-        height: 80px;
-        position: absolute;
-        opacity: 0.3;
-        pointer-events: none;
-      }
-
-      .lottie-top-left {
-        top: 20px;
-        left: 20px;
-      }
-      .lottie-top-right {
-        top: 20px;
-        right: 20px;
-      }
-      .lottie-bottom-left {
-        bottom: 20px;
-        left: 20px;
-      }
-      .lottie-bottom-right {
-        bottom: 20px;
-        right: 20px;
-      }
-
       .name-title {
         font-size: 2rem;
         font-weight: 900;
         margin-bottom: 0.5rem;
         letter-spacing: -0.5px;
       }
-
       .job-title {
         font-size: 1rem;
         font-weight: 500;
         margin-bottom: 1rem;
         letter-spacing: 2px;
       }
-
       .bio-description {
         font-size: 0.95rem;
         font-weight: 400;
@@ -483,15 +351,14 @@
         max-width: 90%;
         margin-left: auto;
         margin-right: auto;
+        opacity: 0.8;
       }
-
       .social-links {
         display: flex;
         justify-content: center;
         gap: 1rem;
         margin-bottom: 1.5rem;
       }
-
       .social-links a {
         width: 45px;
         height: 45px;
@@ -506,17 +373,15 @@
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 3px 3px 0 var(--shadow-color);
       }
-
       .social-links a:hover {
         transform: translate(-2px, -2px) scale(1.1);
         box-shadow: 5px 5px 0 var(--shadow-color);
+        background-color: var(--accent-color);
       }
-
       .social-links a:active {
         transform: translate(1px, 1px);
         box-shadow: 2px 2px 0 var(--shadow-color);
       }
-
       .button-group {
         margin-top: 1.5rem;
         display: flex;
@@ -524,7 +389,6 @@
         flex-wrap: wrap;
         gap: 1rem;
       }
-
       .button-group .btn {
         margin: 0;
       }
@@ -535,17 +399,14 @@
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 3rem;
       }
-
       .item-card {
         cursor: default;
         display: flex;
         flex-direction: column;
       }
-
       .item-card-content {
-        flex-grow: 1; /* Pushes the button group to the bottom */
+        flex-grow: 1;
       }
-
       .item-card img {
         width: 100%;
         height: 180px;
@@ -554,44 +415,20 @@
         margin-bottom: 1rem;
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
-
       .item-card:hover img {
         transform: scale(1.05);
       }
-
       .item-card h3 {
         font-size: 1.5rem;
         margin-bottom: 0.5rem;
         font-weight: 700;
-      }
-
-      .item-card p {
         color: var(--text-color);
+      }
+      .item-card p {
         opacity: 0.8;
         margin-bottom: 1rem;
         line-height: 1.6;
-      }
-
-      .btn-small {
-        display: inline-block;
-        background-color: var(--bg-color);
-        border: 2px solid var(--border-color);
-        padding: 0.5rem 1rem;
-        margin: 0 0.25rem;
-        text-decoration: none;
         color: var(--text-color);
-        font-weight: 700;
-        border-radius: 5px;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.5px;
-        cursor: pointer;
-      }
-
-      .btn-small:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
 
       /* Skills Section */
@@ -627,13 +464,11 @@
         flex-direction: column;
         align-items: center;
       }
-
       .contact-card p {
         font-size: 1.1rem;
         margin-bottom: 1.5rem;
         line-height: 1.6;
       }
-
       .email-link {
         display: inline-block;
         font-size: 1.2rem;
@@ -645,14 +480,13 @@
         word-break: break-all;
         text-align: center;
       }
-
       .email-link:hover {
         transform: scale(1.05);
         opacity: 0.8;
       }
-
       .social-icons {
-        background-color: var(--sidebar-bg);
+        background-color: var(--card-bg-color);
+        border: 2px solid var(--border-color);
         border-radius: 50px;
         padding: 0.75rem 1.5rem;
         display: inline-flex;
@@ -662,14 +496,12 @@
         flex-wrap: wrap;
         justify-content: center;
       }
-
       .social-icons:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
-
       .social-icons a {
-        color: #ffffff; /* White icons on dark bg */
+        color: var(--text-color);
         font-size: 1.5rem;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
@@ -678,89 +510,99 @@
         min-width: 40px;
         min-height: 40px;
       }
-
       .social-icons a:hover {
+        color: var(--accent-color);
         transform: scale(1.2) rotate(5deg);
       }
 
-      /* --- 6. RESPONSIVENESS --- */
+      /* --- 6. MOBILE BARS --- */
+      .mobile-header,
+      .mobile-nav {
+        display: none;
+      }
+
+      /* --- 7. RESPONSIVENESS --- */
       @media (max-width: 768px) {
-        .portfolio-container {
-          flex-direction: column;
-        }
-
         .sidebar {
-          width: 100%;
-          height: 70px;
-          flex-direction: row;
-          padding: 0 1rem;
+          display: none;
+        }
+        .mobile-header,
+        .mobile-nav {
+          display: flex;
+        }
+
+        .mobile-header {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1001;
           justify-content: space-between;
-          /* NEW: Horizontal gradient for mobile */
-          background: linear-gradient(90deg, #2c3e50, #16222a);
-        }
-
-        .sidebar-top {
-          flex-direction: row;
           align-items: center;
+          padding: 0.75rem 1.5rem;
+          background: transparent;
         }
-
-        .logo {
-          margin-bottom: 0;
-          margin-right: 1rem;
-        }
-
-        .nav-links {
-          flex-direction: row;
-          gap: 0.5rem;
-        }
-
-        .nav-links li {
+        .mobile-header .logo {
           margin: 0;
+          color: var(--text-color);
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        #mobile-theme-toggle {
+          background: none;
+          border: none;
+          color: var(--text-color);
+          font-size: 1.4rem;
+          cursor: pointer;
+          padding: 0.5rem;
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
-        .nav-link,
-        #theme-toggle {
-          width: 45px;
-          height: 45px;
+        .mobile-nav {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 1001;
+          background: var(--card-bg-color);
+          border-top: 2px solid var(--border-color);
+          justify-content: space-around;
+          padding: 0.5rem 0;
+        }
+        .mobile-nav .nav-link {
+          color: var(--text-color);
+          opacity: 0.6;
+          width: auto;
+          height: auto;
+          flex-direction: column;
+          gap: 0.25rem;
+          font-size: 0.7rem;
+        }
+        .mobile-nav .nav-link i {
           font-size: 1.2rem;
+        }
+        .mobile-nav .nav-link.active {
+          color: var(--accent-color);
+          opacity: 1;
         }
 
         .main-content {
-          padding: 2rem;
-          height: calc(100vh - 70px);
+          padding: 4rem 1.5rem 6rem 1.5rem;
+          height: 100vh;
         }
-
         .section-title {
           font-size: 2rem;
         }
-
         .home-card {
           margin: 2rem auto;
         }
-
         .profile-image-container {
           margin-top: -4rem;
         }
-
         .grid-container {
           grid-template-columns: 1fr;
           gap: 2rem;
         }
 
-        .button-group {
-          flex-direction: row;
-          justify-content: center;
-        }
-
-        .btn {
-          width: auto;
-          min-width: 110px;
-          white-space: nowrap;
-          padding: 0.6rem 1rem;
-          font-size: 0.85rem;
-        }
-
-        /* Mobile card adjustments */
         .item-card {
           padding: 1.5rem;
         }
@@ -786,22 +628,17 @@
 
       @media (max-width: 480px) {
         .main-content {
-          padding: 1.5rem;
+          padding: 4rem 1rem 5rem 1rem;
         }
-
         .section-title {
           font-size: 1.75rem;
         }
-
         .name-title {
           font-size: 1.75rem;
         }
-
         .job-title {
           font-size: 0.9rem;
         }
-
-        /* Further adjustments for very small screens */
         .item-card {
           padding: 1.25rem;
         }
@@ -811,8 +648,9 @@
         .item-card h3 {
           font-size: 1.15rem;
         }
+        .btn,
         .btn-small {
-          padding: 0.4rem 0.8rem;
+          padding: 0.6rem 1rem;
           font-size: 0.8rem;
         }
         .skills-grid {
@@ -824,11 +662,11 @@
         }
       }
 
-      /* --- 7. MODAL STYLES --- */
+      /* --- 8. MODAL STYLES --- */
       .modal {
-        display: none; /* Hidden by default */
+        display: none;
         position: fixed;
-        z-index: 1000;
+        z-index: 1002;
         left: 0;
         top: 0;
         width: 100%;
@@ -839,7 +677,6 @@
         align-items: center;
         animation: fadeInModal 0.3s ease;
       }
-
       @keyframes fadeInModal {
         from {
           opacity: 0;
@@ -848,7 +685,6 @@
           opacity: 1;
         }
       }
-
       .modal-content {
         position: relative;
         background-color: var(--card-bg-color);
@@ -863,7 +699,6 @@
         overflow-y: auto;
         text-align: left;
       }
-
       @keyframes slideInModal {
         from {
           transform: translateY(-50px);
@@ -874,7 +709,6 @@
           opacity: 1;
         }
       }
-
       .modal-close {
         color: var(--text-color);
         position: absolute;
@@ -885,12 +719,10 @@
         cursor: pointer;
         transition: transform 0.2s ease;
       }
-
       .modal-close:hover,
       .modal-close:focus {
         transform: scale(1.2);
       }
-
       .modal-content img {
         width: 100%;
         height: auto;
@@ -899,24 +731,19 @@
         border-radius: 5px;
         margin-bottom: 1.5rem;
       }
-
       .modal-content h3 {
         font-size: 2rem;
         margin-bottom: 1rem;
       }
-
       .modal-content p {
         line-height: 1.7;
         margin-bottom: 2rem;
-        white-space: pre-wrap; /* Respect newlines from textarea */
+        white-space: pre-wrap;
         text-align: left;
       }
-
       .modal-content .button-group {
         justify-content: flex-start;
       }
-
-      /* Custom scrollbar for modal */
       .modal-content::-webkit-scrollbar {
         width: 6px;
       }
@@ -933,7 +760,7 @@
     </div>
 
     <div class="portfolio-container" id="portfolio-container">
-      <!-- 1. Sidebar Navigation -->
+      <!-- 1. Desktop Sidebar Navigation -->
       <nav class="sidebar">
         <div class="sidebar-top">
           <div class="logo">JSR</div>
@@ -985,37 +812,55 @@
             </li>
           </ul>
         </div>
-        <div class="sidebar-bottom">
-          <button id="theme-toggle" title="Toggle Theme">
-            <i class="fas fa-moon"></i>
-          </button>
-        </div>
+        <!-- This empty div is for the desktop theme toggle, which is now hidden but JS might need it. We will control theme via mobile header. -->
+        <div class="sidebar-bottom" style="display: none"></div>
       </nav>
 
-      <!-- 2. Main Content Area -->
+      <!-- 2. Mobile Header -->
+      <header class="mobile-header">
+        <div class="logo">JSR</div>
+        <button id="mobile-theme-toggle" title="Toggle Theme">
+          <i class="fas fa-moon"></i>
+        </button>
+      </header>
+
+      <!-- 3. Mobile Bottom Navigation -->
+      <nav class="mobile-nav">
+        <a href="#home" class="nav-link active" data-target="home" title="Home"
+          ><i class="fas fa-home"></i><span>Home</span></a
+        >
+        <a
+          href="#projects"
+          class="nav-link"
+          data-target="projects"
+          title="Projects"
+          ><i class="fas fa-briefcase"></i><span>Projects</span></a
+        >
+        <a href="#skills" class="nav-link" data-target="skills" title="Skills"
+          ><i class="fas fa-code"></i><span>Skills</span></a
+        >
+        <a
+          href="#certificates"
+          class="nav-link"
+          data-target="certificates"
+          title="Certs"
+          ><i class="fas fa-certificate"></i><span>Certs</span></a
+        >
+        <a
+          href="#contact"
+          class="nav-link"
+          data-target="contact"
+          title="Contact"
+          ><i class="fas fa-envelope"></i><span>Contact</span></a
+        >
+      </nav>
+
+      <!-- 4. Main Content Area -->
       <main class="main-content">
         <!-- Home Section - DYNAMIC CONTENT -->
         <section id="home" class="content-section active">
-          <div
-            id="lottie-top-left"
-            class="lottie-decoration lottie-top-left"
-          ></div>
-          <div
-            id="lottie-top-right"
-            class="lottie-decoration lottie-top-right"
-          ></div>
-          <div
-            id="lottie-bottom-left"
-            class="lottie-decoration lottie-bottom-left"
-          ></div>
-          <div
-            id="lottie-bottom-right"
-            class="lottie-decoration lottie-bottom-right"
-          ></div>
-
           <div class="home-card">
             <div class="profile-image-container">
-              <div id="lottie-bg" class="lottie-background"></div>
               <img
                 src=""
                 alt="Profile Picture"
@@ -1026,21 +871,17 @@
             <h1 class="name-title" id="profile-name"></h1>
             <p class="job-title" id="profile-job-title"></p>
             <p class="bio-description" id="profile-bio"></p>
-            <div class="social-links" id="social-links">
-              <!-- Social links will be inserted here by JS -->
-            </div>
+            <div class="social-links" id="social-links"></div>
             <div class="button-group">
               <a
                 href="#"
-                class="btn btn-resume"
+                class="btn"
                 id="resume-button"
                 target="_blank"
                 rel="noopener"
                 >RESUME</a
               >
-              <a href="#contact" class="btn btn-contact" data-section="contact"
-                >CONTACT</a
-              >
+              <a href="#contact" class="btn" data-section="contact">CONTACT</a>
             </div>
           </div>
         </section>
@@ -1074,9 +915,7 @@
             <a href="mailto:joelraphael6425@gmail.com" class="email-link"
               >joelraphael6425@gmail.com</a
             >
-            <div class="social-icons" id="contact-social-icons">
-              <!-- Social icons will be inserted here by JS -->
-            </div>
+            <div class="social-icons" id="contact-social-icons"></div>
           </div>
         </section>
 
@@ -1092,7 +931,7 @@
       </main>
     </div>
 
-    <!-- External scripts for Firebase, environment variables, and main logic -->
+    <!-- External scripts -->
     <script src="env.js"></script>
     <script type="module" src="./scripts/main.js"></script>
   </body>
