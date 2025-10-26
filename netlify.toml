@@ -1,0 +1,13 @@
+# Netlify build configuration
+[build]
+  # This command runs your build script from package.json
+  # It will install dependencies and then run "node create-env.js"
+  command = "npm run build"
+  
+  # The directory to publish after the build is complete.
+  # Since your index.html is in the root, we use "."
+  publish = "."
+
+[build.environment]
+  # Specify the Node.js version to ensure compatibility
+  NODE_VERSION = "18"
