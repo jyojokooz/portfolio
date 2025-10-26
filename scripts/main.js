@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
           data.bio || "Your bio goes here.";
         document.getElementById("resume-button").href = data.resumeUrl || "#";
 
-        // Populate Social Links
+        // Populate Social Links on Home Page
         const socialContainer = document.getElementById("social-links");
         socialContainer.innerHTML = ""; // Clear existing
         if (data.socials?.github) {
@@ -46,6 +46,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         if (data.socials?.discord) {
           socialContainer.innerHTML += `<a href="${data.socials.discord}" title="Discord" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>`;
+        }
+
+        // Populate Social Icons on Contact Page
+        const contactSocialContainer = document.getElementById(
+          "contact-social-icons"
+        );
+        contactSocialContainer.innerHTML = ""; // Clear existing
+        if (data.socials?.github) {
+          contactSocialContainer.innerHTML += `<a href="${data.socials.github}" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>`;
+        }
+        if (data.socials?.instagram) {
+          contactSocialContainer.innerHTML += `<a href="${data.socials.instagram}" title="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>`;
+        }
+        if (data.socials?.discord) {
+          contactSocialContainer.innerHTML += `<a href="${data.socials.discord}" title="Discord" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>`;
         }
       } else {
         console.log("No profile document found! Using placeholder data.");
