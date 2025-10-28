@@ -46,6 +46,14 @@
         --sidebar-icon-active: var(--accent-color);
         --sidebar-active-bg: rgba(255, 255, 255, 0.1);
         --font-family: "Montserrat", sans-serif;
+        
+        /* Modern Gradient Colors */
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-fire: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --gradient-aurora: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        --gradient-cosmic: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
       }
 
       body.dark-mode {
@@ -57,6 +65,14 @@
         --shadow-color: #000000;
         --sidebar-icon: #f0f0f0;
         --sidebar-active-bg: rgba(255, 255, 255, 0.15);
+        
+        /* Dark Mode Gradients */
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-fire: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --gradient-aurora: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        --gradient-cosmic: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
       }
 
       * {
@@ -68,8 +84,44 @@
       body {
         font-family: var(--font-family);
         color: var(--text-color);
-        background-color: var(--bg-color);
-        transition: background-color 0.4s cubic-bezier(0.4, 0.2, 1);
+        background: var(--bg-color);
+        transition: background-color 0.4s ease-in-out;
+        position: relative;
+      }
+      
+      /* Animated gradient background */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+          radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, rgba(245, 87, 108, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 20%, rgba(79, 172, 254, 0.1) 0%, transparent 50%);
+        z-index: 0;
+        pointer-events: none;
+        animation: gradientShift 15s ease infinite;
+      }
+      
+      @keyframes gradientShift {
+        0%, 100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.8;
+          transform: scale(1.1);
+        }
+      }
+      
+      body.dark-mode::before {
+        background: 
+          radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, rgba(245, 87, 108, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 40% 20%, rgba(79, 172, 254, 0.15) 0%, transparent 50%);
       }
 
       /* Loading Screen */
@@ -119,6 +171,20 @@
         justify-content: space-between;
         flex-shrink: 0;
         background: var(--sidebar-bg);
+        position: relative;
+        z-index: 10;
+      }
+      
+      .sidebar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-primary);
+        opacity: 0.05;
+        z-index: -1;
       }
 
       .sidebar-top,
@@ -185,6 +251,7 @@
         flex-grow: 1;
         overflow: hidden;
         position: relative;
+        z-index: 1;
       }
 
       .content-section {
@@ -247,9 +314,27 @@
         font-weight: 900;
         text-align: center;
         margin-bottom: 3rem;
-        /* font-style: italic; */
         letter-spacing: 2px;
         text-transform: uppercase;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+      
+      .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--gradient-sunset);
+        border-radius: 2px;
       }
 
       /* --- 4. CARD & BUTTON STYLES (NEW THEME) --- */
@@ -277,12 +362,12 @@
       .btn,
       .btn-small {
         display: inline-block;
-        background-color: var(--accent-color);
+        background: var(--gradient-fire);
         border: 3px solid var(--border-color);
         padding: 0.75rem 1.5rem;
         margin: 0 0.5rem;
         text-decoration: none;
-        color: var(--border-color);
+        color: #ffffff;
         font-weight: 700;
         box-shadow: 4px 4px 0 var(--border-color);
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -290,6 +375,26 @@
         letter-spacing: 0.5px;
         font-size: 0.9rem;
         cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .btn::before,
+      .btn-small::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-sunset);
+        transition: left 0.3s ease;
+        z-index: -1;
+      }
+      
+      .btn:hover::before,
+      .btn-small:hover::before {
+        left: 0;
       }
 
       .btn:hover,
@@ -323,7 +428,7 @@
         margin: 4rem auto;
       }
       .profile-image-container {
-        background-color: var(--card-bg-color);
+        background: var(--gradient-primary);
         border: 3px solid var(--border-color);
         border-radius: 24px;
         padding: 0.75rem;
@@ -335,6 +440,33 @@
         position: relative;
         overflow: hidden;
       }
+      
+      .profile-image-container::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: var(--gradient-ocean);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        animation: rotate 10s linear infinite;
+      }
+      
+      .profile-image-container:hover::before {
+        opacity: 0.3;
+      }
+      
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      
       .profile-image-container:hover {
         transform: translate(-2px, -2px) rotate(-2deg);
         box-shadow: 10px 10px 0 var(--shadow-color);
@@ -393,7 +525,8 @@
       .social-links a:hover {
         transform: translate(-2px, -2px) scale(1.1);
         box-shadow: 5px 5px 0 var(--shadow-color);
-        background-color: var(--accent-color);
+        background: var(--gradient-ocean);
+        color: #ffffff;
       }
       .social-links a:active {
         transform: translate(1px, 1px);
@@ -424,6 +557,25 @@
         cursor: default;
         display: flex;
         flex-direction: column;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .item-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+      
+      .item-card:hover::before {
+        transform: scaleX(1);
       }
       .item-card-content {
         flex-grow: 1;
@@ -468,9 +620,46 @@
         justify-content: center;
         gap: 1rem;
       }
+      .skill-card {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .skill-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-aurora);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 0;
+      }
+      
+      .skill-card:hover::before {
+        opacity: 0.15;
+      }
+      
       .skill-card i {
         font-size: 3.5rem;
-        color: var(--text-color);
+        background: var(--gradient-cosmic);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.3s ease;
+      }
+      
+      .skill-card:hover i {
+        transform: scale(1.1) rotate(5deg);
+      }
+      
+      .skill-card span {
+        position: relative;
+        z-index: 1;
       }
       .skill-card span {
         font-weight: 500;
@@ -817,8 +1006,7 @@
                 class="nav-link active"
                 data-target="home"
                 title="Home"
-                ><i class="fas fa-home"></i
-              ></a>
+                ><i class="fas fa-home"></i></a>
             </li>
             <li>
               <a
@@ -826,8 +1014,7 @@
                 class="nav-link"
                 data-target="projects"
                 title="Projects"
-                ><i class="fas fa-briefcase"></i
-              ></a>
+                ><i class="fas fa-briefcase"></i></a>
             </li>
             <li>
               <a
@@ -835,8 +1022,7 @@
                 class="nav-link"
                 data-target="skills"
                 title="Skills"
-                ><i class="fas fa-code"></i
-              ></a>
+                ><i class="fas fa-code"></i></a>
             </li>
             <li>
               <a
@@ -844,8 +1030,7 @@
                 class="nav-link"
                 data-target="certificates"
                 title="Certificates"
-                ><i class="fas fa-certificate"></i
-              ></a>
+                ><i class="fas fa-certificate"></i></a>
             </li>
             <li>
               <a
@@ -853,8 +1038,7 @@
                 class="nav-link"
                 data-target="contact"
                 title="Contact"
-                ><i class="fas fa-envelope"></i
-              ></a>
+                ><i class="fas fa-envelope"></i></a>
             </li>
           </ul>
         </div>
@@ -872,33 +1056,33 @@
 
       <!-- 3. Mobile Bottom Navigation -->
       <nav class="mobile-nav">
-        <a href="#home" class="nav-link active" data-target="home" title="Home"
-          ><i class="fas fa-home"></i><span>Home</span></a
-        >
+        <a href="#home" class="nav-link active" data-target="home" title="Home">
+          <i class="fas fa-home"></i><span>Home</span>
+        </a>
         <a
           href="#projects"
           class="nav-link"
           data-target="projects"
-          title="Projects"
-          ><i class="fas fa-briefcase"></i><span>Projects</span></a
-        >
-        <a href="#skills" class="nav-link" data-target="skills" title="Skills"
-          ><i class="fas fa-code"></i><span>Skills</span></a
-        >
+          title="Projects">
+          <i class="fas fa-briefcase"></i><span>Projects</span>
+        </a>
+        <a href="#skills" class="nav-link" data-target="skills" title="Skills">
+          <i class="fas fa-code"></i><span>Skills</span>
+        </a>
         <a
           href="#certificates"
           class="nav-link"
           data-target="certificates"
-          title="Certs"
-          ><i class="fas fa-certificate"></i><span>Certs</span></a
-        >
+          title="Certs">
+          <i class="fas fa-certificate"></i><span>Certs</span>
+        </a>
         <a
           href="#contact"
           class="nav-link"
           data-target="contact"
-          title="Contact"
-          ><i class="fas fa-envelope"></i><span>Contact</span></a
-        >
+          title="Contact">
+          <i class="fas fa-envelope"></i><span>Contact</span>
+        </a>
       </nav>
 
       <!-- 4. Main Content Area -->
@@ -925,8 +1109,7 @@
                 id="resume-button"
                 target="_blank"
                 rel="noopener"
-                >RESUME</a
-              >
+                >RESUME</a>
               <a href="#contact" class="btn" data-target="contact">CONTACT</a>
             </div>
           </div>
