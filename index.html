@@ -32,36 +32,37 @@
     <!-- Lottie Animation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <style>
-      /* --- 1. SETUP & CSS VARIABLES --- */
+      /* --- 1. SETUP & CSS VARIABLES (OLD THEME) --- */
       :root {
         /* Light Mode */
         --card-bg-color: #ffffff;
         --text-color: #1a1a1a;
         --border-color: #1a1a1a;
         --shadow-color: #1a1a1a;
-        --light-mode-sidebar-bg: #f0f2f5;
-        --light-mode-icon-color: #555;
         --accent-color: #ffd400;
-
-        /* Dark Mode */
         --sidebar-bg: #1a1a1a;
         --sidebar-icon: #ffffff;
+        --sidebar-icon-active: var(--accent-color);
         --sidebar-active-bg: rgba(255, 255, 255, 0.1);
         --font-family: "Montserrat", sans-serif;
 
-        /* Gradients */
+        /* Modern Gradient Colors */
         --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         --gradient-fire: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --gradient-aurora: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        --gradient-cosmic: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
       }
 
       body.dark-mode {
-        /* Dark Mode Overrides */
+        /* Dark Mode */
         --card-bg-color: #1e1e1e;
         --text-color: #f0f0f0;
         --border-color: #f0f0f0;
         --shadow-color: #000000;
+        --sidebar-icon: #f0f0f0;
+        --sidebar-active-bg: rgba(255, 255, 255, 0.15);
       }
 
       * {
@@ -73,7 +74,7 @@
       body {
         font-family: var(--font-family);
         color: var(--text-color);
-        background-color: #ffffff;
+        background-color: #f8f9fa;
         background-attachment: fixed;
         transition: background-color 0.4s ease-in-out;
         position: relative;
@@ -100,7 +101,7 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: #ffffff;
+        background: #f8f9fa;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -128,7 +129,7 @@
         opacity: 1;
       }
 
-      /* --- 2. LAYOUT & SIDEBAR STYLES --- */
+      /* --- 2. MAIN LAYOUT --- */
       .portfolio-container {
         display: flex;
         height: 100vh;
@@ -142,10 +143,23 @@
         align-items: center;
         justify-content: space-between;
         flex-shrink: 0;
+        background: var(--sidebar-bg);
         position: relative;
         z-index: 10;
-        transition: background-color 0.4s ease-in-out;
       }
+
+      .sidebar::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-primary);
+        opacity: 0.05;
+        z-index: -1;
+      }
+
       .sidebar-top,
       .sidebar-bottom {
         display: flex;
@@ -153,6 +167,17 @@
         align-items: center;
         width: 100%;
       }
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.5rem;
+        transition: color 0.3s ease;
+      }
+
+      .sidebar .logo {
+        color: #ffffff;
+      }
+
       .nav-links {
         list-style: none;
         display: flex;
@@ -167,11 +192,12 @@
         display: flex;
         justify-content: center;
       }
+
       .nav-link {
         font-size: 1.4rem;
         text-decoration: none;
         padding: 0.75rem;
-        border-radius: 12px;
+        border-radius: 8px;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
@@ -180,75 +206,39 @@
         height: 50px;
       }
 
-      /* Light Mode Sidebar */
-      .sidebar {
-        background: var(--light-mode-sidebar-bg);
-      }
-      .sidebar .logo {
-        color: var(--text-color);
-        font-weight: 900;
-        font-size: 1.5rem;
-      }
+      /* Sidebar specific link colors */
       .sidebar .nav-link {
-        color: var(--light-mode-icon-color);
-      }
-      .sidebar .nav-link:hover {
-        background-color: #e2e6ea;
-        color: var(--text-color);
-        transform: scale(1.1);
-      }
-
-      /* Dark Mode Sidebar */
-      body.dark-mode .sidebar {
-        background: var(--sidebar-bg);
-      }
-      body.dark-mode .sidebar .logo {
-        color: var(--sidebar-icon);
-      }
-      body.dark-mode .sidebar .nav-link {
         color: rgba(255, 255, 255, 0.7);
       }
-      body.dark-mode .sidebar .nav-link:hover {
+      .sidebar .nav-link:hover {
         background-color: var(--sidebar-active-bg);
-        color: var(--sidebar-icon);
-      }
-
-      /* Universal Active Link Style */
-      .sidebar .nav-link.active {
-        background: var(--gradient-primary);
-        color: #ffffff !important;
+        color: #ffffff;
         transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+      .sidebar .nav-link.active {
+        color: var(--sidebar-icon-active);
+        background-color: var(--sidebar-active-bg);
       }
 
-      /* Desktop Theme Toggle */
+      /* Desktop Theme Toggle Button */
       #desktop-theme-toggle {
         background: none;
         border: none;
         font-size: 1.4rem;
         cursor: pointer;
+        color: rgba(255, 255, 255, 0.7);
         padding: 0.75rem;
-        border-radius: 12px;
+        border-radius: 8px;
         width: 50px;
         height: 50px;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: background-color 0.3s ease, color 0.3s ease;
-      }
-      #desktop-theme-toggle {
-        color: var(--light-mode-icon-color);
+        transition: all 0.3s ease;
       }
       #desktop-theme-toggle:hover {
-        background-color: #e2e6ea;
-        color: var(--text-color);
-      }
-      body.dark-mode #desktop-theme-toggle {
-        color: rgba(255, 255, 255, 0.7);
-      }
-      body.dark-mode #desktop-theme-toggle:hover {
         background-color: var(--sidebar-active-bg);
-        color: var(--sidebar-icon);
+        color: #ffffff;
       }
 
       .main-content {
@@ -257,6 +247,7 @@
         position: relative;
         z-index: 1;
       }
+
       .content-section {
         display: none;
         position: absolute;
@@ -269,6 +260,7 @@
         padding: 4rem;
         background: transparent;
       }
+
       .content-section::-webkit-scrollbar {
         width: 8px;
       }
@@ -279,8 +271,11 @@
         background: var(--border-color);
         border-radius: 4px;
       }
+      .content-section::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
 
-      /* --- 3. CONTENT & CARD STYLES --- */
+      /* --- 3. CONTENT SECTIONS --- */
       .content-section.active {
         display: block;
         animation: page-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -313,6 +308,7 @@
         font-weight: 900;
         text-align: center;
         margin-bottom: 3rem;
+        letter-spacing: 2px;
         text-transform: uppercase;
         background: var(--gradient-primary);
         -webkit-background-clip: text;
@@ -322,6 +318,7 @@
         display: inline-block;
         width: 100%;
       }
+
       .section-title::after {
         content: "";
         position: absolute;
@@ -334,19 +331,20 @@
         border-radius: 2px;
       }
 
-      /* CARD STYLES from Screenshot */
+      /* --- 4. CARD & BUTTON STYLES (OLD THEME) --- */
       .home-card,
       .item-card,
       .contact-card,
       .skill-card {
         background-color: var(--card-bg-color);
-        border: 2px solid var(--border-color);
-        border-radius: 24px;
+        border: 3px solid var(--border-color);
+        border-radius: 10px;
         padding: 2rem;
-        box-shadow: 8px 8px 0px var(--shadow-color);
+        box-shadow: 8px 8px 0 var(--shadow-color);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-align: center;
       }
+
       .home-card:hover,
       .item-card:hover,
       .contact-card:hover,
@@ -354,11 +352,12 @@
         transform: translate(-4px, -4px);
         box-shadow: 12px 12px 0 var(--shadow-color);
       }
+
       .btn,
       .btn-small {
         display: inline-block;
         background: var(--gradient-fire);
-        border: 2px solid var(--border-color);
+        border: 3px solid var(--border-color);
         padding: 0.75rem 1.5rem;
         margin: 0 0.5rem;
         text-decoration: none;
@@ -367,13 +366,14 @@
         box-shadow: 4px 4px 0 var(--border-color);
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         text-transform: uppercase;
+        letter-spacing: 0.5px;
         font-size: 0.9rem;
         cursor: pointer;
         position: relative;
         overflow: hidden;
         z-index: 1;
-        border-radius: 8px;
       }
+
       .btn::before,
       .btn-small::before {
         content: "";
@@ -397,24 +397,32 @@
       }
       .btn:active,
       .btn-small:active {
-        transform: translate(1px, 1px);
-        box-shadow: 1px 1px 0 var(--border-color);
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 var(--border-color);
       }
       .btn-small {
         padding: 0.5rem 1rem;
         font-size: 0.85rem;
+        border-width: 2px;
+        box-shadow: 3px 3px 0 var(--border-color);
+      }
+      .btn-small:hover {
+        box-shadow: 5px 5px 0 var(--border-color);
+      }
+      .btn-small:active {
+        box-shadow: 1px 1px 0 var(--border-color);
       }
 
-      /* --- 4. SECTION-SPECIFIC STYLES --- */
+      /* --- 5. SPECIFIC SECTION STYLES --- */
       .home-card {
         max-width: 500px;
         margin: 4rem auto;
       }
       .profile-image-container {
         background: var(--gradient-primary);
-        border: 2px solid var(--border-color);
-        border-radius: 20px;
-        padding: 0.5rem;
+        border: 3px solid var(--border-color);
+        border-radius: 24px;
+        padding: 0.75rem;
         width: 150px;
         height: 150px;
         margin: -6rem auto 1.5rem;
@@ -423,6 +431,29 @@
         position: relative;
         overflow: hidden;
       }
+      .profile-image-container::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: var(--gradient-ocean);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        animation: rotate 10s linear infinite;
+      }
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .profile-image-container:hover::before {
+        opacity: 0.3;
+      }
       .profile-image-container:hover {
         transform: translate(-2px, -2px) rotate(-2deg);
         box-shadow: 10px 10px 0 var(--shadow-color);
@@ -430,7 +461,7 @@
       .profile-pic {
         width: 100%;
         height: 100%;
-        border-radius: 16px;
+        border-radius: 50%;
         object-fit: cover;
         position: relative;
         z-index: 1;
@@ -439,16 +470,19 @@
         font-size: 2rem;
         font-weight: 900;
         margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
       }
       .job-title {
         font-size: 1rem;
         font-weight: 500;
         margin-bottom: 1rem;
-        text-transform: uppercase;
+        letter-spacing: 2px;
       }
       .bio-description {
         font-size: 0.95rem;
+        font-weight: 400;
         margin-bottom: 1.5rem;
+        color: var(--text-color);
         line-height: 1.6;
         max-width: 90%;
         margin-left: auto;
@@ -481,12 +515,19 @@
         background: var(--gradient-ocean);
         color: #ffffff;
       }
+      .social-links a:active {
+        transform: translate(1px, 1px);
+        box-shadow: 2px 2px 0 var(--shadow-color);
+      }
       .button-group {
         margin-top: 1.5rem;
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
         gap: 1rem;
+      }
+      .button-group .btn {
+        margin: 0;
       }
       .grid-container {
         display: grid;
@@ -497,11 +538,36 @@
         margin-left: auto;
         margin-right: auto;
       }
+      .item-card {
+        cursor: default;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+      }
+      .item-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+      .item-card:hover::before {
+        transform: scaleX(1);
+      }
+      .item-card-content {
+        flex-grow: 1;
+      }
       .item-card img {
         width: 100%;
         height: 180px;
         object-fit: cover;
-        border-radius: 16px;
+        border-radius: 5px;
         margin-bottom: 1rem;
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -512,11 +578,13 @@
         font-size: 1.5rem;
         margin-bottom: 0.5rem;
         font-weight: 700;
+        color: var(--text-color);
       }
       .item-card p {
         opacity: 0.8;
         margin-bottom: 1rem;
         line-height: 1.6;
+        color: var(--text-color);
       }
       .skills-grid {
         display: grid;
@@ -525,41 +593,115 @@
         max-width: 800px;
         margin: 0 auto;
       }
+      .skill-card {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .skill-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-aurora);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 0;
+      }
+      .skill-card:hover::before {
+        opacity: 0.15;
+      }
       .skill-card i {
         font-size: 3.5rem;
-        background: var(--gradient-primary);
+        background: var(--gradient-cosmic);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        position: relative;
+        z-index: 1;
         transition: transform 0.3s ease;
       }
       .skill-card:hover i {
         transform: scale(1.1) rotate(5deg);
       }
+      .skill-card span {
+        position: relative;
+        z-index: 1;
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
       .contact-card {
         max-width: 600px;
         margin: 2rem auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .contact-card p {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
       }
       .email-link {
         display: inline-block;
         font-size: 1.2rem;
         font-weight: 700;
-        margin: 1rem 0 1.5rem 0;
+        margin: 1.5rem 0;
+        color: var(--text-color);
         text-decoration: none;
         transition: all 0.3s ease;
         word-break: break-all;
         text-align: center;
-        color: var(--text-color);
       }
       .email-link:hover {
-        opacity: 0.7;
+        transform: scale(1.05);
+        opacity: 0.8;
+      }
+      .social-icons {
+        background-color: var(--card-bg-color);
+        border: 2px solid var(--border-color);
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        display: inline-flex;
+        gap: 1.5rem;
+        margin-top: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .social-icons:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      .social-icons a {
+        color: var(--text-color);
+        font-size: 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        min-height: 40px;
+      }
+      .social-icons a:hover {
+        color: var(--accent-color);
+        transform: scale(1.2) rotate(5deg);
       }
 
-      /* --- 5. MOBILE & RESPONSIVENESS (WITH SIZE FIX) --- */
+      /* --- 6. MOBILE BARS --- */
       .mobile-header,
       .mobile-nav {
         display: none;
       }
+
+      /* --- 7. RESPONSIVENESS --- */
       @media (max-width: 768px), (max-height: 500px) {
         .sidebar {
           display: none;
@@ -577,12 +719,13 @@
           justify-content: space-between;
           align-items: center;
           padding: 0.75rem 1.5rem;
+          background: transparent;
         }
         .mobile-header .logo {
+          margin: 0;
           color: var(--text-color);
-          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
           font-weight: 900;
-          font-size: 1.5rem;
         }
         #mobile-theme-toggle {
           background: none;
@@ -591,7 +734,7 @@
           font-size: 1.4rem;
           cursor: pointer;
           padding: 0.5rem;
-          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         .mobile-nav {
           position: fixed;
@@ -599,23 +742,26 @@
           left: 0;
           right: 0;
           z-index: 1001;
-          background: #ffffff;
+          background: var(--card-bg-color);
           justify-content: space-around;
           padding: 0.5rem 0;
-          border-top: 1px solid #e9e9e9;
+          border-top: 1px solid rgba(0, 0, 0, 0.1);
           box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
         }
         body.dark-mode .mobile-nav {
-          background: #1e1e1e;
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
         }
         .mobile-nav .nav-link {
           color: #8a8a8a;
+          opacity: 1;
+          width: auto;
+          height: auto;
           flex-direction: column;
           gap: 0.2rem;
           font-size: 0.75rem;
           font-weight: 500;
+          transition: color 0.3s ease, transform 0.3s ease;
         }
         body.dark-mode .mobile-nav .nav-link {
           color: #888;
@@ -625,23 +771,48 @@
         }
         .mobile-nav .nav-link.active {
           color: var(--accent-color);
-          transform: none;
+          transform: translateY(-4px);
         }
         .content-section {
           padding: 4rem 1.5rem 6rem 1.5rem;
+          height: 100%;
         }
         .section-title {
           font-size: 2rem;
         }
-        /* MOBILE SIZE FIX */
         .home-card {
-          margin: 4rem auto;
-          max-width: none; /* Let it be responsive */
+          margin: 3rem auto;
+          max-width: 360px;
+          padding: 1.5rem;
         }
         .profile-image-container {
-          margin-top: -5rem;
+          margin-top: -5.5rem;
           width: 130px;
           height: 130px;
+        }
+        .grid-container {
+          gap: 2rem;
+        }
+        .item-card {
+          padding: 1.5rem;
+        }
+        .item-card h3 {
+          font-size: 1.25rem;
+        }
+        .item-card p {
+          font-size: 0.9rem;
+          line-height: 1.5;
+          margin-bottom: 1.25rem;
+        }
+        .item-card .button-group {
+          gap: 0.75rem;
+        }
+        .skills-grid {
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+          gap: 1.5rem;
+        }
+        .skill-card i {
+          font-size: 3rem;
         }
       }
       @media (max-width: 480px) {
@@ -654,18 +825,41 @@
         .name-title {
           font-size: 1.75rem;
         }
-        /* SMALLER MOBILE SIZE FIX */
-        .profile-image-container {
-          width: 110px;
-          height: 110px;
-          margin-top: -4rem;
+        .job-title {
+          font-size: 0.9rem;
+        }
+        .item-card {
+          padding: 1.25rem;
+        }
+        .item-card img {
+          height: 160px;
+        }
+        .item-card h3 {
+          font-size: 1.15rem;
+        }
+        .btn,
+        .btn-small {
+          padding: 0.6rem 1rem;
+          font-size: 0.8rem;
+        }
+        .skills-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1rem;
+        }
+        .skill-card {
+          padding: 1rem;
         }
         .home-card {
           margin-top: 2.5rem;
         }
+        .profile-image-container {
+          width: 120px;
+          height: 120px;
+          margin-top: -4.5rem;
+        }
       }
 
-      /* --- 6. MODAL STYLES --- */
+      /* --- 8. MODAL STYLES --- */
       .modal {
         display: none;
         position: fixed;
@@ -680,12 +874,20 @@
         align-items: center;
         animation: fadeInModal 0.3s ease;
       }
+      @keyframes fadeInModal {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
       .modal-content {
         position: relative;
         background-color: var(--card-bg-color);
-        border: 2px solid var(--border-color);
+        border: 3px solid var(--border-color);
         padding: 2rem;
-        border-radius: 24px;
+        border-radius: 10px;
         width: 90%;
         max-width: 700px;
         box-shadow: 10px 10px 0 var(--shadow-color);
@@ -714,8 +916,37 @@
         cursor: pointer;
         transition: transform 0.2s ease;
       }
-      .modal-close:hover {
+      .modal-close:hover,
+      .modal-close:focus {
         transform: scale(1.2);
+      }
+      .modal-content img {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-bottom: 1.5rem;
+      }
+      .modal-content h3 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+      .modal-content p {
+        line-height: 1.7;
+        margin-bottom: 2rem;
+        white-space: pre-wrap;
+        text-align: left;
+      }
+      .modal-content .button-group {
+        justify-content: flex-start;
+      }
+      .modal-content::-webkit-scrollbar {
+        width: 6px;
+      }
+      .modal-content::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 3px;
       }
     </style>
   </head>
