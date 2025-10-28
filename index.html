@@ -84,12 +84,13 @@
       body {
         font-family: var(--font-family);
         color: var(--text-color);
-        background: var(--bg-color);
-        transition: background-color 0.4s ease-in-out;
+        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        transition: background 0.4s ease-in-out;
         position: relative;
+        min-height: 100vh;
       }
       
-      /* Animated gradient background */
+      /* Artistic gradient background overlay */
       body::before {
         content: '';
         position: fixed;
@@ -98,30 +99,42 @@
         width: 100%;
         height: 100%;
         background: 
-          radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(245, 87, 108, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 40% 20%, rgba(79, 172, 254, 0.1) 0%, transparent 50%);
+          radial-gradient(ellipse at 10% 20%, rgba(253, 239, 249, 0.6) 0%, transparent 40%),
+          radial-gradient(ellipse at 90% 80%, rgba(232, 245, 253, 0.6) 0%, transparent 40%),
+          radial-gradient(ellipse at 50% 50%, rgba(255, 251, 235, 0.5) 0%, transparent 50%),
+          radial-gradient(circle at 70% 30%, rgba(243, 232, 255, 0.5) 0%, transparent 35%),
+          radial-gradient(circle at 30% 70%, rgba(255, 239, 239, 0.5) 0%, transparent 35%);
         z-index: 0;
         pointer-events: none;
-        animation: gradientShift 15s ease infinite;
+        animation: artworkFloat 20s ease-in-out infinite;
       }
       
-      @keyframes gradientShift {
+      @keyframes artworkFloat {
         0%, 100% {
           opacity: 1;
-          transform: scale(1);
+          transform: scale(1) rotate(0deg);
         }
-        50% {
-          opacity: 0.8;
-          transform: scale(1.1);
+        33% {
+          opacity: 0.9;
+          transform: scale(1.05) rotate(1deg);
         }
+        66% {
+          opacity: 0.95;
+          transform: scale(0.98) rotate(-1deg);
+        }
+      }
+      
+      body.dark-mode {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       }
       
       body.dark-mode::before {
         background: 
-          radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(245, 87, 108, 0.15) 0%, transparent 50%),
-          radial-gradient(circle at 40% 20%, rgba(79, 172, 254, 0.15) 0%, transparent 50%);
+          radial-gradient(ellipse at 10% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 40%),
+          radial-gradient(ellipse at 90% 80%, rgba(79, 172, 254, 0.15) 0%, transparent 40%),
+          radial-gradient(ellipse at 50% 50%, rgba(250, 112, 154, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 70% 30%, rgba(168, 237, 234, 0.12) 0%, transparent 35%),
+          radial-gradient(circle at 30% 70%, rgba(245, 87, 108, 0.12) 0%, transparent 35%);
       }
 
       /* Loading Screen */
@@ -264,7 +277,7 @@
         overflow-y: auto;
         scroll-behavior: smooth;
         padding: 4rem;
-        background-color: var(--bg-color); /* THIS IS THE FIX */
+        background: transparent;
       }
 
       .content-section::-webkit-scrollbar {
