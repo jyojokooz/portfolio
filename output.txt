@@ -539,6 +539,14 @@ export { db, auth };
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Joel S raphael | Portfolio</title>
+    <!-- PWA & Add to Home Screen Meta Tags -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#1a1a1a" />
     <!-- Google Fonts: Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -562,7 +570,7 @@ export { db, auth };
       /* --- 1. SETUP & CSS VARIABLES (NEW THEME) --- */
       :root {
         /* Light Mode */
-        --bg-color: #f7f8fc;
+        --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
         --card-bg-color: #ffffff;
         --text-color: #1a1a1a;
         --border-color: #1a1a1a;
@@ -573,17 +581,33 @@ export { db, auth };
         --sidebar-icon-active: var(--accent-color);
         --sidebar-active-bg: rgba(255, 255, 255, 0.1);
         --font-family: "Montserrat", sans-serif;
+        
+        /* Modern Gradient Colors */
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-fire: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --gradient-aurora: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        --gradient-cosmic: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
       }
 
       body.dark-mode {
         /* Dark Mode */
-        --bg-color: #121212;
+        --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         --card-bg-color: #1e1e1e;
         --text-color: #f0f0f0;
         --border-color: #f0f0f0;
         --shadow-color: #000000;
         --sidebar-icon: #f0f0f0;
         --sidebar-active-bg: rgba(255, 255, 255, 0.15);
+        
+        /* Dark Mode Gradients */
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-fire: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --gradient-aurora: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        --gradient-cosmic: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
       }
 
       * {
@@ -595,8 +619,54 @@ export { db, auth };
       body {
         font-family: var(--font-family);
         color: var(--text-color);
-        background-color: var(--bg-color);
-        transition: background-color 0.4s cubic-bezier(0.4, 0.2, 1);
+        background: var(--bg-gradient);
+        background-attachment: fixed;
+        transition: background 0.4s ease-in-out;
+        position: relative;
+        min-height: 100vh;
+      }
+      
+      /* Artistic gradient background overlay */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+          radial-gradient(ellipse at 10% 20%, rgba(253, 239, 249, 0.6) 0%, transparent 40%),
+          radial-gradient(ellipse at 90% 80%, rgba(232, 245, 253, 0.6) 0%, transparent 40%),
+          radial-gradient(ellipse at 50% 50%, rgba(255, 251, 235, 0.5) 0%, transparent 50%),
+          radial-gradient(circle at 70% 30%, rgba(243, 232, 255, 0.5) 0%, transparent 35%),
+          radial-gradient(circle at 30% 70%, rgba(255, 239, 239, 0.5) 0%, transparent 35%);
+        z-index: 0;
+        pointer-events: none;
+        animation: artworkFloat 20s ease-in-out infinite;
+      }
+      
+      @keyframes artworkFloat {
+        0%, 100% {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+        }
+        33% {
+          opacity: 0.9;
+          transform: scale(1.05) rotate(1deg);
+        }
+        66% {
+          opacity: 0.95;
+          transform: scale(0.98) rotate(-1deg);
+        }
+      }
+      
+      body.dark-mode::before {
+        background: 
+          radial-gradient(ellipse at 10% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 40%),
+          radial-gradient(ellipse at 90% 80%, rgba(79, 172, 254, 0.15) 0%, transparent 40%),
+          radial-gradient(ellipse at 50% 50%, rgba(250, 112, 154, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 70% 30%, rgba(168, 237, 234, 0.12) 0%, transparent 35%),
+          radial-gradient(circle at 30% 70%, rgba(245, 87, 108, 0.12) 0%, transparent 35%);
       }
 
       /* Loading Screen */
@@ -606,7 +676,7 @@ export { db, auth };
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: var(--bg-color);
+        background: var(--bg-gradient);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -646,6 +716,20 @@ export { db, auth };
         justify-content: space-between;
         flex-shrink: 0;
         background: var(--sidebar-bg);
+        position: relative;
+        z-index: 10;
+      }
+      
+      .sidebar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-primary);
+        opacity: 0.05;
+        z-index: -1;
       }
 
       .sidebar-top,
@@ -712,6 +796,7 @@ export { db, auth };
         flex-grow: 1;
         overflow: hidden;
         position: relative;
+        z-index: 1;
       }
 
       .content-section {
@@ -724,7 +809,7 @@ export { db, auth };
         overflow-y: auto;
         scroll-behavior: smooth;
         padding: 4rem;
-        background-color: var(--bg-color); /* THIS IS THE FIX */
+        background: transparent;
       }
 
       .content-section::-webkit-scrollbar {
@@ -774,9 +859,27 @@ export { db, auth };
         font-weight: 900;
         text-align: center;
         margin-bottom: 3rem;
-        /* font-style: italic; */
         letter-spacing: 2px;
         text-transform: uppercase;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        display: inline-block;
+        width: 100%;
+      }
+      
+      .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--gradient-sunset);
+        border-radius: 2px;
       }
 
       /* --- 4. CARD & BUTTON STYLES (NEW THEME) --- */
@@ -804,12 +907,12 @@ export { db, auth };
       .btn,
       .btn-small {
         display: inline-block;
-        background-color: var(--accent-color);
+        background: var(--gradient-fire);
         border: 3px solid var(--border-color);
         padding: 0.75rem 1.5rem;
         margin: 0 0.5rem;
         text-decoration: none;
-        color: var(--border-color);
+        color: #ffffff;
         font-weight: 700;
         box-shadow: 4px 4px 0 var(--border-color);
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -817,6 +920,26 @@ export { db, auth };
         letter-spacing: 0.5px;
         font-size: 0.9rem;
         cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .btn::before,
+      .btn-small::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-sunset);
+        transition: left 0.3s ease;
+        z-index: -1;
+      }
+      
+      .btn:hover::before,
+      .btn-small:hover::before {
+        left: 0;
       }
 
       .btn:hover,
@@ -850,7 +973,7 @@ export { db, auth };
         margin: 4rem auto;
       }
       .profile-image-container {
-        background-color: var(--card-bg-color);
+        background: var(--gradient-primary);
         border: 3px solid var(--border-color);
         border-radius: 24px;
         padding: 0.75rem;
@@ -862,6 +985,33 @@ export { db, auth };
         position: relative;
         overflow: hidden;
       }
+      
+      .profile-image-container::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: var(--gradient-ocean);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        animation: rotate 10s linear infinite;
+      }
+      
+      .profile-image-container:hover::before {
+        opacity: 0.3;
+      }
+      
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      
       .profile-image-container:hover {
         transform: translate(-2px, -2px) rotate(-2deg);
         box-shadow: 10px 10px 0 var(--shadow-color);
@@ -920,7 +1070,8 @@ export { db, auth };
       .social-links a:hover {
         transform: translate(-2px, -2px) scale(1.1);
         box-shadow: 5px 5px 0 var(--shadow-color);
-        background-color: var(--accent-color);
+        background: var(--gradient-ocean);
+        color: #ffffff;
       }
       .social-links a:active {
         transform: translate(1px, 1px);
@@ -951,6 +1102,25 @@ export { db, auth };
         cursor: default;
         display: flex;
         flex-direction: column;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .item-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+      
+      .item-card:hover::before {
+        transform: scaleX(1);
       }
       .item-card-content {
         flex-grow: 1;
@@ -995,9 +1165,46 @@ export { db, auth };
         justify-content: center;
         gap: 1rem;
       }
+      .skill-card {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .skill-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-aurora);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 0;
+      }
+      
+      .skill-card:hover::before {
+        opacity: 0.15;
+      }
+      
       .skill-card i {
         font-size: 3.5rem;
-        color: var(--text-color);
+        background: var(--gradient-cosmic);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        z-index: 1;
+        transition: transform 0.3s ease;
+      }
+      
+      .skill-card:hover i {
+        transform: scale(1.1) rotate(5deg);
+      }
+      
+      .skill-card span {
+        position: relative;
+        z-index: 1;
       }
       .skill-card span {
         font-weight: 500;
@@ -1344,8 +1551,7 @@ export { db, auth };
                 class="nav-link active"
                 data-target="home"
                 title="Home"
-                ><i class="fas fa-home"></i
-              ></a>
+                ><i class="fas fa-home"></i></a>
             </li>
             <li>
               <a
@@ -1353,8 +1559,7 @@ export { db, auth };
                 class="nav-link"
                 data-target="projects"
                 title="Projects"
-                ><i class="fas fa-briefcase"></i
-              ></a>
+                ><i class="fas fa-briefcase"></i></a>
             </li>
             <li>
               <a
@@ -1362,8 +1567,7 @@ export { db, auth };
                 class="nav-link"
                 data-target="skills"
                 title="Skills"
-                ><i class="fas fa-code"></i
-              ></a>
+                ><i class="fas fa-code"></i></a>
             </li>
             <li>
               <a
@@ -1371,8 +1575,7 @@ export { db, auth };
                 class="nav-link"
                 data-target="certificates"
                 title="Certificates"
-                ><i class="fas fa-certificate"></i
-              ></a>
+                ><i class="fas fa-certificate"></i></a>
             </li>
             <li>
               <a
@@ -1380,8 +1583,7 @@ export { db, auth };
                 class="nav-link"
                 data-target="contact"
                 title="Contact"
-                ><i class="fas fa-envelope"></i
-              ></a>
+                ><i class="fas fa-envelope"></i></a>
             </li>
           </ul>
         </div>
@@ -1399,33 +1601,33 @@ export { db, auth };
 
       <!-- 3. Mobile Bottom Navigation -->
       <nav class="mobile-nav">
-        <a href="#home" class="nav-link active" data-target="home" title="Home"
-          ><i class="fas fa-home"></i><span>Home</span></a
-        >
+        <a href="#home" class="nav-link active" data-target="home" title="Home">
+          <i class="fas fa-home"></i><span>Home</span>
+        </a>
         <a
           href="#projects"
           class="nav-link"
           data-target="projects"
-          title="Projects"
-          ><i class="fas fa-briefcase"></i><span>Projects</span></a
-        >
-        <a href="#skills" class="nav-link" data-target="skills" title="Skills"
-          ><i class="fas fa-code"></i><span>Skills</span></a
-        >
+          title="Projects">
+          <i class="fas fa-briefcase"></i><span>Projects</span>
+        </a>
+        <a href="#skills" class="nav-link" data-target="skills" title="Skills">
+          <i class="fas fa-code"></i><span>Skills</span>
+        </a>
         <a
           href="#certificates"
           class="nav-link"
           data-target="certificates"
-          title="Certs"
-          ><i class="fas fa-certificate"></i><span>Certs</span></a
-        >
+          title="Certs">
+          <i class="fas fa-certificate"></i><span>Certs</span>
+        </a>
         <a
           href="#contact"
           class="nav-link"
           data-target="contact"
-          title="Contact"
-          ><i class="fas fa-envelope"></i><span>Contact</span></a
-        >
+          title="Contact">
+          <i class="fas fa-envelope"></i><span>Contact</span>
+        </a>
       </nav>
 
       <!-- 4. Main Content Area -->
@@ -1452,8 +1654,7 @@ export { db, auth };
                 id="resume-button"
                 target="_blank"
                 rel="noopener"
-                >RESUME</a
-              >
+                >RESUME</a>
               <a href="#contact" class="btn" data-target="contact">CONTACT</a>
             </div>
           </div>
@@ -1508,6 +1709,19 @@ export { db, auth };
     <script src="env.js" async></script>
 </html>
 
+----- C:/hello/portfolio\manifest.json -----
+
+{
+  "name": "Joel S Raphael | Portfolio",
+  "short_name": "JSR",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f7f8fc",
+  "theme_color": "#1a1a1a",
+  "description": "Portfolio of Joel S Raphael, a designer and developer."
+}
+
+
 ----- C:/hello/portfolio\netlify.toml -----
 
 # Netlify build configuration
@@ -1541,7 +1755,7 @@ export { db, auth };
 
 ----- C:/hello/portfolio\.git\COMMIT_EDITMSG -----
 
-v
+hh
 
 
 ----- C:/hello/portfolio\.git\config -----
@@ -1569,7 +1783,7 @@ Unnamed repository; edit this file 'description' to name the repository.
 
 ----- C:/hello/portfolio\.git\FETCH_HEAD -----
 
-3c754dc80bba4774bb05f5f23e55237ecf351aa5		branch 'master' of https://github.com/jyojokooz/portfolio
+2f0210f2b0a5e1588dff595fd6afb32df3d75752		branch 'master' of https://github.com/jyojokooz/portfolio
 
 
 ----- C:/hello/portfolio\.git\HEAD -----
@@ -1579,7 +1793,7 @@ ref: refs/heads/master
 
 ----- C:/hello/portfolio\.git\ORIG_HEAD -----
 
-3c754dc80bba4774bb05f5f23e55237ecf351aa5
+2f0210f2b0a5e1588dff595fd6afb32df3d75752
 
 
 ----- C:/hello/portfolio\.git\hooks\applypatch-msg.sample -----
@@ -2543,6 +2757,11 @@ f201c9e4df9bdd8ccf40b96ce9465bcf9d25ac12 147ac4632e8bcd768fcbcbd5394014ef579db2c
 147ac4632e8bcd768fcbcbd5394014ef579db2ca ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761629739 +0530	commit: BUZ
 ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d 05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761630339 +0530	commit: G
 05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 3c754dc80bba4774bb05f5f23e55237ecf351aa5 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761635263 +0530	commit: v
+3c754dc80bba4774bb05f5f23e55237ecf351aa5 0de8bcd1016f069132503e5a0a2f20dbaf159cbe JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761636704 +0530	commit: ss
+0de8bcd1016f069132503e5a0a2f20dbaf159cbe 30df73726e69ffb53b25d93014f97356f1a4ff27 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761637138 +0530	commit: jj
+30df73726e69ffb53b25d93014f97356f1a4ff27 ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761661603 +0530	commit: ui updated
+ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 3488a9c4d3864ad097f7c46c1d1aefe051c19d28 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761662358 +0530	commit: hi
+3488a9c4d3864ad097f7c46c1d1aefe051c19d28 2f0210f2b0a5e1588dff595fd6afb32df3d75752 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761664179 +0530	commit: hh
 
 
 ----- C:/hello/portfolio\.git\logs\refs\heads\master -----
@@ -2572,6 +2791,11 @@ f201c9e4df9bdd8ccf40b96ce9465bcf9d25ac12 147ac4632e8bcd768fcbcbd5394014ef579db2c
 147ac4632e8bcd768fcbcbd5394014ef579db2ca ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761629739 +0530	commit: BUZ
 ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d 05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761630339 +0530	commit: G
 05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 3c754dc80bba4774bb05f5f23e55237ecf351aa5 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761635263 +0530	commit: v
+3c754dc80bba4774bb05f5f23e55237ecf351aa5 0de8bcd1016f069132503e5a0a2f20dbaf159cbe JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761636704 +0530	commit: ss
+0de8bcd1016f069132503e5a0a2f20dbaf159cbe 30df73726e69ffb53b25d93014f97356f1a4ff27 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761637138 +0530	commit: jj
+30df73726e69ffb53b25d93014f97356f1a4ff27 ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761661603 +0530	commit: ui updated
+ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 3488a9c4d3864ad097f7c46c1d1aefe051c19d28 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761662358 +0530	commit: hi
+3488a9c4d3864ad097f7c46c1d1aefe051c19d28 2f0210f2b0a5e1588dff595fd6afb32df3d75752 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761664179 +0530	commit: hh
 
 
 ----- C:/hello/portfolio\.git\logs\refs\remotes\origin\HEAD -----
@@ -2606,11 +2830,16 @@ f201c9e4df9bdd8ccf40b96ce9465bcf9d25ac12 147ac4632e8bcd768fcbcbd5394014ef579db2c
 147ac4632e8bcd768fcbcbd5394014ef579db2ca ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761629748 +0530	update by push
 ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d 05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761630345 +0530	update by push
 05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 3c754dc80bba4774bb05f5f23e55237ecf351aa5 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761635269 +0530	update by push
+3c754dc80bba4774bb05f5f23e55237ecf351aa5 0de8bcd1016f069132503e5a0a2f20dbaf159cbe JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761636710 +0530	update by push
+0de8bcd1016f069132503e5a0a2f20dbaf159cbe 30df73726e69ffb53b25d93014f97356f1a4ff27 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761637144 +0530	update by push
+30df73726e69ffb53b25d93014f97356f1a4ff27 ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761661609 +0530	update by push
+ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 3488a9c4d3864ad097f7c46c1d1aefe051c19d28 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761662364 +0530	update by push
+3488a9c4d3864ad097f7c46c1d1aefe051c19d28 2f0210f2b0a5e1588dff595fd6afb32df3d75752 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761664186 +0530	update by push
 
 
 ----- C:/hello/portfolio\.git\refs\heads\master -----
 
-3c754dc80bba4774bb05f5f23e55237ecf351aa5
+2f0210f2b0a5e1588dff595fd6afb32df3d75752
 
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\HEAD -----
@@ -2620,7 +2849,7 @@ ref: refs/remotes/origin/master
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\master -----
 
-3c754dc80bba4774bb05f5f23e55237ecf351aa5
+2f0210f2b0a5e1588dff595fd6afb32df3d75752
 
 
 ----- C:/hello/portfolio\.vscode\launch.json -----
@@ -4017,10 +4246,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- D. SECTION NAVIGATION WITH PAGE TRANSITIONS ---
   const allNavTriggers = document.querySelectorAll("[data-target]");
+  let isTransitioning = false; // Flag to prevent rapid clicks during transition
 
   allNavTriggers.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
+
+      // If a transition is already happening, ignore this click
+      if (isTransitioning) {
+        return;
+      }
+
       const targetId = link.dataset.target;
       const currentActiveSection = document.querySelector(
         ".content-section.active"
@@ -4029,8 +4265,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (
         !targetId ||
         (currentActiveSection && currentActiveSection.id === targetId)
-      )
+      ) {
         return;
+      }
+
+      // Start the transition
+      isTransitioning = true;
 
       // Remove active class from all main navigation links
       document
@@ -4046,12 +4286,23 @@ document.addEventListener("DOMContentLoaded", () => {
         currentActiveSection.classList.add("fade-out");
         setTimeout(() => {
           currentActiveSection.classList.remove("active", "fade-out");
-          document.getElementById(targetId)?.classList.add("active");
+          const targetSection = document.getElementById(targetId);
+          if (targetSection) {
+            targetSection.classList.add("active");
+          }
           document.querySelector(".main-content").scrollTop = 0;
-        }, 400); // Match animation duration
+          // End the transition
+          isTransitioning = false;
+        }, 500); // Match CSS animation duration (0.5s)
       } else {
-        document.getElementById(targetId)?.classList.add("active");
+        // This case handles the initial page load if needed, though not typical for this setup
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+          targetSection.classList.add("active");
+        }
         document.querySelector(".main-content").scrollTop = 0;
+        // End the transition
+        isTransitioning = false;
       }
     });
   });

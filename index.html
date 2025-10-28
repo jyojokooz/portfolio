@@ -34,8 +34,7 @@
     <style>
       /* --- 1. SETUP & CSS VARIABLES (NEW THEME) --- */
       :root {
-        /* Light Mode */
-        --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        /* Light Mode - Base colors remain, but background is now solid */
         --card-bg-color: #ffffff;
         --text-color: #1a1a1a;
         --border-color: #1a1a1a;
@@ -46,7 +45,7 @@
         --sidebar-icon-active: var(--accent-color);
         --sidebar-active-bg: rgba(255, 255, 255, 0.1);
         --font-family: "Montserrat", sans-serif;
-        
+
         /* Modern Gradient Colors */
         --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -57,22 +56,13 @@
       }
 
       body.dark-mode {
-        /* Dark Mode */
-        --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        /* Dark Mode - Base colors remain, but background is now solid */
         --card-bg-color: #1e1e1e;
         --text-color: #f0f0f0;
         --border-color: #f0f0f0;
         --shadow-color: #000000;
         --sidebar-icon: #f0f0f0;
         --sidebar-active-bg: rgba(255, 255, 255, 0.15);
-        
-        /* Dark Mode Gradients */
-        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        --gradient-fire: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        --gradient-aurora: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-        --gradient-cosmic: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
       }
 
       * {
@@ -84,55 +74,29 @@
       body {
         font-family: var(--font-family);
         color: var(--text-color);
-        background: var(--bg-gradient);
+        /* The gradient background is replaced by a solid color for particles.js */
+        background-color: #f8f9fa;
         background-attachment: fixed;
-        transition: background 0.4s ease-in-out;
+        transition: background-color 0.4s ease-in-out;
         position: relative;
         min-height: 100vh;
       }
-      
-      /* Artistic gradient background overlay */
-      body::before {
-        content: '';
+
+      body.dark-mode {
+        background-color: #1a1a2e;
+      }
+
+      /* --- NEW: Particles.js Background Container --- */
+      #particles-js {
         position: fixed;
-        top: 0;
-        left: 0;
         width: 100%;
         height: 100%;
-        background: 
-          radial-gradient(ellipse at 10% 20%, rgba(253, 239, 249, 0.6) 0%, transparent 40%),
-          radial-gradient(ellipse at 90% 80%, rgba(232, 245, 253, 0.6) 0%, transparent 40%),
-          radial-gradient(ellipse at 50% 50%, rgba(255, 251, 235, 0.5) 0%, transparent 50%),
-          radial-gradient(circle at 70% 30%, rgba(243, 232, 255, 0.5) 0%, transparent 35%),
-          radial-gradient(circle at 30% 70%, rgba(255, 239, 239, 0.5) 0%, transparent 35%);
-        z-index: 0;
-        pointer-events: none;
-        animation: artworkFloat 20s ease-in-out infinite;
+        top: 0;
+        left: 0;
+        z-index: 0; /* Position behind all content */
       }
-      
-      @keyframes artworkFloat {
-        0%, 100% {
-          opacity: 1;
-          transform: scale(1) rotate(0deg);
-        }
-        33% {
-          opacity: 0.9;
-          transform: scale(1.05) rotate(1deg);
-        }
-        66% {
-          opacity: 0.95;
-          transform: scale(0.98) rotate(-1deg);
-        }
-      }
-      
-      body.dark-mode::before {
-        background: 
-          radial-gradient(ellipse at 10% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 40%),
-          radial-gradient(ellipse at 90% 80%, rgba(79, 172, 254, 0.15) 0%, transparent 40%),
-          radial-gradient(ellipse at 50% 50%, rgba(250, 112, 154, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 70% 30%, rgba(168, 237, 234, 0.12) 0%, transparent 35%),
-          radial-gradient(circle at 30% 70%, rgba(245, 87, 108, 0.12) 0%, transparent 35%);
-      }
+
+      /* REMOVED: The body::before artistic overlay and its animation are no longer needed */
 
       /* Loading Screen */
       .loading-screen {
@@ -141,13 +105,16 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: var(--bg-gradient);
+        background: #f8f9fa;
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 9999;
         transition: opacity 0.5s ease, visibility 0.5s ease;
         overflow: hidden;
+      }
+      body.dark-mode .loading-screen {
+        background: #1a1a2e;
       }
       .loading-screen.hide {
         opacity: 0;
@@ -184,9 +151,9 @@
         position: relative;
         z-index: 10;
       }
-      
+
       .sidebar::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -261,7 +228,7 @@
         flex-grow: 1;
         overflow: hidden;
         position: relative;
-        z-index: 1;
+        z-index: 1; /* Ensure content is above the particles background */
       }
 
       .content-section {
@@ -334,9 +301,9 @@
         display: inline-block;
         width: 100%;
       }
-      
+
       .section-title::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: -10px;
         left: 50%;
@@ -387,11 +354,12 @@
         cursor: pointer;
         position: relative;
         overflow: hidden;
+        z-index: 1; /* Ensure button content is above the ::before pseudo-element */
       }
-      
+
       .btn::before,
       .btn-small::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: -100%;
@@ -401,7 +369,7 @@
         transition: left 0.3s ease;
         z-index: -1;
       }
-      
+
       .btn:hover::before,
       .btn-small:hover::before {
         left: 0;
@@ -450,9 +418,9 @@
         position: relative;
         overflow: hidden;
       }
-      
+
       .profile-image-container::before {
-        content: '';
+        content: "";
         position: absolute;
         top: -50%;
         left: -50%;
@@ -463,11 +431,7 @@
         transition: opacity 0.3s ease;
         animation: rotate 10s linear infinite;
       }
-      
-      .profile-image-container:hover::before {
-        opacity: 0.3;
-      }
-      
+
       @keyframes rotate {
         0% {
           transform: rotate(0deg);
@@ -476,7 +440,11 @@
           transform: rotate(360deg);
         }
       }
-      
+
+      .profile-image-container:hover::before {
+        opacity: 0.3;
+      }
+
       .profile-image-container:hover {
         transform: translate(-2px, -2px) rotate(-2deg);
         box-shadow: 10px 10px 0 var(--shadow-color);
@@ -570,9 +538,9 @@
         position: relative;
         overflow: hidden;
       }
-      
+
       .item-card::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -583,7 +551,7 @@
         transform-origin: left;
         transition: transform 0.3s ease;
       }
-      
+
       .item-card:hover::before {
         transform: scaleX(1);
       }
@@ -634,9 +602,9 @@
         position: relative;
         overflow: hidden;
       }
-      
+
       .skill-card::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -647,11 +615,11 @@
         transition: opacity 0.3s ease;
         z-index: 0;
       }
-      
+
       .skill-card:hover::before {
         opacity: 0.15;
       }
-      
+
       .skill-card i {
         font-size: 3.5rem;
         background: var(--gradient-cosmic);
@@ -662,11 +630,11 @@
         z-index: 1;
         transition: transform 0.3s ease;
       }
-      
+
       .skill-card:hover i {
         transform: scale(1.1) rotate(5deg);
       }
-      
+
       .skill-card span {
         position: relative;
         z-index: 1;
@@ -999,6 +967,9 @@
     </style>
   </head>
   <body>
+    <!-- NEW: Container for Particles.js -->
+    <div id="particles-js"></div>
+
     <!-- Loading Screen -->
     <div class="loading-screen" id="loading-screen">
       <div id="loading-animation" class="loading-animation"></div>
@@ -1016,7 +987,8 @@
                 class="nav-link active"
                 data-target="home"
                 title="Home"
-                ><i class="fas fa-home"></i></a>
+                ><i class="fas fa-home"></i
+              ></a>
             </li>
             <li>
               <a
@@ -1024,7 +996,8 @@
                 class="nav-link"
                 data-target="projects"
                 title="Projects"
-                ><i class="fas fa-briefcase"></i></a>
+                ><i class="fas fa-briefcase"></i
+              ></a>
             </li>
             <li>
               <a
@@ -1032,7 +1005,8 @@
                 class="nav-link"
                 data-target="skills"
                 title="Skills"
-                ><i class="fas fa-code"></i></a>
+                ><i class="fas fa-code"></i
+              ></a>
             </li>
             <li>
               <a
@@ -1040,7 +1014,8 @@
                 class="nav-link"
                 data-target="certificates"
                 title="Certificates"
-                ><i class="fas fa-certificate"></i></a>
+                ><i class="fas fa-certificate"></i
+              ></a>
             </li>
             <li>
               <a
@@ -1048,12 +1023,11 @@
                 class="nav-link"
                 data-target="contact"
                 title="Contact"
-                ><i class="fas fa-envelope"></i></a>
+                ><i class="fas fa-envelope"></i
+              ></a>
             </li>
           </ul>
         </div>
-        <!-- Sidebar-bottom reserved for future desktop theme toggle integration. Currently hidden and unused. Remove if not required. -->
-        <!-- <div class="sidebar-bottom" style="display: none"></div> -->
       </nav>
 
       <!-- 2. Mobile Header -->
@@ -1073,7 +1047,8 @@
           href="#projects"
           class="nav-link"
           data-target="projects"
-          title="Projects">
+          title="Projects"
+        >
           <i class="fas fa-briefcase"></i><span>Projects</span>
         </a>
         <a href="#skills" class="nav-link" data-target="skills" title="Skills">
@@ -1083,14 +1058,16 @@
           href="#certificates"
           class="nav-link"
           data-target="certificates"
-          title="Certs">
+          title="Certs"
+        >
           <i class="fas fa-certificate"></i><span>Certs</span>
         </a>
         <a
           href="#contact"
           class="nav-link"
           data-target="contact"
-          title="Contact">
+          title="Contact"
+        >
           <i class="fas fa-envelope"></i><span>Contact</span>
         </a>
       </nav>
@@ -1119,7 +1096,8 @@
                 id="resume-button"
                 target="_blank"
                 rel="noopener"
-                >RESUME</a>
+                >RESUME</a
+              >
               <a href="#contact" class="btn" data-target="contact">CONTACT</a>
             </div>
           </div>
@@ -1170,6 +1148,72 @@
 
     <!-- External scripts -->
     <script src="env.js"></script>
+    <!-- NEW: Include particles.js library -->
+    <script src="scripts/particles.min.js"></script>
     <script type="module" src="./scripts/main.js"></script>
-    <script src="env.js" async></script>
+
+    <!-- NEW: Initialize particles.js -->
+    <script>
+      particlesJS("particles-js", {
+        particles: {
+          number: { value: 80, density: { enable: true, value_area: 800 } },
+          color: { value: "#ffffff" },
+          shape: {
+            type: "circle",
+            stroke: { width: 0, color: "#000000" },
+            polygon: { nb_sides: 5 },
+          },
+          opacity: {
+            value: 0.5,
+            random: false,
+            anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false },
+          },
+          size: {
+            value: 3,
+            random: true,
+            anim: { enable: false, speed: 40, size_min: 0.1, sync: false },
+          },
+          line_linked: {
+            enable: true,
+            distance: 150,
+            color: "#ffffff",
+            opacity: 0.4,
+            width: 1,
+          },
+          move: {
+            enable: true,
+            speed: 6,
+            direction: "none",
+            random: false,
+            straight: false,
+            out_mode: "out",
+            bounce: false,
+            attract: { enable: false, rotateX: 600, rotateY: 1200 },
+          },
+        },
+        interactivity: {
+          detect_on: "canvas",
+          events: {
+            onhover: { enable: true, mode: "repulse" },
+            onclick: { enable: false },
+            resize: true,
+          },
+          modes: {
+            grab: { distance: 400, line_linked: { opacity: 1 } },
+            bubble: {
+              distance: 400,
+              size: 40,
+              duration: 2,
+              opacity: 8,
+              speed: 3,
+            },
+            repulse: { distance: 200, duration: 0.4 },
+            push: { particles_nb: 4 },
+            remove: { particles_nb: 2 },
+          },
+        },
+        retina_detect: true,
+      });
+    </script>
+  </body>
 </html>
