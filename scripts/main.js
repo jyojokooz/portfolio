@@ -974,44 +974,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1500);
   });
 
-  // --- B. LOTTIE ANIMATIONS (DECORATIVE) ---
-  lottie.loadAnimation({
-    container: document.getElementById("lottie-bg"),
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-    path: "https://lottie.host/4c6da31c-2eee-4597-80e5-2c29d2d3f3ef/YEdkZGPzrr.json",
-  });
-  setTimeout(() => {
-    lottie.loadAnimation({
-      container: document.getElementById("lottie-top-left"),
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "https://lottie.host/embed/dd1ad89a-093c-40ad-be27-c26766194b74/kqodXzYwCZ.json",
-    });
-    lottie.loadAnimation({
-      container: document.getElementById("lottie-top-right"),
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "https://lottie.host/b58d2644-bd8c-45de-b1bc-d4b5f8be7b65/yGhcpjjNJf.json",
-    });
-    lottie.loadAnimation({
-      container: document.getElementById("lottie-bottom-left"),
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "https://lottie.host/6e38b84d-5c0b-4d71-9c3f-abbb0eb10831/4dgYipsDhj.json",
-    });
-    lottie.loadAnimation({
-      container: document.getElementById("lottie-bottom-right"),
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "https://lottie.host/8ea7fdf7-69b7-4cc9-aaf2-5ffb2d1c2f17/ckQ9nDj01Q.json",
-    });
-  }, 2000);
+  // --- B. LOTTIE ANIMATIONS (DECORATIVE) - These have been removed as they are replaced by particles.js ---
 
   // --- C. THEME TOGGLER ---
   const body = document.body;
@@ -1022,9 +985,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const applyTheme = (theme) => {
     body.classList.toggle("dark-mode", theme === "dark");
     mobileThemeToggle.innerHTML = theme === "dark" ? sunIcon : moonIcon;
+
+    // NEW: Update particles color based on theme
+    if (window.pJSDom && window.pJSDom[0]) {
+      const particlesInstance = window.pJSDom[0].pJS;
+      const newColor = theme === "dark" ? "#ffffff" : "#1a1a1a";
+      particlesInstance.particles.color.value = newColor;
+      particlesInstance.particles.line_linked.color = newColor;
+      particlesInstance.fn.particlesRefresh();
+    }
   };
 
-  const savedTheme = localStorage.getItem("theme") || "light";
+  // CHANGED: Default theme is now "dark"
+  const savedTheme = localStorage.getItem("theme") || "dark";
   applyTheme(savedTheme);
 
   mobileThemeToggle.addEventListener("click", () => {
