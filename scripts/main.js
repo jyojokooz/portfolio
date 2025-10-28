@@ -1034,12 +1034,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // --- D. SECTION NAVIGATION WITH PAGE TRANSITIONS ---
-  const allNavLinks = document.querySelectorAll(".nav-link");
+  const allNavTriggers = document.querySelectorAll("[data-target]");
 
-  allNavLinks.forEach((link) => {
+  allNavTriggers.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      const targetId = link.dataset.target || link.dataset.section;
+      const targetId = link.dataset.target;
       const currentActiveSection = document.querySelector(
         ".content-section.active"
       );
@@ -1050,18 +1050,23 @@ document.addEventListener("DOMContentLoaded", () => {
       )
         return;
 
-      allNavLinks.forEach((l) => l.classList.remove("active"));
+      // Remove active class from all main navigation links
+      document
+        .querySelectorAll(".nav-link")
+        .forEach((l) => l.classList.remove("active"));
+      // Add active class to the specific main navigation links that match the target
       document
         .querySelectorAll(`.nav-link[data-target="${targetId}"]`)
         .forEach((l) => l.classList.add("active"));
 
+      // Handle the content section transition
       if (currentActiveSection) {
         currentActiveSection.classList.add("fade-out");
         setTimeout(() => {
           currentActiveSection.classList.remove("active", "fade-out");
           document.getElementById(targetId)?.classList.add("active");
           document.querySelector(".main-content").scrollTop = 0;
-        }, 400);
+        }, 400); // Match animation duration
       } else {
         document.getElementById(targetId)?.classList.add("active");
         document.querySelector(".main-content").scrollTop = 0;
