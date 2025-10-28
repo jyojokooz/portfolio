@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Name | Portfolio</title>
+    <title>Joel S raphael | Portfolio</title>
     <!-- Google Fonts: Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -61,7 +61,6 @@
         font-family: var(--font-family);
         color: var(--text-color);
         background-color: var(--bg-color);
-        overflow: hidden;
         transition: background-color 0.4s cubic-bezier(0.4, 0.2, 1);
       }
 
@@ -78,6 +77,7 @@
         justify-content: center;
         z-index: 9999;
         transition: opacity 0.5s ease, visibility 0.5s ease;
+        overflow: hidden;
       }
       .loading-screen.hide {
         opacity: 0;
@@ -850,8 +850,8 @@
             </li>
           </ul>
         </div>
-        <!-- This empty div is for the desktop theme toggle, which is now hidden but JS might need it. We will control theme via mobile header. -->
-        <div class="sidebar-bottom" style="display: none"></div>
+        <!-- Sidebar-bottom reserved for future desktop theme toggle integration. Currently hidden and unused. Remove if not required. -->
+        <!-- <div class="sidebar-bottom" style="display: none"></div> -->
       </nav>
 
       <!-- 2. Mobile Header -->
@@ -900,7 +900,7 @@
           <div class="home-card">
             <div class="profile-image-container">
               <img
-                src=""
+                src="assets/default-profile.png"
                 alt="Profile Picture"
                 class="profile-pic"
                 id="profile-pic"
@@ -950,9 +950,7 @@
               Feel free to reach out through email or connect with me on social
               media.
             </p>
-            <a href="mailto:joelraphael6425@gmail.com" class="email-link"
-              >joelraphael6425@gmail.com</a
-            >
+            <a href="#" class="email-link" id="contact-email"></a>
             <div class="social-icons" id="contact-social-icons"></div>
           </div>
         </section>
@@ -972,5 +970,5 @@
     <!-- External scripts -->
     <script src="env.js"></script>
     <script type="module" src="./scripts/main.js"></script>
-  </body>
+    <script src="env.js" async></script>
 </html>
