@@ -54,8 +54,6 @@
         --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         --gradient-fire: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        --gradient-aurora: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-        --gradient-cosmic: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
       }
 
       body.dark-mode {
@@ -282,7 +280,7 @@
         border-radius: 4px;
       }
 
-      /* --- 3. CONTENT SECTIONS --- */
+      /* --- 3. CONTENT & CARD STYLES --- */
       .content-section.active {
         display: block;
         animation: page-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -336,16 +334,16 @@
         border-radius: 2px;
       }
 
-      /* --- 4. CARD & BUTTON STYLES (REVERTED TO OLD DESIGN) --- */
+      /* CARD STYLES from Screenshot */
       .home-card,
       .item-card,
       .contact-card,
       .skill-card {
         background-color: var(--card-bg-color);
-        border: 3px solid var(--border-color);
-        border-radius: 10px;
+        border: 2px solid var(--border-color);
+        border-radius: 24px;
         padding: 2rem;
-        box-shadow: 8px 8px 0 var(--shadow-color);
+        box-shadow: 8px 8px 0px var(--shadow-color);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-align: center;
       }
@@ -360,7 +358,7 @@
       .btn-small {
         display: inline-block;
         background: var(--gradient-fire);
-        border: 3px solid var(--border-color);
+        border: 2px solid var(--border-color);
         padding: 0.75rem 1.5rem;
         margin: 0 0.5rem;
         text-decoration: none;
@@ -374,6 +372,7 @@
         position: relative;
         overflow: hidden;
         z-index: 1;
+        border-radius: 8px;
       }
       .btn::before,
       .btn-small::before {
@@ -398,32 +397,24 @@
       }
       .btn:active,
       .btn-small:active {
-        transform: translate(2px, 2px);
-        box-shadow: 2px 2px 0 var(--border-color);
+        transform: translate(1px, 1px);
+        box-shadow: 1px 1px 0 var(--border-color);
       }
       .btn-small {
         padding: 0.5rem 1rem;
         font-size: 0.85rem;
-        border-width: 2px;
-        box-shadow: 3px 3px 0 var(--border-color);
-      }
-      .btn-small:hover {
-        box-shadow: 5px 5px 0 var(--border-color);
-      }
-      .btn-small:active {
-        box-shadow: 1px 1px 0 var(--border-color);
       }
 
-      /* --- 5. SECTION-SPECIFIC STYLES --- */
+      /* --- 4. SECTION-SPECIFIC STYLES --- */
       .home-card {
         max-width: 500px;
         margin: 4rem auto;
       }
       .profile-image-container {
         background: var(--gradient-primary);
-        border: 3px solid var(--border-color);
-        border-radius: 24px;
-        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 20px;
+        padding: 0.5rem;
         width: 150px;
         height: 150px;
         margin: -6rem auto 1.5rem;
@@ -439,7 +430,7 @@
       .profile-pic {
         width: 100%;
         height: 100%;
-        border-radius: 50%;
+        border-radius: 16px;
         object-fit: cover;
         position: relative;
         z-index: 1;
@@ -448,19 +439,16 @@
         font-size: 2rem;
         font-weight: 900;
         margin-bottom: 0.5rem;
-        letter-spacing: -0.5px;
       }
       .job-title {
         font-size: 1rem;
         font-weight: 500;
         margin-bottom: 1rem;
-        letter-spacing: 2px;
+        text-transform: uppercase;
       }
       .bio-description {
         font-size: 0.95rem;
-        font-weight: 400;
         margin-bottom: 1.5rem;
-        color: var(--text-color);
         line-height: 1.6;
         max-width: 90%;
         margin-left: auto;
@@ -513,7 +501,7 @@
         width: 100%;
         height: 180px;
         object-fit: cover;
-        border-radius: 5px;
+        border-radius: 16px;
         margin-bottom: 1rem;
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -567,7 +555,7 @@
         opacity: 0.7;
       }
 
-      /* --- 6. MOBILE & RESPONSIVENESS --- */
+      /* --- 5. MOBILE & RESPONSIVENESS (WITH SIZE FIX) --- */
       .mobile-header,
       .mobile-nav {
         display: none;
@@ -645,10 +633,10 @@
         .section-title {
           font-size: 2rem;
         }
+        /* MOBILE SIZE FIX */
         .home-card {
           margin: 4rem auto;
-          max-width: 360px;
-          padding: 1.5rem;
+          max-width: none; /* Let it be responsive */
         }
         .profile-image-container {
           margin-top: -5rem;
@@ -666,14 +654,18 @@
         .name-title {
           font-size: 1.75rem;
         }
+        /* SMALLER MOBILE SIZE FIX */
         .profile-image-container {
-          width: 120px;
-          height: 120px;
-          margin-top: -4.5rem;
+          width: 110px;
+          height: 110px;
+          margin-top: -4rem;
+        }
+        .home-card {
+          margin-top: 2.5rem;
         }
       }
 
-      /* --- 7. MODAL STYLES --- */
+      /* --- 6. MODAL STYLES --- */
       .modal {
         display: none;
         position: fixed;
@@ -691,9 +683,9 @@
       .modal-content {
         position: relative;
         background-color: var(--card-bg-color);
-        border: 3px solid var(--border-color);
+        border: 2px solid var(--border-color);
         padding: 2rem;
-        border-radius: 10px;
+        border-radius: 24px;
         width: 90%;
         max-width: 700px;
         box-shadow: 10px 10px 0 var(--shadow-color);
