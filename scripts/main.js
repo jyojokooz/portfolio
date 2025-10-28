@@ -1035,10 +1035,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- D. SECTION NAVIGATION WITH PAGE TRANSITIONS ---
   const allNavTriggers = document.querySelectorAll("[data-target]");
+  let isTransitioning = false; // Flag to prevent rapid clicks during transition
 
   allNavTriggers.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
+
+      // If a transition is already happening, ignore this click
+      if (isTransitioning) {
+        return;
+      }
+
       const targetId = link.dataset.target;
       const currentActiveSection = document.querySelector(
         ".content-section.active"
@@ -1047,8 +1054,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (
         !targetId ||
         (currentActiveSection && currentActiveSection.id === targetId)
-      )
+      ) {
         return;
+      }
+
+      // Start the transition
+      isTransitioning = true;
 
       // Remove active class from all main navigation links
       document
@@ -1064,12 +1075,23 @@ document.addEventListener("DOMContentLoaded", () => {
         currentActiveSection.classList.add("fade-out");
         setTimeout(() => {
           currentActiveSection.classList.remove("active", "fade-out");
-          document.getElementById(targetId)?.classList.add("active");
+          const targetSection = document.getElementById(targetId);
+          if (targetSection) {
+            targetSection.classList.add("active");
+          }
           document.querySelector(".main-content").scrollTop = 0;
-        }, 400); // Match animation duration
+          // End the transition
+          isTransitioning = false;
+        }, 500); // Match CSS animation duration (0.5s)
       } else {
-        document.getElementById(targetId)?.classList.add("active");
+        // This case handles the initial page load if needed, though not typical for this setup
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+          targetSection.classList.add("active");
+        }
         document.querySelector(".main-content").scrollTop = 0;
+        // End the transition
+        isTransitioning = false;
       }
     });
   });

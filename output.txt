@@ -538,7 +538,7 @@ export { db, auth };
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Name | Portfolio</title>
+    <title>Joel S raphael | Portfolio</title>
     <!-- Google Fonts: Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -596,7 +596,6 @@ export { db, auth };
         font-family: var(--font-family);
         color: var(--text-color);
         background-color: var(--bg-color);
-        overflow: hidden;
         transition: background-color 0.4s cubic-bezier(0.4, 0.2, 1);
       }
 
@@ -613,6 +612,7 @@ export { db, auth };
         justify-content: center;
         z-index: 9999;
         transition: opacity 0.5s ease, visibility 0.5s ease;
+        overflow: hidden;
       }
       .loading-screen.hide {
         opacity: 0;
@@ -774,8 +774,9 @@ export { db, auth };
         font-weight: 900;
         text-align: center;
         margin-bottom: 3rem;
-        font-style: italic;
-        letter-spacing: -1px;
+        /* font-style: italic; */
+        letter-spacing: 2px;
+        text-transform: uppercase;
       }
 
       /* --- 4. CARD & BUTTON STYLES (NEW THEME) --- */
@@ -939,8 +940,12 @@ export { db, auth };
       /* Projects & Certificates */
       .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 400px));
         gap: 3rem;
+        justify-content: center; /* Center items when there's extra space */
+        max-width: 1200px; /* Prevents cards from stretching too wide */
+        margin-left: auto;
+        margin-right: auto;
       }
       .item-card {
         cursor: default;
@@ -1159,7 +1164,6 @@ export { db, auth };
         }
 
         .grid-container {
-          grid-template-columns: 1fr;
           gap: 2rem;
         }
 
@@ -1381,8 +1385,8 @@ export { db, auth };
             </li>
           </ul>
         </div>
-        <!-- This empty div is for the desktop theme toggle, which is now hidden but JS might need it. We will control theme via mobile header. -->
-        <div class="sidebar-bottom" style="display: none"></div>
+        <!-- Sidebar-bottom reserved for future desktop theme toggle integration. Currently hidden and unused. Remove if not required. -->
+        <!-- <div class="sidebar-bottom" style="display: none"></div> -->
       </nav>
 
       <!-- 2. Mobile Header -->
@@ -1431,7 +1435,7 @@ export { db, auth };
           <div class="home-card">
             <div class="profile-image-container">
               <img
-                src=""
+                src="assets/default-profile.png"
                 alt="Profile Picture"
                 class="profile-pic"
                 id="profile-pic"
@@ -1481,9 +1485,7 @@ export { db, auth };
               Feel free to reach out through email or connect with me on social
               media.
             </p>
-            <a href="mailto:joelraphael6425@gmail.com" class="email-link"
-              >joelraphael6425@gmail.com</a
-            >
+            <a href="#" class="email-link" id="contact-email"></a>
             <div class="social-icons" id="contact-social-icons"></div>
           </div>
         </section>
@@ -1503,9 +1505,8 @@ export { db, auth };
     <!-- External scripts -->
     <script src="env.js"></script>
     <script type="module" src="./scripts/main.js"></script>
-  </body>
+    <script src="env.js" async></script>
 </html>
-
 
 ----- C:/hello/portfolio\netlify.toml -----
 
@@ -1540,7 +1541,7 @@ export { db, auth };
 
 ----- C:/hello/portfolio\.git\COMMIT_EDITMSG -----
 
-h
+v
 
 
 ----- C:/hello/portfolio\.git\config -----
@@ -1568,7 +1569,7 @@ Unnamed repository; edit this file 'description' to name the repository.
 
 ----- C:/hello/portfolio\.git\FETCH_HEAD -----
 
-147ac4632e8bcd768fcbcbd5394014ef579db2ca		branch 'master' of https://github.com/jyojokooz/portfolio
+3c754dc80bba4774bb05f5f23e55237ecf351aa5		branch 'master' of https://github.com/jyojokooz/portfolio
 
 
 ----- C:/hello/portfolio\.git\HEAD -----
@@ -1578,7 +1579,7 @@ ref: refs/heads/master
 
 ----- C:/hello/portfolio\.git\ORIG_HEAD -----
 
-147ac4632e8bcd768fcbcbd5394014ef579db2ca
+3c754dc80bba4774bb05f5f23e55237ecf351aa5
 
 
 ----- C:/hello/portfolio\.git\hooks\applypatch-msg.sample -----
@@ -2539,6 +2540,9 @@ a030eeb8fdd745058d60cccc58c552ef6240827a 0b8839f920d7d96472c342e01ec995fa03dcdc6
 67a08801ef4c27330f220646a038cc691958fac0 09642ad6323924ae000ecfbc853d936b1a2fc837 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761496206 +0530	commit: ha
 09642ad6323924ae000ecfbc853d936b1a2fc837 f201c9e4df9bdd8ccf40b96ce9465bcf9d25ac12 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761496845 +0530	commit: m
 f201c9e4df9bdd8ccf40b96ce9465bcf9d25ac12 147ac4632e8bcd768fcbcbd5394014ef579db2ca JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761497279 +0530	commit: h
+147ac4632e8bcd768fcbcbd5394014ef579db2ca ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761629739 +0530	commit: BUZ
+ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d 05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761630339 +0530	commit: G
+05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 3c754dc80bba4774bb05f5f23e55237ecf351aa5 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761635263 +0530	commit: v
 
 
 ----- C:/hello/portfolio\.git\logs\refs\heads\master -----
@@ -2565,6 +2569,9 @@ a030eeb8fdd745058d60cccc58c552ef6240827a 0b8839f920d7d96472c342e01ec995fa03dcdc6
 67a08801ef4c27330f220646a038cc691958fac0 09642ad6323924ae000ecfbc853d936b1a2fc837 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761496206 +0530	commit: ha
 09642ad6323924ae000ecfbc853d936b1a2fc837 f201c9e4df9bdd8ccf40b96ce9465bcf9d25ac12 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761496845 +0530	commit: m
 f201c9e4df9bdd8ccf40b96ce9465bcf9d25ac12 147ac4632e8bcd768fcbcbd5394014ef579db2ca JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761497279 +0530	commit: h
+147ac4632e8bcd768fcbcbd5394014ef579db2ca ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761629739 +0530	commit: BUZ
+ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d 05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761630339 +0530	commit: G
+05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 3c754dc80bba4774bb05f5f23e55237ecf351aa5 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761635263 +0530	commit: v
 
 
 ----- C:/hello/portfolio\.git\logs\refs\remotes\origin\HEAD -----
@@ -2596,11 +2603,14 @@ a030eeb8fdd745058d60cccc58c552ef6240827a 0b8839f920d7d96472c342e01ec995fa03dcdc6
 67a08801ef4c27330f220646a038cc691958fac0 09642ad6323924ae000ecfbc853d936b1a2fc837 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761496212 +0530	update by push
 09642ad6323924ae000ecfbc853d936b1a2fc837 f201c9e4df9bdd8ccf40b96ce9465bcf9d25ac12 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761496851 +0530	update by push
 f201c9e4df9bdd8ccf40b96ce9465bcf9d25ac12 147ac4632e8bcd768fcbcbd5394014ef579db2ca JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761497286 +0530	update by push
+147ac4632e8bcd768fcbcbd5394014ef579db2ca ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761629748 +0530	update by push
+ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d 05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761630345 +0530	update by push
+05bbc8c2e76cfb2040d5bc5229b1e27f46ff8662 3c754dc80bba4774bb05f5f23e55237ecf351aa5 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761635269 +0530	update by push
 
 
 ----- C:/hello/portfolio\.git\refs\heads\master -----
 
-147ac4632e8bcd768fcbcbd5394014ef579db2ca
+3c754dc80bba4774bb05f5f23e55237ecf351aa5
 
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\HEAD -----
@@ -2610,7 +2620,7 @@ ref: refs/remotes/origin/master
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\master -----
 
-147ac4632e8bcd768fcbcbd5394014ef579db2ca
+3c754dc80bba4774bb05f5f23e55237ecf351aa5
 
 
 ----- C:/hello/portfolio\.vscode\launch.json -----
@@ -4006,12 +4016,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // --- D. SECTION NAVIGATION WITH PAGE TRANSITIONS ---
-  const allNavLinks = document.querySelectorAll(".nav-link");
+  const allNavTriggers = document.querySelectorAll("[data-target]");
 
-  allNavLinks.forEach((link) => {
+  allNavTriggers.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      const targetId = link.dataset.target || link.dataset.section;
+      const targetId = link.dataset.target;
       const currentActiveSection = document.querySelector(
         ".content-section.active"
       );
@@ -4022,18 +4032,23 @@ document.addEventListener("DOMContentLoaded", () => {
       )
         return;
 
-      allNavLinks.forEach((l) => l.classList.remove("active"));
+      // Remove active class from all main navigation links
+      document
+        .querySelectorAll(".nav-link")
+        .forEach((l) => l.classList.remove("active"));
+      // Add active class to the specific main navigation links that match the target
       document
         .querySelectorAll(`.nav-link[data-target="${targetId}"]`)
         .forEach((l) => l.classList.add("active"));
 
+      // Handle the content section transition
       if (currentActiveSection) {
         currentActiveSection.classList.add("fade-out");
         setTimeout(() => {
           currentActiveSection.classList.remove("active", "fade-out");
           document.getElementById(targetId)?.classList.add("active");
           document.querySelector(".main-content").scrollTop = 0;
-        }, 400);
+        }, 400); // Match animation duration
       } else {
         document.getElementById(targetId)?.classList.add("active");
         document.querySelector(".main-content").scrollTop = 0;
