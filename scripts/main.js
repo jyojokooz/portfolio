@@ -8,6 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let projectsData = new Map();
+let loadingAnimation = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   // Set Contact Email
@@ -171,10 +172,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Function to update Lottie animation colors based on theme
+  function updateLottieColors(isDarkMode) {
+    if (!loadingAnimation) return;
+
+    try {
+      const color = isDarkMode ? [1, 1, 1] : [0.125, 0.153, 0.173];
+
+      // Update all layers in the animation
+      loadingAnimation.renderer.elements.forEach((element) => {
+        if (element.data && element.data.ty === 5) {
+          // Text layer
+          if (element.textProperty && element.textProperty.currentData) {
+            element.textProperty.currentData.fc = color;
+          }
+        } else if (element.data && element.data.shapes) {
+          // Shape layers
+          element.data.shapes.forEach((shape) => {
+            if (shape.it) {
+              shape.it.forEach((item) => {
+                if (item.ty === "fl" && item.c) {
+                  // Fill color
+                  item.c.k = color;
+                } else if (item.ty === "st" && item.c) {
+                  // Stroke color
+                  item.c.k = color;
+                }
+              });
+            }
+          });
+        }
+      });
+
+      // Force re-render
+      loadingAnimation.renderer.renderFrame(loadingAnimation.currentFrame);
+    } catch (error) {
+      console.error("Error updating Lottie colors:", error);
+    }
+  }
+
   // --- A. LOADING SCREEN & DATA INITIALIZATION ---
   const loadingScreen = document.getElementById("loading-screen");
   const portfolioContainer = document.getElementById("portfolio-container");
-  const loadingAnimation = lottie.loadAnimation({
+
+  // Determine initial theme
+  const savedTheme = localStorage.getItem("theme") || "dark";
+  const isDarkMode = savedTheme === "dark";
+  const initialColor = isDarkMode ? [1, 1, 1] : [0.125, 0.153, 0.173];
+
+  loadingAnimation = lottie.loadAnimation({
     container: document.getElementById("loading-animation"),
     renderer: "svg",
     loop: true,
@@ -273,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     },
                     {
                       ty: "fl",
-                      c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 4 },
+                      c: { a: 0, k: initialColor, ix: 4 },
                       o: { a: 0, k: 100, ix: 5 },
                       r: 1,
                       nm: "Relleno 1",
@@ -589,7 +635,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 {
                   ty: "fl",
-                  c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 4 },
+                  c: { a: 0, k: initialColor, ix: 4 },
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   nm: "Relleno 1",
@@ -728,7 +774,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 {
                   ty: "fl",
-                  c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 4 },
+                  c: { a: 0, k: initialColor, ix: 4 },
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   nm: "Relleno 1",
@@ -789,7 +835,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 {
                   ty: "st",
-                  c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 3 },
+                  c: { a: 0, k: initialColor, ix: 3 },
                   o: { a: 0, k: 100, ix: 4 },
                   w: { a: 0, k: 10, ix: 5 },
                   lc: 1,
@@ -909,7 +955,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 {
                   ty: "fl",
-                  c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 4 },
+                  c: { a: 0, k: initialColor, ix: 4 },
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   nm: "Relleno 1",
@@ -941,6 +987,48 @@ document.addEventListener("DOMContentLoaded", () => {
           st: 0,
           bm: 0,
         },
+        // JSR TEXT LAYER
+        {
+          ddd: 0,
+          ind: 12,
+          ty: 5,
+          nm: "JSR Text",
+          sr: 1,
+          ks: {
+            o: { a: 0, k: 100, ix: 11 },
+            r: { a: 0, k: 0, ix: 10 },
+            p: { a: 0, k: [199, 270, 0], ix: 2 },
+            a: { a: 0, k: [0, 0, 0], ix: 1 },
+            s: { a: 0, k: [100, 100, 100], ix: 6 },
+          },
+          ao: 0,
+          t: {
+            d: {
+              k: [
+                {
+                  s: {
+                    s: 60,
+                    f: "Montserrat-Black",
+                    t: "JSR",
+                    j: 2,
+                    tr: 0,
+                    lh: 72,
+                    ls: 0,
+                    fc: initialColor,
+                  },
+                  t: 0,
+                },
+              ],
+            },
+            p: {},
+            m: { g: 1, a: { a: 0, k: [0, 0], ix: 2 } },
+            a: [],
+          },
+          ip: 0,
+          op: 144,
+          st: 0,
+          bm: 0,
+        },
         {
           ddd: 0,
           ind: 11,
@@ -965,6 +1053,16 @@ document.addEventListener("DOMContentLoaded", () => {
           bm: 0,
         },
       ],
+      fonts: {
+        list: [
+          {
+            fName: "Montserrat-Black",
+            fFamily: "Montserrat",
+            fStyle: "Black",
+            ascent: 96.8017578125,
+          },
+        ],
+      },
     },
   });
 
@@ -978,7 +1076,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       loadingScreen.classList.add("hide");
       portfolioContainer.classList.add("show");
-      setTimeout(() => loadingAnimation.destroy(), 500);
+      setTimeout(() => {
+        if (loadingAnimation) {
+          loadingAnimation.destroy();
+          loadingAnimation = null;
+        }
+      }, 500);
     }, 1500);
   });
 
@@ -997,6 +1100,11 @@ document.addEventListener("DOMContentLoaded", () => {
       desktopThemeToggle.innerHTML = newIcon;
     }
 
+    // Update loading animation colors if it exists
+    if (loadingAnimation) {
+      updateLottieColors(theme === "dark");
+    }
+
     if (window.pJSDom && window.pJSDom[0]) {
       const particlesInstance = window.pJSDom[0].pJS;
       const newColor = theme === "dark" ? "#ffffff" : "#1a1a1a";
@@ -1006,7 +1114,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  const savedTheme = localStorage.getItem("theme") || "dark";
   applyTheme(savedTheme);
 
   const toggleTheme = () => {
