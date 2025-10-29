@@ -567,10 +567,9 @@ export { db, auth };
     <!-- Lottie Animation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
     <style>
-      /* --- 1. SETUP & CSS VARIABLES (NEW THEME) --- */
+      /* --- 1. SETUP & CSS VARIABLES (OLD THEME) --- */
       :root {
         /* Light Mode */
-        --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
         --card-bg-color: #ffffff;
         --text-color: #1a1a1a;
         --border-color: #1a1a1a;
@@ -581,7 +580,7 @@ export { db, auth };
         --sidebar-icon-active: var(--accent-color);
         --sidebar-active-bg: rgba(255, 255, 255, 0.1);
         --font-family: "Montserrat", sans-serif;
-        
+
         /* Modern Gradient Colors */
         --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -593,21 +592,12 @@ export { db, auth };
 
       body.dark-mode {
         /* Dark Mode */
-        --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         --card-bg-color: #1e1e1e;
         --text-color: #f0f0f0;
         --border-color: #f0f0f0;
         --shadow-color: #000000;
         --sidebar-icon: #f0f0f0;
         --sidebar-active-bg: rgba(255, 255, 255, 0.15);
-        
-        /* Dark Mode Gradients */
-        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        --gradient-fire: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        --gradient-aurora: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-        --gradient-cosmic: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
       }
 
       * {
@@ -619,54 +609,24 @@ export { db, auth };
       body {
         font-family: var(--font-family);
         color: var(--text-color);
-        background: var(--bg-gradient);
+        background-color: #f8f9fa;
         background-attachment: fixed;
-        transition: background 0.4s ease-in-out;
+        transition: background-color 0.4s ease-in-out;
         position: relative;
         min-height: 100vh;
       }
-      
-      /* Artistic gradient background overlay */
-      body::before {
-        content: '';
+
+      body.dark-mode {
+        background-color: #1a1a2e;
+      }
+
+      #particles-js {
         position: fixed;
-        top: 0;
-        left: 0;
         width: 100%;
         height: 100%;
-        background: 
-          radial-gradient(ellipse at 10% 20%, rgba(253, 239, 249, 0.6) 0%, transparent 40%),
-          radial-gradient(ellipse at 90% 80%, rgba(232, 245, 253, 0.6) 0%, transparent 40%),
-          radial-gradient(ellipse at 50% 50%, rgba(255, 251, 235, 0.5) 0%, transparent 50%),
-          radial-gradient(circle at 70% 30%, rgba(243, 232, 255, 0.5) 0%, transparent 35%),
-          radial-gradient(circle at 30% 70%, rgba(255, 239, 239, 0.5) 0%, transparent 35%);
+        top: 0;
+        left: 0;
         z-index: 0;
-        pointer-events: none;
-        animation: artworkFloat 20s ease-in-out infinite;
-      }
-      
-      @keyframes artworkFloat {
-        0%, 100% {
-          opacity: 1;
-          transform: scale(1) rotate(0deg);
-        }
-        33% {
-          opacity: 0.9;
-          transform: scale(1.05) rotate(1deg);
-        }
-        66% {
-          opacity: 0.95;
-          transform: scale(0.98) rotate(-1deg);
-        }
-      }
-      
-      body.dark-mode::before {
-        background: 
-          radial-gradient(ellipse at 10% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 40%),
-          radial-gradient(ellipse at 90% 80%, rgba(79, 172, 254, 0.15) 0%, transparent 40%),
-          radial-gradient(ellipse at 50% 50%, rgba(250, 112, 154, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 70% 30%, rgba(168, 237, 234, 0.12) 0%, transparent 35%),
-          radial-gradient(circle at 30% 70%, rgba(245, 87, 108, 0.12) 0%, transparent 35%);
       }
 
       /* Loading Screen */
@@ -676,13 +636,16 @@ export { db, auth };
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: var(--bg-gradient);
+        background: #f8f9fa;
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 9999;
         transition: opacity 0.5s ease, visibility 0.5s ease;
         overflow: hidden;
+      }
+      body.dark-mode .loading-screen {
+        background: #1a1a2e;
       }
       .loading-screen.hide {
         opacity: 0;
@@ -719,9 +682,9 @@ export { db, auth };
         position: relative;
         z-index: 10;
       }
-      
+
       .sidebar::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -748,7 +711,6 @@ export { db, auth };
 
       .sidebar .logo {
         color: #ffffff;
-        margin-bottom: 2rem;
       }
 
       .nav-links {
@@ -757,6 +719,7 @@ export { db, auth };
         flex-direction: column;
         align-items: center;
         width: 100%;
+        margin-top: 2rem;
       }
       .nav-links li {
         margin: 1rem 0;
@@ -790,6 +753,27 @@ export { db, auth };
       .sidebar .nav-link.active {
         color: var(--sidebar-icon-active);
         background-color: var(--sidebar-active-bg);
+      }
+
+      /* Desktop Theme Toggle Button */
+      #desktop-theme-toggle {
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.7);
+        padding: 0.75rem;
+        border-radius: 8px;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+      #desktop-theme-toggle:hover {
+        background-color: var(--sidebar-active-bg);
+        color: #ffffff;
       }
 
       .main-content {
@@ -869,9 +853,9 @@ export { db, auth };
         display: inline-block;
         width: 100%;
       }
-      
+
       .section-title::after {
-        content: '';
+        content: "";
         position: absolute;
         bottom: -10px;
         left: 50%;
@@ -882,7 +866,7 @@ export { db, auth };
         border-radius: 2px;
       }
 
-      /* --- 4. CARD & BUTTON STYLES (NEW THEME) --- */
+      /* --- 4. CARD & BUTTON STYLES (OLD THEME) --- */
       .home-card,
       .item-card,
       .contact-card,
@@ -922,11 +906,12 @@ export { db, auth };
         cursor: pointer;
         position: relative;
         overflow: hidden;
+        z-index: 1;
       }
-      
+
       .btn::before,
       .btn-small::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: -100%;
@@ -936,24 +921,20 @@ export { db, auth };
         transition: left 0.3s ease;
         z-index: -1;
       }
-      
       .btn:hover::before,
       .btn-small:hover::before {
         left: 0;
       }
-
       .btn:hover,
       .btn-small:hover {
         transform: translate(-2px, -2px);
         box-shadow: 6px 6px 0 var(--border-color);
       }
-
       .btn:active,
       .btn-small:active {
         transform: translate(2px, 2px);
         box-shadow: 2px 2px 0 var(--border-color);
       }
-
       .btn-small {
         padding: 0.5rem 1rem;
         font-size: 0.85rem;
@@ -985,9 +966,8 @@ export { db, auth };
         position: relative;
         overflow: hidden;
       }
-      
       .profile-image-container::before {
-        content: '';
+        content: "";
         position: absolute;
         top: -50%;
         left: -50%;
@@ -998,11 +978,6 @@ export { db, auth };
         transition: opacity 0.3s ease;
         animation: rotate 10s linear infinite;
       }
-      
-      .profile-image-container:hover::before {
-        opacity: 0.3;
-      }
-      
       @keyframes rotate {
         0% {
           transform: rotate(0deg);
@@ -1011,7 +986,9 @@ export { db, auth };
           transform: rotate(360deg);
         }
       }
-      
+      .profile-image-container:hover::before {
+        opacity: 0.3;
+      }
       .profile-image-container:hover {
         transform: translate(-2px, -2px) rotate(-2deg);
         box-shadow: 10px 10px 0 var(--shadow-color);
@@ -1087,14 +1064,12 @@ export { db, auth };
       .button-group .btn {
         margin: 0;
       }
-
-      /* Projects & Certificates */
       .grid-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 400px));
         gap: 3rem;
-        justify-content: center; /* Center items when there's extra space */
-        max-width: 1200px; /* Prevents cards from stretching too wide */
+        justify-content: center;
+        max-width: 1200px;
         margin-left: auto;
         margin-right: auto;
       }
@@ -1105,9 +1080,8 @@ export { db, auth };
         position: relative;
         overflow: hidden;
       }
-      
       .item-card::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -1118,7 +1092,6 @@ export { db, auth };
         transform-origin: left;
         transition: transform 0.3s ease;
       }
-      
       .item-card:hover::before {
         transform: scaleX(1);
       }
@@ -1148,8 +1121,6 @@ export { db, auth };
         line-height: 1.6;
         color: var(--text-color);
       }
-
-      /* Skills Section */
       .skills-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -1164,14 +1135,11 @@ export { db, auth };
         align-items: center;
         justify-content: center;
         gap: 1rem;
-      }
-      .skill-card {
         position: relative;
         overflow: hidden;
       }
-      
       .skill-card::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -1182,11 +1150,9 @@ export { db, auth };
         transition: opacity 0.3s ease;
         z-index: 0;
       }
-      
       .skill-card:hover::before {
         opacity: 0.15;
       }
-      
       .skill-card i {
         font-size: 3.5rem;
         background: var(--gradient-cosmic);
@@ -1197,21 +1163,15 @@ export { db, auth };
         z-index: 1;
         transition: transform 0.3s ease;
       }
-      
       .skill-card:hover i {
         transform: scale(1.1) rotate(5deg);
       }
-      
       .skill-card span {
         position: relative;
         z-index: 1;
-      }
-      .skill-card span {
         font-weight: 500;
         font-size: 0.9rem;
       }
-
-      /* Contact Section */
       .contact-card {
         max-width: 600px;
         margin: 2rem auto;
@@ -1277,7 +1237,7 @@ export { db, auth };
       }
 
       /* --- 7. RESPONSIVENESS --- */
-      @media (max-width: 768px) {
+      @media (max-width: 768px), (max-height: 500px) {
         .sidebar {
           display: none;
         }
@@ -1285,7 +1245,6 @@ export { db, auth };
         .mobile-nav {
           display: flex;
         }
-
         .mobile-header {
           position: fixed;
           top: 0;
@@ -1301,6 +1260,7 @@ export { db, auth };
           margin: 0;
           color: var(--text-color);
           text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+          font-weight: 900;
         }
         #mobile-theme-toggle {
           background: none;
@@ -1311,7 +1271,6 @@ export { db, auth };
           padding: 0.5rem;
           text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
-
         .mobile-nav {
           position: fixed;
           bottom: 0;
@@ -1349,16 +1308,13 @@ export { db, auth };
           color: var(--accent-color);
           transform: translateY(-4px);
         }
-
         .content-section {
           padding: 4rem 1.5rem 6rem 1.5rem;
           height: 100%;
         }
-
         .section-title {
           font-size: 2rem;
         }
-
         .home-card {
           margin: 3rem auto;
           max-width: 360px;
@@ -1369,11 +1325,9 @@ export { db, auth };
           width: 130px;
           height: 130px;
         }
-
         .grid-container {
           gap: 2rem;
         }
-
         .item-card {
           padding: 1.5rem;
         }
@@ -1396,12 +1350,10 @@ export { db, auth };
           font-size: 3rem;
         }
       }
-
       @media (max-width: 480px) {
         .content-section {
           padding: 4rem 1rem 5rem 1rem;
         }
-
         .section-title {
           font-size: 1.75rem;
         }
@@ -1534,13 +1486,13 @@ export { db, auth };
     </style>
   </head>
   <body>
-    <!-- Loading Screen -->
+    <div id="particles-js"></div>
+
     <div class="loading-screen" id="loading-screen">
       <div id="loading-animation" class="loading-animation"></div>
     </div>
 
     <div class="portfolio-container" id="portfolio-container">
-      <!-- 1. Desktop Sidebar Navigation -->
       <nav class="sidebar">
         <div class="sidebar-top">
           <div class="logo">JSR</div>
@@ -1551,7 +1503,8 @@ export { db, auth };
                 class="nav-link active"
                 data-target="home"
                 title="Home"
-                ><i class="fas fa-home"></i></a>
+                ><i class="fas fa-home"></i
+              ></a>
             </li>
             <li>
               <a
@@ -1559,7 +1512,8 @@ export { db, auth };
                 class="nav-link"
                 data-target="projects"
                 title="Projects"
-                ><i class="fas fa-briefcase"></i></a>
+                ><i class="fas fa-briefcase"></i
+              ></a>
             </li>
             <li>
               <a
@@ -1567,7 +1521,8 @@ export { db, auth };
                 class="nav-link"
                 data-target="skills"
                 title="Skills"
-                ><i class="fas fa-code"></i></a>
+                ><i class="fas fa-code"></i
+              ></a>
             </li>
             <li>
               <a
@@ -1575,7 +1530,8 @@ export { db, auth };
                 class="nav-link"
                 data-target="certificates"
                 title="Certificates"
-                ><i class="fas fa-certificate"></i></a>
+                ><i class="fas fa-certificate"></i
+              ></a>
             </li>
             <li>
               <a
@@ -1583,15 +1539,18 @@ export { db, auth };
                 class="nav-link"
                 data-target="contact"
                 title="Contact"
-                ><i class="fas fa-envelope"></i></a>
+                ><i class="fas fa-envelope"></i
+              ></a>
             </li>
           </ul>
         </div>
-        <!-- Sidebar-bottom reserved for future desktop theme toggle integration. Currently hidden and unused. Remove if not required. -->
-        <!-- <div class="sidebar-bottom" style="display: none"></div> -->
+        <div class="sidebar-bottom">
+          <button id="desktop-theme-toggle" title="Toggle Theme">
+            <i class="fas fa-moon"></i>
+          </button>
+        </div>
       </nav>
 
-      <!-- 2. Mobile Header -->
       <header class="mobile-header">
         <div class="logo">JSR</div>
         <button id="mobile-theme-toggle" title="Toggle Theme">
@@ -1599,40 +1558,37 @@ export { db, auth };
         </button>
       </header>
 
-      <!-- 3. Mobile Bottom Navigation -->
       <nav class="mobile-nav">
-        <a href="#home" class="nav-link active" data-target="home" title="Home">
-          <i class="fas fa-home"></i><span>Home</span>
-        </a>
+        <a href="#home" class="nav-link active" data-target="home" title="Home"
+          ><i class="fas fa-home"></i><span>Home</span></a
+        >
         <a
           href="#projects"
           class="nav-link"
           data-target="projects"
-          title="Projects">
-          <i class="fas fa-briefcase"></i><span>Projects</span>
-        </a>
-        <a href="#skills" class="nav-link" data-target="skills" title="Skills">
-          <i class="fas fa-code"></i><span>Skills</span>
-        </a>
+          title="Projects"
+          ><i class="fas fa-briefcase"></i><span>Projects</span></a
+        >
+        <a href="#skills" class="nav-link" data-target="skills" title="Skills"
+          ><i class="fas fa-code"></i><span>Skills</span></a
+        >
         <a
           href="#certificates"
           class="nav-link"
           data-target="certificates"
-          title="Certs">
-          <i class="fas fa-certificate"></i><span>Certs</span>
-        </a>
+          title="Certs"
+          ><i class="fas fa-certificate"></i><span>Certs</span></a
+        >
         <a
           href="#contact"
           class="nav-link"
           data-target="contact"
-          title="Contact">
-          <i class="fas fa-envelope"></i><span>Contact</span>
-        </a>
+          title="Contact"
+          ><i class="fas fa-envelope"></i><span>Contact</span></a
+        >
       </nav>
 
-      <!-- 4. Main Content Area -->
       <main class="main-content">
-        <!-- Home Section - DYNAMIC CONTENT -->
         <section id="home" class="content-section active">
           <div class="home-card">
             <div class="profile-image-container">
@@ -1654,31 +1610,28 @@ export { db, auth };
                 id="resume-button"
                 target="_blank"
                 rel="noopener"
-                >RESUME</a>
+                >RESUME</a
+              >
               <a href="#contact" class="btn" data-target="contact">CONTACT</a>
             </div>
           </div>
         </section>
 
-        <!-- Projects Section - DYNAMIC CONTENT -->
         <section id="projects" class="content-section">
           <h2 class="section-title">PROJECTS</h2>
           <div class="grid-container" id="projects-grid"></div>
         </section>
 
-        <!-- Skills Section - DYNAMIC CONTENT -->
         <section id="skills" class="content-section">
           <h2 class="section-title">SKILLS</h2>
           <div class="skills-grid" id="skills-grid"></div>
         </section>
 
-        <!-- Certificates Section - DYNAMIC CONTENT -->
         <section id="certificates" class="content-section">
           <h2 class="section-title">CERTIFICATES</h2>
           <div class="grid-container" id="certificates-grid"></div>
         </section>
 
-        <!-- Contact Section - DYNAMIC CONTENT -->
         <section id="contact" class="content-section">
           <h2 class="section-title">CONTACT ME</h2>
           <div class="contact-card">
@@ -1691,7 +1644,6 @@ export { db, auth };
           </div>
         </section>
 
-        <!-- Project Details Modal -->
         <div id="project-modal" class="modal">
           <div class="modal-content">
             <span class="modal-close">&times;</span>
@@ -1703,11 +1655,50 @@ export { db, auth };
       </main>
     </div>
 
-    <!-- External scripts -->
     <script src="env.js"></script>
+    <script src="scripts/particles.min.js"></script>
     <script type="module" src="./scripts/main.js"></script>
-    <script src="env.js" async></script>
+
+    <script>
+      particlesJS("particles-js", {
+        particles: {
+          number: { value: 80, density: { enable: true, value_area: 800 } },
+          color: { value: "#ffffff" },
+          shape: { type: "circle" },
+          opacity: { value: 0.5, random: false },
+          size: { value: 3, random: true },
+          line_linked: {
+            enable: true,
+            distance: 150,
+            color: "#ffffff",
+            opacity: 0.4,
+            width: 1,
+          },
+          move: {
+            enable: true,
+            speed: 6,
+            direction: "none",
+            random: false,
+            straight: false,
+            out_mode: "out",
+            bounce: false,
+          },
+        },
+        interactivity: {
+          detect_on: "canvas",
+          events: {
+            onhover: { enable: true, mode: "repulse" },
+            onclick: { enable: false },
+            resize: true,
+          },
+          modes: { repulse: { distance: 200, duration: 0.4 } },
+        },
+        retina_detect: true,
+      });
+    </script>
+  </body>
 </html>
+
 
 ----- C:/hello/portfolio\manifest.json -----
 
@@ -1755,7 +1746,7 @@ export { db, auth };
 
 ----- C:/hello/portfolio\.git\COMMIT_EDITMSG -----
 
-hh
+hd
 
 
 ----- C:/hello/portfolio\.git\config -----
@@ -1783,7 +1774,7 @@ Unnamed repository; edit this file 'description' to name the repository.
 
 ----- C:/hello/portfolio\.git\FETCH_HEAD -----
 
-2f0210f2b0a5e1588dff595fd6afb32df3d75752		branch 'master' of https://github.com/jyojokooz/portfolio
+173a7e572208cd442016de2633511f8167e8abcd		branch 'master' of https://github.com/jyojokooz/portfolio
 
 
 ----- C:/hello/portfolio\.git\HEAD -----
@@ -1793,7 +1784,7 @@ ref: refs/heads/master
 
 ----- C:/hello/portfolio\.git\ORIG_HEAD -----
 
-2f0210f2b0a5e1588dff595fd6afb32df3d75752
+173a7e572208cd442016de2633511f8167e8abcd
 
 
 ----- C:/hello/portfolio\.git\hooks\applypatch-msg.sample -----
@@ -2762,6 +2753,16 @@ ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d 05bbc8c2e76cfb2040d5bc5229b1e27f46ff866
 30df73726e69ffb53b25d93014f97356f1a4ff27 ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761661603 +0530	commit: ui updated
 ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 3488a9c4d3864ad097f7c46c1d1aefe051c19d28 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761662358 +0530	commit: hi
 3488a9c4d3864ad097f7c46c1d1aefe051c19d28 2f0210f2b0a5e1588dff595fd6afb32df3d75752 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761664179 +0530	commit: hh
+2f0210f2b0a5e1588dff595fd6afb32df3d75752 143f2acc953eea89fac929382dfd6303c475cd48 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761666987 +0530	commit: particles added
+143f2acc953eea89fac929382dfd6303c475cd48 c7fbac673cf4930516540fb99f968f37a7518356 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761667407 +0530	commit: default as dark theme
+c7fbac673cf4930516540fb99f968f37a7518356 e74403ed67b557a7f277aa88a419657df7cf84bc JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761667721 +0530	commit: designed more
+e74403ed67b557a7f277aa88a419657df7cf84bc 7c089fc9e21e18bdd35b94047ea80c31bd3bbdde JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761669228 +0530	commit: hh
+7c089fc9e21e18bdd35b94047ea80c31bd3bbdde a6fb9962f7fc1e2eab8962d99701c44565e2d3bb JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761669660 +0530	commit: tt
+a6fb9962f7fc1e2eab8962d99701c44565e2d3bb 1e67d4b0dc29efe43ee560695b529d5ddb22620d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761670106 +0530	commit: jdj
+1e67d4b0dc29efe43ee560695b529d5ddb22620d 88560c07e8fe358c8c1510c667a0849deeda4b5b JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761671392 +0530	commit: design updated
+88560c07e8fe358c8c1510c667a0849deeda4b5b acff032c5c29dc4eff162a336f73fd86bb23bad7 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761672083 +0530	commit: gg
+acff032c5c29dc4eff162a336f73fd86bb23bad7 b9773cc536f60c3d0bb39a317e204c62ffc9a48a JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674065 +0530	commit: ha
+b9773cc536f60c3d0bb39a317e204c62ffc9a48a 173a7e572208cd442016de2633511f8167e8abcd JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674320 +0530	commit: hd
 
 
 ----- C:/hello/portfolio\.git\logs\refs\heads\master -----
@@ -2796,6 +2797,16 @@ ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d 05bbc8c2e76cfb2040d5bc5229b1e27f46ff866
 30df73726e69ffb53b25d93014f97356f1a4ff27 ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761661603 +0530	commit: ui updated
 ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 3488a9c4d3864ad097f7c46c1d1aefe051c19d28 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761662358 +0530	commit: hi
 3488a9c4d3864ad097f7c46c1d1aefe051c19d28 2f0210f2b0a5e1588dff595fd6afb32df3d75752 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761664179 +0530	commit: hh
+2f0210f2b0a5e1588dff595fd6afb32df3d75752 143f2acc953eea89fac929382dfd6303c475cd48 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761666987 +0530	commit: particles added
+143f2acc953eea89fac929382dfd6303c475cd48 c7fbac673cf4930516540fb99f968f37a7518356 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761667407 +0530	commit: default as dark theme
+c7fbac673cf4930516540fb99f968f37a7518356 e74403ed67b557a7f277aa88a419657df7cf84bc JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761667721 +0530	commit: designed more
+e74403ed67b557a7f277aa88a419657df7cf84bc 7c089fc9e21e18bdd35b94047ea80c31bd3bbdde JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761669228 +0530	commit: hh
+7c089fc9e21e18bdd35b94047ea80c31bd3bbdde a6fb9962f7fc1e2eab8962d99701c44565e2d3bb JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761669660 +0530	commit: tt
+a6fb9962f7fc1e2eab8962d99701c44565e2d3bb 1e67d4b0dc29efe43ee560695b529d5ddb22620d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761670106 +0530	commit: jdj
+1e67d4b0dc29efe43ee560695b529d5ddb22620d 88560c07e8fe358c8c1510c667a0849deeda4b5b JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761671392 +0530	commit: design updated
+88560c07e8fe358c8c1510c667a0849deeda4b5b acff032c5c29dc4eff162a336f73fd86bb23bad7 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761672083 +0530	commit: gg
+acff032c5c29dc4eff162a336f73fd86bb23bad7 b9773cc536f60c3d0bb39a317e204c62ffc9a48a JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674065 +0530	commit: ha
+b9773cc536f60c3d0bb39a317e204c62ffc9a48a 173a7e572208cd442016de2633511f8167e8abcd JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674320 +0530	commit: hd
 
 
 ----- C:/hello/portfolio\.git\logs\refs\remotes\origin\HEAD -----
@@ -2835,11 +2846,21 @@ ebfaa3ca7ee6e9b905405f506a5c79e0cacb899d 05bbc8c2e76cfb2040d5bc5229b1e27f46ff866
 30df73726e69ffb53b25d93014f97356f1a4ff27 ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761661609 +0530	update by push
 ddfd818f1f829aa20f5a9b1ec783f0d8bd245ea0 3488a9c4d3864ad097f7c46c1d1aefe051c19d28 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761662364 +0530	update by push
 3488a9c4d3864ad097f7c46c1d1aefe051c19d28 2f0210f2b0a5e1588dff595fd6afb32df3d75752 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761664186 +0530	update by push
+2f0210f2b0a5e1588dff595fd6afb32df3d75752 143f2acc953eea89fac929382dfd6303c475cd48 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761666993 +0530	update by push
+143f2acc953eea89fac929382dfd6303c475cd48 c7fbac673cf4930516540fb99f968f37a7518356 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761667413 +0530	update by push
+c7fbac673cf4930516540fb99f968f37a7518356 e74403ed67b557a7f277aa88a419657df7cf84bc JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761667727 +0530	update by push
+e74403ed67b557a7f277aa88a419657df7cf84bc 7c089fc9e21e18bdd35b94047ea80c31bd3bbdde JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761669246 +0530	update by push
+7c089fc9e21e18bdd35b94047ea80c31bd3bbdde a6fb9962f7fc1e2eab8962d99701c44565e2d3bb JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761669666 +0530	update by push
+a6fb9962f7fc1e2eab8962d99701c44565e2d3bb 1e67d4b0dc29efe43ee560695b529d5ddb22620d JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761670112 +0530	update by push
+1e67d4b0dc29efe43ee560695b529d5ddb22620d 88560c07e8fe358c8c1510c667a0849deeda4b5b JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761671399 +0530	update by push
+88560c07e8fe358c8c1510c667a0849deeda4b5b acff032c5c29dc4eff162a336f73fd86bb23bad7 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761672089 +0530	update by push
+acff032c5c29dc4eff162a336f73fd86bb23bad7 b9773cc536f60c3d0bb39a317e204c62ffc9a48a JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674071 +0530	update by push
+b9773cc536f60c3d0bb39a317e204c62ffc9a48a 173a7e572208cd442016de2633511f8167e8abcd JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674326 +0530	update by push
 
 
 ----- C:/hello/portfolio\.git\refs\heads\master -----
 
-2f0210f2b0a5e1588dff595fd6afb32df3d75752
+173a7e572208cd442016de2633511f8167e8abcd
 
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\HEAD -----
@@ -2849,7 +2870,7 @@ ref: refs/remotes/origin/master
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\master -----
 
-2f0210f2b0a5e1588dff595fd6afb32df3d75752
+173a7e572208cd442016de2633511f8167e8abcd
 
 
 ----- C:/hello/portfolio\.vscode\launch.json -----
@@ -3221,6 +3242,14 @@ import {
 let projectsData = new Map();
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Set Contact Email
+  const userEmail = "joelraphael6425@gmail.com";
+  const contactEmailLink = document.getElementById("contact-email");
+  if (contactEmailLink) {
+    contactEmailLink.href = `mailto:${userEmail}`;
+    contactEmailLink.textContent = userEmail;
+  }
+
   // --- 1. DATA FETCHING & POPULATING FUNCTIONS ---
 
   async function populateHomePage() {
@@ -4185,77 +4214,52 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1500);
   });
 
-  // --- B. LOTTIE ANIMATIONS (DECORATIVE) ---
-  lottie.loadAnimation({
-    container: document.getElementById("lottie-bg"),
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-    path: "https://lottie.host/4c6da31c-2eee-4597-80e5-2c29d2d3f3ef/YEdkZGPzrr.json",
-  });
-  setTimeout(() => {
-    lottie.loadAnimation({
-      container: document.getElementById("lottie-top-left"),
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "https://lottie.host/embed/dd1ad89a-093c-40ad-be27-c26766194b74/kqodXzYwCZ.json",
-    });
-    lottie.loadAnimation({
-      container: document.getElementById("lottie-top-right"),
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "https://lottie.host/b58d2644-bd8c-45de-b1bc-d4b5f8be7b65/yGhcpjjNJf.json",
-    });
-    lottie.loadAnimation({
-      container: document.getElementById("lottie-bottom-left"),
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "https://lottie.host/6e38b84d-5c0b-4d71-9c3f-abbb0eb10831/4dgYipsDhj.json",
-    });
-    lottie.loadAnimation({
-      container: document.getElementById("lottie-bottom-right"),
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "https://lottie.host/8ea7fdf7-69b7-4cc9-aaf2-5ffb2d1c2f17/ckQ9nDj01Q.json",
-    });
-  }, 2000);
-
   // --- C. THEME TOGGLER ---
   const body = document.body;
   const mobileThemeToggle = document.getElementById("mobile-theme-toggle");
+  const desktopThemeToggle = document.getElementById("desktop-theme-toggle");
   const sunIcon = '<i class="fas fa-sun"></i>';
   const moonIcon = '<i class="fas fa-moon"></i>';
 
   const applyTheme = (theme) => {
     body.classList.toggle("dark-mode", theme === "dark");
-    mobileThemeToggle.innerHTML = theme === "dark" ? sunIcon : moonIcon;
+    const newIcon = theme === "dark" ? sunIcon : moonIcon;
+    mobileThemeToggle.innerHTML = newIcon;
+    if (desktopThemeToggle) {
+      desktopThemeToggle.innerHTML = newIcon;
+    }
+
+    if (window.pJSDom && window.pJSDom[0]) {
+      const particlesInstance = window.pJSDom[0].pJS;
+      const newColor = theme === "dark" ? "#ffffff" : "#1a1a1a";
+      particlesInstance.particles.color.value = newColor;
+      particlesInstance.particles.line_linked.color = newColor;
+      particlesInstance.fn.particlesRefresh();
+    }
   };
 
-  const savedTheme = localStorage.getItem("theme") || "light";
+  const savedTheme = localStorage.getItem("theme") || "dark";
   applyTheme(savedTheme);
 
-  mobileThemeToggle.addEventListener("click", () => {
+  const toggleTheme = () => {
     const newTheme = body.classList.contains("dark-mode") ? "light" : "dark";
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
-  });
+  };
+
+  mobileThemeToggle.addEventListener("click", toggleTheme);
+  if (desktopThemeToggle) {
+    desktopThemeToggle.addEventListener("click", toggleTheme);
+  }
 
   // --- D. SECTION NAVIGATION WITH PAGE TRANSITIONS ---
   const allNavTriggers = document.querySelectorAll("[data-target]");
-  let isTransitioning = false; // Flag to prevent rapid clicks during transition
+  let isTransitioning = false;
 
   allNavTriggers.forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
-
-      // If a transition is already happening, ignore this click
-      if (isTransitioning) {
-        return;
-      }
+      if (isTransitioning) return;
 
       const targetId = link.dataset.target;
       const currentActiveSection = document.querySelector(
@@ -4265,43 +4269,28 @@ document.addEventListener("DOMContentLoaded", () => {
       if (
         !targetId ||
         (currentActiveSection && currentActiveSection.id === targetId)
-      ) {
+      )
         return;
-      }
-
-      // Start the transition
       isTransitioning = true;
-
-      // Remove active class from all main navigation links
       document
         .querySelectorAll(".nav-link")
         .forEach((l) => l.classList.remove("active"));
-      // Add active class to the specific main navigation links that match the target
       document
         .querySelectorAll(`.nav-link[data-target="${targetId}"]`)
         .forEach((l) => l.classList.add("active"));
 
-      // Handle the content section transition
       if (currentActiveSection) {
         currentActiveSection.classList.add("fade-out");
         setTimeout(() => {
           currentActiveSection.classList.remove("active", "fade-out");
           const targetSection = document.getElementById(targetId);
-          if (targetSection) {
-            targetSection.classList.add("active");
-          }
+          if (targetSection) targetSection.classList.add("active");
           document.querySelector(".main-content").scrollTop = 0;
-          // End the transition
           isTransitioning = false;
-        }, 500); // Match CSS animation duration (0.5s)
+        }, 500);
       } else {
-        // This case handles the initial page load if needed, though not typical for this setup
         const targetSection = document.getElementById(targetId);
-        if (targetSection) {
-          targetSection.classList.add("active");
-        }
-        document.querySelector(".main-content").scrollTop = 0;
-        // End the transition
+        if (targetSection) targetSection.classList.add("active");
         isTransitioning = false;
       }
     });
@@ -4317,7 +4306,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!project) return;
     document.getElementById("modal-project-image").src =
       project.imageUrl || "https://via.placeholder.com/400x180";
-    document.getElementById("modal-project-image").alt = project.title;
     document.getElementById("modal-project-title").textContent = project.title;
     document.getElementById("modal-project-description").textContent =
       project.description;
@@ -4340,8 +4328,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === projectModal) closeProjectModal();
   });
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && projectModal.style.display === "flex") {
-      closeProjectModal();
-    }
+    if (e.key === "Escape") closeProjectModal();
   });
 });
+
+
+----- C:/hello/portfolio\scripts\particles.min.js -----
+
+/* -----------------------------------------------
+/* Author : Vincent Garreau  - vincentgarreau.com
+/* MIT license: http://opensource.org/licenses/MIT
+/* Demo / Generator : vincentgarreau.com/particles.js
+/* GitHub : github.com/VincentGarreau/particles.js
+/* How to use? : Check the GitHub README
+/* v2.0.0
+/* ----------------------------------------------- */
+function hexToRgb(e){var a=/^#?([a-f\d])([a-f\d])([a-f\d])$/i;e=e.replace(a,function(e,a,t,i){return a+a+t+t+i+i});var t=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(e);return t?{r:parseInt(t[1],16),g:parseInt(t[2],16),b:parseInt(t[3],16)}:null}function clamp(e,a,t){return Math.min(Math.max(e,a),t)}function isInArray(e,a){return a.indexOf(e)>-1}var pJS=function(e,a){var t=document.querySelector("#"+e+" > .particles-js-canvas-el");this.pJS={canvas:{el:t,w:t.offsetWidth,h:t.offsetHeight},particles:{number:{value:400,density:{enable:!0,value_area:800}},color:{value:"#fff"},shape:{type:"circle",stroke:{width:0,color:"#ff0000"},polygon:{nb_sides:5},image:{src:"",width:100,height:100}},opacity:{value:1,random:!1,anim:{enable:!1,speed:2,opacity_min:0,sync:!1}},size:{value:20,random:!1,anim:{enable:!1,speed:20,size_min:0,sync:!1}},line_linked:{enable:!0,distance:100,color:"#fff",opacity:1,width:1},move:{enable:!0,speed:2,direction:"none",random:!1,straight:!1,out_mode:"out",bounce:!1,attract:{enable:!1,rotateX:3e3,rotateY:3e3}},array:[]},interactivity:{detect_on:"canvas",events:{onhover:{enable:!0,mode:"grab"},onclick:{enable:!0,mode:"push"},resize:!0},modes:{grab:{distance:100,line_linked:{opacity:1}},bubble:{distance:200,size:80,duration:.4},repulse:{distance:200,duration:.4},push:{particles_nb:4},remove:{particles_nb:2}},mouse:{}},retina_detect:!1,fn:{interact:{},modes:{},vendors:{}},tmp:{}};var i=this.pJS;a&&Object.deepExtend(i,a),i.tmp.obj={size_value:i.particles.size.value,size_anim_speed:i.particles.size.anim.speed,move_speed:i.particles.move.speed,line_linked_distance:i.particles.line_linked.distance,line_linked_width:i.particles.line_linked.width,mode_grab_distance:i.interactivity.modes.grab.distance,mode_bubble_distance:i.interactivity.modes.bubble.distance,mode_bubble_size:i.interactivity.modes.bubble.size,mode_repulse_distance:i.interactivity.modes.repulse.distance},i.fn.retinaInit=function(){i.retina_detect&&window.devicePixelRatio>1?(i.canvas.pxratio=window.devicePixelRatio,i.tmp.retina=!0):(i.canvas.pxratio=1,i.tmp.retina=!1),i.canvas.w=i.canvas.el.offsetWidth*i.canvas.pxratio,i.canvas.h=i.canvas.el.offsetHeight*i.canvas.pxratio,i.particles.size.value=i.tmp.obj.size_value*i.canvas.pxratio,i.particles.size.anim.speed=i.tmp.obj.size_anim_speed*i.canvas.pxratio,i.particles.move.speed=i.tmp.obj.move_speed*i.canvas.pxratio,i.particles.line_linked.distance=i.tmp.obj.line_linked_distance*i.canvas.pxratio,i.interactivity.modes.grab.distance=i.tmp.obj.mode_grab_distance*i.canvas.pxratio,i.interactivity.modes.bubble.distance=i.tmp.obj.mode_bubble_distance*i.canvas.pxratio,i.particles.line_linked.width=i.tmp.obj.line_linked_width*i.canvas.pxratio,i.interactivity.modes.bubble.size=i.tmp.obj.mode_bubble_size*i.canvas.pxratio,i.interactivity.modes.repulse.distance=i.tmp.obj.mode_repulse_distance*i.canvas.pxratio},i.fn.canvasInit=function(){i.canvas.ctx=i.canvas.el.getContext("2d")},i.fn.canvasSize=function(){i.canvas.el.width=i.canvas.w,i.canvas.el.height=i.canvas.h,i&&i.interactivity.events.resize&&window.addEventListener("resize",function(){i.canvas.w=i.canvas.el.offsetWidth,i.canvas.h=i.canvas.el.offsetHeight,i.tmp.retina&&(i.canvas.w*=i.canvas.pxratio,i.canvas.h*=i.canvas.pxratio),i.canvas.el.width=i.canvas.w,i.canvas.el.height=i.canvas.h,i.particles.move.enable||(i.fn.particlesEmpty(),i.fn.particlesCreate(),i.fn.particlesDraw(),i.fn.vendors.densityAutoParticles()),i.fn.vendors.densityAutoParticles()})},i.fn.canvasPaint=function(){i.canvas.ctx.fillRect(0,0,i.canvas.w,i.canvas.h)},i.fn.canvasClear=function(){i.canvas.ctx.clearRect(0,0,i.canvas.w,i.canvas.h)},i.fn.particle=function(e,a,t){if(this.radius=(i.particles.size.random?Math.random():1)*i.particles.size.value,i.particles.size.anim.enable&&(this.size_status=!1,this.vs=i.particles.size.anim.speed/100,i.particles.size.anim.sync||(this.vs=this.vs*Math.random())),this.x=t?t.x:Math.random()*i.canvas.w,this.y=t?t.y:Math.random()*i.canvas.h,this.x>i.canvas.w-2*this.radius?this.x=this.x-this.radius:this.x<2*this.radius&&(this.x=this.x+this.radius),this.y>i.canvas.h-2*this.radius?this.y=this.y-this.radius:this.y<2*this.radius&&(this.y=this.y+this.radius),i.particles.move.bounce&&i.fn.vendors.checkOverlap(this,t),this.color={},"object"==typeof e.value)if(e.value instanceof Array){var s=e.value[Math.floor(Math.random()*i.particles.color.value.length)];this.color.rgb=hexToRgb(s)}else void 0!=e.value.r&&void 0!=e.value.g&&void 0!=e.value.b&&(this.color.rgb={r:e.value.r,g:e.value.g,b:e.value.b}),void 0!=e.value.h&&void 0!=e.value.s&&void 0!=e.value.l&&(this.color.hsl={h:e.value.h,s:e.value.s,l:e.value.l});else"random"==e.value?this.color.rgb={r:Math.floor(256*Math.random())+0,g:Math.floor(256*Math.random())+0,b:Math.floor(256*Math.random())+0}:"string"==typeof e.value&&(this.color=e,this.color.rgb=hexToRgb(this.color.value));this.opacity=(i.particles.opacity.random?Math.random():1)*i.particles.opacity.value,i.particles.opacity.anim.enable&&(this.opacity_status=!1,this.vo=i.particles.opacity.anim.speed/100,i.particles.opacity.anim.sync||(this.vo=this.vo*Math.random()));var n={};switch(i.particles.move.direction){case"top":n={x:0,y:-1};break;case"top-right":n={x:.5,y:-.5};break;case"right":n={x:1,y:-0};break;case"bottom-right":n={x:.5,y:.5};break;case"bottom":n={x:0,y:1};break;case"bottom-left":n={x:-.5,y:1};break;case"left":n={x:-1,y:0};break;case"top-left":n={x:-.5,y:-.5};break;default:n={x:0,y:0}}i.particles.move.straight?(this.vx=n.x,this.vy=n.y,i.particles.move.random&&(this.vx=this.vx*Math.random(),this.vy=this.vy*Math.random())):(this.vx=n.x+Math.random()-.5,this.vy=n.y+Math.random()-.5),this.vx_i=this.vx,this.vy_i=this.vy;var r=i.particles.shape.type;if("object"==typeof r){if(r instanceof Array){var c=r[Math.floor(Math.random()*r.length)];this.shape=c}}else this.shape=r;if("image"==this.shape){var o=i.particles.shape;this.img={src:o.image.src,ratio:o.image.width/o.image.height},this.img.ratio||(this.img.ratio=1),"svg"==i.tmp.img_type&&void 0!=i.tmp.source_svg&&(i.fn.vendors.createSvgImg(this),i.tmp.pushing&&(this.img.loaded=!1))}},i.fn.particle.prototype.draw=function(){function e(){i.canvas.ctx.drawImage(r,a.x-t,a.y-t,2*t,2*t/a.img.ratio)}var a=this;if(void 0!=a.radius_bubble)var t=a.radius_bubble;else var t=a.radius;if(void 0!=a.opacity_bubble)var s=a.opacity_bubble;else var s=a.opacity;if(a.color.rgb)var n="rgba("+a.color.rgb.r+","+a.color.rgb.g+","+a.color.rgb.b+","+s+")";else var n="hsla("+a.color.hsl.h+","+a.color.hsl.s+"%,"+a.color.hsl.l+"%,"+s+")";switch(i.canvas.ctx.fillStyle=n,i.canvas.ctx.beginPath(),a.shape){case"circle":i.canvas.ctx.arc(a.x,a.y,t,0,2*Math.PI,!1);break;case"edge":i.canvas.ctx.rect(a.x-t,a.y-t,2*t,2*t);break;case"triangle":i.fn.vendors.drawShape(i.canvas.ctx,a.x-t,a.y+t/1.66,2*t,3,2);break;case"polygon":i.fn.vendors.drawShape(i.canvas.ctx,a.x-t/(i.particles.shape.polygon.nb_sides/3.5),a.y-t/.76,2.66*t/(i.particles.shape.polygon.nb_sides/3),i.particles.shape.polygon.nb_sides,1);break;case"star":i.fn.vendors.drawShape(i.canvas.ctx,a.x-2*t/(i.particles.shape.polygon.nb_sides/4),a.y-t/1.52,2*t*2.66/(i.particles.shape.polygon.nb_sides/3),i.particles.shape.polygon.nb_sides,2);break;case"image":if("svg"==i.tmp.img_type)var r=a.img.obj;else var r=i.tmp.img_obj;r&&e()}i.canvas.ctx.closePath(),i.particles.shape.stroke.width>0&&(i.canvas.ctx.strokeStyle=i.particles.shape.stroke.color,i.canvas.ctx.lineWidth=i.particles.shape.stroke.width,i.canvas.ctx.stroke()),i.canvas.ctx.fill()},i.fn.particlesCreate=function(){for(var e=0;e<i.particles.number.value;e++)i.particles.array.push(new i.fn.particle(i.particles.color,i.particles.opacity.value))},i.fn.particlesUpdate=function(){for(var e=0;e<i.particles.array.length;e++){var a=i.particles.array[e];if(i.particles.move.enable){var t=i.particles.move.speed/2;a.x+=a.vx*t,a.y+=a.vy*t}if(i.particles.opacity.anim.enable&&(1==a.opacity_status?(a.opacity>=i.particles.opacity.value&&(a.opacity_status=!1),a.opacity+=a.vo):(a.opacity<=i.particles.opacity.anim.opacity_min&&(a.opacity_status=!0),a.opacity-=a.vo),a.opacity<0&&(a.opacity=0)),i.particles.size.anim.enable&&(1==a.size_status?(a.radius>=i.particles.size.value&&(a.size_status=!1),a.radius+=a.vs):(a.radius<=i.particles.size.anim.size_min&&(a.size_status=!0),a.radius-=a.vs),a.radius<0&&(a.radius=0)),"bounce"==i.particles.move.out_mode)var s={x_left:a.radius,x_right:i.canvas.w,y_top:a.radius,y_bottom:i.canvas.h};else var s={x_left:-a.radius,x_right:i.canvas.w+a.radius,y_top:-a.radius,y_bottom:i.canvas.h+a.radius};switch(a.x-a.radius>i.canvas.w?(a.x=s.x_left,a.y=Math.random()*i.canvas.h):a.x+a.radius<0&&(a.x=s.x_right,a.y=Math.random()*i.canvas.h),a.y-a.radius>i.canvas.h?(a.y=s.y_top,a.x=Math.random()*i.canvas.w):a.y+a.radius<0&&(a.y=s.y_bottom,a.x=Math.random()*i.canvas.w),i.particles.move.out_mode){case"bounce":a.x+a.radius>i.canvas.w?a.vx=-a.vx:a.x-a.radius<0&&(a.vx=-a.vx),a.y+a.radius>i.canvas.h?a.vy=-a.vy:a.y-a.radius<0&&(a.vy=-a.vy)}if(isInArray("grab",i.interactivity.events.onhover.mode)&&i.fn.modes.grabParticle(a),(isInArray("bubble",i.interactivity.events.onhover.mode)||isInArray("bubble",i.interactivity.events.onclick.mode))&&i.fn.modes.bubbleParticle(a),(isInArray("repulse",i.interactivity.events.onhover.mode)||isInArray("repulse",i.interactivity.events.onclick.mode))&&i.fn.modes.repulseParticle(a),i.particles.line_linked.enable||i.particles.move.attract.enable)for(var n=e+1;n<i.particles.array.length;n++){var r=i.particles.array[n];i.particles.line_linked.enable&&i.fn.interact.linkParticles(a,r),i.particles.move.attract.enable&&i.fn.interact.attractParticles(a,r),i.particles.move.bounce&&i.fn.interact.bounceParticles(a,r)}}},i.fn.particlesDraw=function(){i.canvas.ctx.clearRect(0,0,i.canvas.w,i.canvas.h),i.fn.particlesUpdate();for(var e=0;e<i.particles.array.length;e++){var a=i.particles.array[e];a.draw()}},i.fn.particlesEmpty=function(){i.particles.array=[]},i.fn.particlesRefresh=function(){cancelRequestAnimFrame(i.fn.checkAnimFrame),cancelRequestAnimFrame(i.fn.drawAnimFrame),i.tmp.source_svg=void 0,i.tmp.img_obj=void 0,i.tmp.count_svg=0,i.fn.particlesEmpty(),i.fn.canvasClear(),i.fn.vendors.start()},i.fn.interact.linkParticles=function(e,a){var t=e.x-a.x,s=e.y-a.y,n=Math.sqrt(t*t+s*s);if(n<=i.particles.line_linked.distance){var r=i.particles.line_linked.opacity-n/(1/i.particles.line_linked.opacity)/i.particles.line_linked.distance;if(r>0){var c=i.particles.line_linked.color_rgb_line;i.canvas.ctx.strokeStyle="rgba("+c.r+","+c.g+","+c.b+","+r+")",i.canvas.ctx.lineWidth=i.particles.line_linked.width,i.canvas.ctx.beginPath(),i.canvas.ctx.moveTo(e.x,e.y),i.canvas.ctx.lineTo(a.x,a.y),i.canvas.ctx.stroke(),i.canvas.ctx.closePath()}}},i.fn.interact.attractParticles=function(e,a){var t=e.x-a.x,s=e.y-a.y,n=Math.sqrt(t*t+s*s);if(n<=i.particles.line_linked.distance){var r=t/(1e3*i.particles.move.attract.rotateX),c=s/(1e3*i.particles.move.attract.rotateY);e.vx-=r,e.vy-=c,a.vx+=r,a.vy+=c}},i.fn.interact.bounceParticles=function(e,a){var t=e.x-a.x,i=e.y-a.y,s=Math.sqrt(t*t+i*i),n=e.radius+a.radius;n>=s&&(e.vx=-e.vx,e.vy=-e.vy,a.vx=-a.vx,a.vy=-a.vy)},i.fn.modes.pushParticles=function(e,a){i.tmp.pushing=!0;for(var t=0;e>t;t++)i.particles.array.push(new i.fn.particle(i.particles.color,i.particles.opacity.value,{x:a?a.pos_x:Math.random()*i.canvas.w,y:a?a.pos_y:Math.random()*i.canvas.h})),t==e-1&&(i.particles.move.enable||i.fn.particlesDraw(),i.tmp.pushing=!1)},i.fn.modes.removeParticles=function(e){i.particles.array.splice(0,e),i.particles.move.enable||i.fn.particlesDraw()},i.fn.modes.bubbleParticle=function(e){function a(){e.opacity_bubble=e.opacity,e.radius_bubble=e.radius}function t(a,t,s,n,c){if(a!=t)if(i.tmp.bubble_duration_end){if(void 0!=s){var o=n-p*(n-a)/i.interactivity.modes.bubble.duration,l=a-o;d=a+l,"size"==c&&(e.radius_bubble=d),"opacity"==c&&(e.opacity_bubble=d)}}else if(r<=i.interactivity.modes.bubble.distance){if(void 0!=s)var v=s;else var v=n;if(v!=a){var d=n-p*(n-a)/i.interactivity.modes.bubble.duration;"size"==c&&(e.radius_bubble=d),"opacity"==c&&(e.opacity_bubble=d)}}else"size"==c&&(e.radius_bubble=void 0),"opacity"==c&&(e.opacity_bubble=void 0)}if(i.interactivity.events.onhover.enable&&isInArray("bubble",i.interactivity.events.onhover.mode)){var s=e.x-i.interactivity.mouse.pos_x,n=e.y-i.interactivity.mouse.pos_y,r=Math.sqrt(s*s+n*n),c=1-r/i.interactivity.modes.bubble.distance;if(r<=i.interactivity.modes.bubble.distance){if(c>=0&&"mousemove"==i.interactivity.status){if(i.interactivity.modes.bubble.size!=i.particles.size.value)if(i.interactivity.modes.bubble.size>i.particles.size.value){var o=e.radius+i.interactivity.modes.bubble.size*c;o>=0&&(e.radius_bubble=o)}else{var l=e.radius-i.interactivity.modes.bubble.size,o=e.radius-l*c;o>0?e.radius_bubble=o:e.radius_bubble=0}if(i.interactivity.modes.bubble.opacity!=i.particles.opacity.value)if(i.interactivity.modes.bubble.opacity>i.particles.opacity.value){var v=i.interactivity.modes.bubble.opacity*c;v>e.opacity&&v<=i.interactivity.modes.bubble.opacity&&(e.opacity_bubble=v)}else{var v=e.opacity-(i.particles.opacity.value-i.interactivity.modes.bubble.opacity)*c;v<e.opacity&&v>=i.interactivity.modes.bubble.opacity&&(e.opacity_bubble=v)}}}else a();"mouseleave"==i.interactivity.status&&a()}else if(i.interactivity.events.onclick.enable&&isInArray("bubble",i.interactivity.events.onclick.mode)){if(i.tmp.bubble_clicking){var s=e.x-i.interactivity.mouse.click_pos_x,n=e.y-i.interactivity.mouse.click_pos_y,r=Math.sqrt(s*s+n*n),p=((new Date).getTime()-i.interactivity.mouse.click_time)/1e3;p>i.interactivity.modes.bubble.duration&&(i.tmp.bubble_duration_end=!0),p>2*i.interactivity.modes.bubble.duration&&(i.tmp.bubble_clicking=!1,i.tmp.bubble_duration_end=!1)}i.tmp.bubble_clicking&&(t(i.interactivity.modes.bubble.size,i.particles.size.value,e.radius_bubble,e.radius,"size"),t(i.interactivity.modes.bubble.opacity,i.particles.opacity.value,e.opacity_bubble,e.opacity,"opacity"))}},i.fn.modes.repulseParticle=function(e){function a(){var a=Math.atan2(d,p);if(e.vx=u*Math.cos(a),e.vy=u*Math.sin(a),"bounce"==i.particles.move.out_mode){var t={x:e.x+e.vx,y:e.y+e.vy};t.x+e.radius>i.canvas.w?e.vx=-e.vx:t.x-e.radius<0&&(e.vx=-e.vx),t.y+e.radius>i.canvas.h?e.vy=-e.vy:t.y-e.radius<0&&(e.vy=-e.vy)}}if(i.interactivity.events.onhover.enable&&isInArray("repulse",i.interactivity.events.onhover.mode)&&"mousemove"==i.interactivity.status){var t=e.x-i.interactivity.mouse.pos_x,s=e.y-i.interactivity.mouse.pos_y,n=Math.sqrt(t*t+s*s),r={x:t/n,y:s/n},c=i.interactivity.modes.repulse.distance,o=100,l=clamp(1/c*(-1*Math.pow(n/c,2)+1)*c*o,0,50),v={x:e.x+r.x*l,y:e.y+r.y*l};"bounce"==i.particles.move.out_mode?(v.x-e.radius>0&&v.x+e.radius<i.canvas.w&&(e.x=v.x),v.y-e.radius>0&&v.y+e.radius<i.canvas.h&&(e.y=v.y)):(e.x=v.x,e.y=v.y)}else if(i.interactivity.events.onclick.enable&&isInArray("repulse",i.interactivity.events.onclick.mode))if(i.tmp.repulse_finish||(i.tmp.repulse_count++,i.tmp.repulse_count==i.particles.array.length&&(i.tmp.repulse_finish=!0)),i.tmp.repulse_clicking){var c=Math.pow(i.interactivity.modes.repulse.distance/6,3),p=i.interactivity.mouse.click_pos_x-e.x,d=i.interactivity.mouse.click_pos_y-e.y,m=p*p+d*d,u=-c/m*1;c>=m&&a()}else 0==i.tmp.repulse_clicking&&(e.vx=e.vx_i,e.vy=e.vy_i)},i.fn.modes.grabParticle=function(e){if(i.interactivity.events.onhover.enable&&"mousemove"==i.interactivity.status){var a=e.x-i.interactivity.mouse.pos_x,t=e.y-i.interactivity.mouse.pos_y,s=Math.sqrt(a*a+t*t);if(s<=i.interactivity.modes.grab.distance){var n=i.interactivity.modes.grab.line_linked.opacity-s/(1/i.interactivity.modes.grab.line_linked.opacity)/i.interactivity.modes.grab.distance;if(n>0){var r=i.particles.line_linked.color_rgb_line;i.canvas.ctx.strokeStyle="rgba("+r.r+","+r.g+","+r.b+","+n+")",i.canvas.ctx.lineWidth=i.particles.line_linked.width,i.canvas.ctx.beginPath(),i.canvas.ctx.moveTo(e.x,e.y),i.canvas.ctx.lineTo(i.interactivity.mouse.pos_x,i.interactivity.mouse.pos_y),i.canvas.ctx.stroke(),i.canvas.ctx.closePath()}}}},i.fn.vendors.eventsListeners=function(){"window"==i.interactivity.detect_on?i.interactivity.el=window:i.interactivity.el=i.canvas.el,(i.interactivity.events.onhover.enable||i.interactivity.events.onclick.enable)&&(i.interactivity.el.addEventListener("mousemove",function(e){if(i.interactivity.el==window)var a=e.clientX,t=e.clientY;else var a=e.offsetX||e.clientX,t=e.offsetY||e.clientY;i.interactivity.mouse.pos_x=a,i.interactivity.mouse.pos_y=t,i.tmp.retina&&(i.interactivity.mouse.pos_x*=i.canvas.pxratio,i.interactivity.mouse.pos_y*=i.canvas.pxratio),i.interactivity.status="mousemove"}),i.interactivity.el.addEventListener("mouseleave",function(e){i.interactivity.mouse.pos_x=null,i.interactivity.mouse.pos_y=null,i.interactivity.status="mouseleave"})),i.interactivity.events.onclick.enable&&i.interactivity.el.addEventListener("click",function(){if(i.interactivity.mouse.click_pos_x=i.interactivity.mouse.pos_x,i.interactivity.mouse.click_pos_y=i.interactivity.mouse.pos_y,i.interactivity.mouse.click_time=(new Date).getTime(),i.interactivity.events.onclick.enable)switch(i.interactivity.events.onclick.mode){case"push":i.particles.move.enable?i.fn.modes.pushParticles(i.interactivity.modes.push.particles_nb,i.interactivity.mouse):1==i.interactivity.modes.push.particles_nb?i.fn.modes.pushParticles(i.interactivity.modes.push.particles_nb,i.interactivity.mouse):i.interactivity.modes.push.particles_nb>1&&i.fn.modes.pushParticles(i.interactivity.modes.push.particles_nb);break;case"remove":i.fn.modes.removeParticles(i.interactivity.modes.remove.particles_nb);break;case"bubble":i.tmp.bubble_clicking=!0;break;case"repulse":i.tmp.repulse_clicking=!0,i.tmp.repulse_count=0,i.tmp.repulse_finish=!1,setTimeout(function(){i.tmp.repulse_clicking=!1},1e3*i.interactivity.modes.repulse.duration)}})},i.fn.vendors.densityAutoParticles=function(){if(i.particles.number.density.enable){var e=i.canvas.el.width*i.canvas.el.height/1e3;i.tmp.retina&&(e/=2*i.canvas.pxratio);var a=e*i.particles.number.value/i.particles.number.density.value_area,t=i.particles.array.length-a;0>t?i.fn.modes.pushParticles(Math.abs(t)):i.fn.modes.removeParticles(t)}},i.fn.vendors.checkOverlap=function(e,a){for(var t=0;t<i.particles.array.length;t++){var s=i.particles.array[t],n=e.x-s.x,r=e.y-s.y,c=Math.sqrt(n*n+r*r);c<=e.radius+s.radius&&(e.x=a?a.x:Math.random()*i.canvas.w,e.y=a?a.y:Math.random()*i.canvas.h,i.fn.vendors.checkOverlap(e))}},i.fn.vendors.createSvgImg=function(e){var a=i.tmp.source_svg,t=/#([0-9A-F]{3,6})/gi,s=a.replace(t,function(a,t,i,s){if(e.color.rgb)var n="rgba("+e.color.rgb.r+","+e.color.rgb.g+","+e.color.rgb.b+","+e.opacity+")";else var n="hsla("+e.color.hsl.h+","+e.color.hsl.s+"%,"+e.color.hsl.l+"%,"+e.opacity+")";return n}),n=new Blob([s],{type:"image/svg+xml;charset=utf-8"}),r=window.URL||window.webkitURL||window,c=r.createObjectURL(n),o=new Image;o.addEventListener("load",function(){e.img.obj=o,e.img.loaded=!0,r.revokeObjectURL(c),i.tmp.count_svg++}),o.src=c},i.fn.vendors.destroypJS=function(){cancelAnimationFrame(i.fn.drawAnimFrame),t.remove(),pJSDom=null},i.fn.vendors.drawShape=function(e,a,t,i,s,n){var r=s*n,c=s/n,o=180*(c-2)/c,l=Math.PI-Math.PI*o/180;e.save(),e.beginPath(),e.translate(a,t),e.moveTo(0,0);for(var v=0;r>v;v++)e.lineTo(i,0),e.translate(i,0),e.rotate(l);e.fill(),e.restore()},i.fn.vendors.exportImg=function(){window.open(i.canvas.el.toDataURL("image/png"),"_blank")},i.fn.vendors.loadImg=function(e){if(i.tmp.img_error=void 0,""!=i.particles.shape.image.src)if("svg"==e){var a=new XMLHttpRequest;a.open("GET",i.particles.shape.image.src),a.onreadystatechange=function(e){4==a.readyState&&(200==a.status?(i.tmp.source_svg=e.currentTarget.response,i.fn.vendors.checkBeforeDraw()):(console.log("Error pJS - Image not found"),i.tmp.img_error=!0))},a.send()}else{var t=new Image;t.addEventListener("load",function(){i.tmp.img_obj=t,i.fn.vendors.checkBeforeDraw()}),t.src=i.particles.shape.image.src}else console.log("Error pJS - No image.src"),i.tmp.img_error=!0},i.fn.vendors.draw=function(){"image"==i.particles.shape.type?"svg"==i.tmp.img_type?i.tmp.count_svg>=i.particles.number.value?(i.fn.particlesDraw(),i.particles.move.enable?i.fn.drawAnimFrame=requestAnimFrame(i.fn.vendors.draw):cancelRequestAnimFrame(i.fn.drawAnimFrame)):i.tmp.img_error||(i.fn.drawAnimFrame=requestAnimFrame(i.fn.vendors.draw)):void 0!=i.tmp.img_obj?(i.fn.particlesDraw(),i.particles.move.enable?i.fn.drawAnimFrame=requestAnimFrame(i.fn.vendors.draw):cancelRequestAnimFrame(i.fn.drawAnimFrame)):i.tmp.img_error||(i.fn.drawAnimFrame=requestAnimFrame(i.fn.vendors.draw)):(i.fn.particlesDraw(),i.particles.move.enable?i.fn.drawAnimFrame=requestAnimFrame(i.fn.vendors.draw):cancelRequestAnimFrame(i.fn.drawAnimFrame))},i.fn.vendors.checkBeforeDraw=function(){"image"==i.particles.shape.type?"svg"==i.tmp.img_type&&void 0==i.tmp.source_svg?i.tmp.checkAnimFrame=requestAnimFrame(check):(cancelRequestAnimFrame(i.tmp.checkAnimFrame),i.tmp.img_error||(i.fn.vendors.init(),i.fn.vendors.draw())):(i.fn.vendors.init(),i.fn.vendors.draw())},i.fn.vendors.init=function(){i.fn.retinaInit(),i.fn.canvasInit(),i.fn.canvasSize(),i.fn.canvasPaint(),i.fn.particlesCreate(),i.fn.vendors.densityAutoParticles(),i.particles.line_linked.color_rgb_line=hexToRgb(i.particles.line_linked.color)},i.fn.vendors.start=function(){isInArray("image",i.particles.shape.type)?(i.tmp.img_type=i.particles.shape.image.src.substr(i.particles.shape.image.src.length-3),i.fn.vendors.loadImg(i.tmp.img_type)):i.fn.vendors.checkBeforeDraw()},i.fn.vendors.eventsListeners(),i.fn.vendors.start()};Object.deepExtend=function(e,a){for(var t in a)a[t]&&a[t].constructor&&a[t].constructor===Object?(e[t]=e[t]||{},arguments.callee(e[t],a[t])):e[t]=a[t];return e},window.requestAnimFrame=function(){return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||window.oRequestAnimationFrame||window.msRequestAnimationFrame||function(e){window.setTimeout(e,1e3/60)}}(),window.cancelRequestAnimFrame=function(){return window.cancelAnimationFrame||window.webkitCancelRequestAnimationFrame||window.mozCancelRequestAnimationFrame||window.oCancelRequestAnimationFrame||window.msCancelRequestAnimationFrame||clearTimeout}(),window.pJSDom=[],window.particlesJS=function(e,a){"string"!=typeof e&&(a=e,e="particles-js"),e||(e="particles-js");var t=document.getElementById(e),i="particles-js-canvas-el",s=t.getElementsByClassName(i);if(s.length)for(;s.length>0;)t.removeChild(s[0]);var n=document.createElement("canvas");n.className=i,n.style.width="100%",n.style.height="100%";var r=document.getElementById(e).appendChild(n);null!=r&&pJSDom.push(new pJS(e,a))},window.particlesJS.load=function(e,a,t){var i=new XMLHttpRequest;i.open("GET",a),i.onreadystatechange=function(a){if(4==i.readyState)if(200==i.status){var s=JSON.parse(a.currentTarget.response);window.particlesJS(e,s),t&&t()}else console.log("Error pJS - XMLHttpRequest status: "+i.status),console.log("Error pJS - File config not found")},i.send()};

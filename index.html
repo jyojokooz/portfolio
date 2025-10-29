@@ -75,7 +75,14 @@
         font-family: var(--font-family);
         color: var(--text-color);
         background-color: #f8f9fa;
+
+        /* MODIFICATION: Added background image for the page */
+        background-image: url("assets/background.jpg"); /* <-- CHANGE THIS to your background image path */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         background-attachment: fixed;
+
         transition: background-color 0.4s ease-in-out;
         position: relative;
         min-height: 100vh;
@@ -143,7 +150,6 @@
         align-items: center;
         justify-content: space-between;
         flex-shrink: 0;
-        background: var(--sidebar-bg);
         position: relative;
         z-index: 10;
       }
@@ -417,6 +423,11 @@
       .home-card {
         max-width: 500px;
         margin: 4rem auto;
+        /* MODIFICATION: Changed background-color to background-image */
+        background-image: url("assets/card-background.png"); /* Assumed image path */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
       }
       .profile-image-container {
         background: var(--gradient-primary);
@@ -723,14 +734,14 @@
         }
         .mobile-header .logo {
           margin: 0;
-          color: var(--text-color);
+          color: #ffffff;
           text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
           font-weight: 900;
         }
         #mobile-theme-toggle {
           background: none;
           border: none;
-          color: var(--text-color);
+          color: #ffffff;
           font-size: 1.4rem;
           cursor: pointer;
           padding: 0.5rem;
@@ -742,7 +753,6 @@
           left: 0;
           right: 0;
           z-index: 1001;
-          background: var(--card-bg-color);
           justify-content: space-around;
           padding: 0.5rem 0;
           border-top: 1px solid rgba(0, 0, 0, 0.1);
