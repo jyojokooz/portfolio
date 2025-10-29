@@ -610,7 +610,14 @@ export { db, auth };
         font-family: var(--font-family);
         color: var(--text-color);
         background-color: #f8f9fa;
+
+        /* MODIFICATION: Added background image for the page */
+        background-image: url("assets/background.jpg"); /* <-- CHANGE THIS to your background image path */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         background-attachment: fixed;
+
         transition: background-color 0.4s ease-in-out;
         position: relative;
         min-height: 100vh;
@@ -678,7 +685,6 @@ export { db, auth };
         align-items: center;
         justify-content: space-between;
         flex-shrink: 0;
-        background: var(--sidebar-bg);
         position: relative;
         z-index: 10;
       }
@@ -952,6 +958,11 @@ export { db, auth };
       .home-card {
         max-width: 500px;
         margin: 4rem auto;
+        /* MODIFICATION: Changed background-color to background-image */
+        background-image: url("assets/card-background.png"); /* Assumed image path */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
       }
       .profile-image-container {
         background: var(--gradient-primary);
@@ -1258,14 +1269,14 @@ export { db, auth };
         }
         .mobile-header .logo {
           margin: 0;
-          color: var(--text-color);
+          color: #ffffff;
           text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
           font-weight: 900;
         }
         #mobile-theme-toggle {
           background: none;
           border: none;
-          color: var(--text-color);
+          color: #ffffff;
           font-size: 1.4rem;
           cursor: pointer;
           padding: 0.5rem;
@@ -1277,7 +1288,6 @@ export { db, auth };
           left: 0;
           right: 0;
           z-index: 1001;
-          background: var(--card-bg-color);
           justify-content: space-around;
           padding: 0.5rem 0;
           border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -1746,7 +1756,7 @@ export { db, auth };
 
 ----- C:/hello/portfolio\.git\COMMIT_EDITMSG -----
 
-hd
+ha
 
 
 ----- C:/hello/portfolio\.git\config -----
@@ -1774,7 +1784,7 @@ Unnamed repository; edit this file 'description' to name the repository.
 
 ----- C:/hello/portfolio\.git\FETCH_HEAD -----
 
-173a7e572208cd442016de2633511f8167e8abcd		branch 'master' of https://github.com/jyojokooz/portfolio
+b19fff947159e1e6d3d1cf136e0add3cc2c76d26		branch 'master' of https://github.com/jyojokooz/portfolio
 
 
 ----- C:/hello/portfolio\.git\HEAD -----
@@ -1784,7 +1794,7 @@ ref: refs/heads/master
 
 ----- C:/hello/portfolio\.git\ORIG_HEAD -----
 
-173a7e572208cd442016de2633511f8167e8abcd
+b19fff947159e1e6d3d1cf136e0add3cc2c76d26
 
 
 ----- C:/hello/portfolio\.git\hooks\applypatch-msg.sample -----
@@ -2763,6 +2773,7 @@ a6fb9962f7fc1e2eab8962d99701c44565e2d3bb 1e67d4b0dc29efe43ee560695b529d5ddb22620
 88560c07e8fe358c8c1510c667a0849deeda4b5b acff032c5c29dc4eff162a336f73fd86bb23bad7 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761672083 +0530	commit: gg
 acff032c5c29dc4eff162a336f73fd86bb23bad7 b9773cc536f60c3d0bb39a317e204c62ffc9a48a JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674065 +0530	commit: ha
 b9773cc536f60c3d0bb39a317e204c62ffc9a48a 173a7e572208cd442016de2633511f8167e8abcd JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674320 +0530	commit: hd
+173a7e572208cd442016de2633511f8167e8abcd b19fff947159e1e6d3d1cf136e0add3cc2c76d26 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761715549 +0530	commit: ha
 
 
 ----- C:/hello/portfolio\.git\logs\refs\heads\master -----
@@ -2807,6 +2818,7 @@ a6fb9962f7fc1e2eab8962d99701c44565e2d3bb 1e67d4b0dc29efe43ee560695b529d5ddb22620
 88560c07e8fe358c8c1510c667a0849deeda4b5b acff032c5c29dc4eff162a336f73fd86bb23bad7 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761672083 +0530	commit: gg
 acff032c5c29dc4eff162a336f73fd86bb23bad7 b9773cc536f60c3d0bb39a317e204c62ffc9a48a JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674065 +0530	commit: ha
 b9773cc536f60c3d0bb39a317e204c62ffc9a48a 173a7e572208cd442016de2633511f8167e8abcd JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674320 +0530	commit: hd
+173a7e572208cd442016de2633511f8167e8abcd b19fff947159e1e6d3d1cf136e0add3cc2c76d26 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761715549 +0530	commit: ha
 
 
 ----- C:/hello/portfolio\.git\logs\refs\remotes\origin\HEAD -----
@@ -2856,11 +2868,12 @@ a6fb9962f7fc1e2eab8962d99701c44565e2d3bb 1e67d4b0dc29efe43ee560695b529d5ddb22620
 88560c07e8fe358c8c1510c667a0849deeda4b5b acff032c5c29dc4eff162a336f73fd86bb23bad7 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761672089 +0530	update by push
 acff032c5c29dc4eff162a336f73fd86bb23bad7 b9773cc536f60c3d0bb39a317e204c62ffc9a48a JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674071 +0530	update by push
 b9773cc536f60c3d0bb39a317e204c62ffc9a48a 173a7e572208cd442016de2633511f8167e8abcd JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674326 +0530	update by push
+173a7e572208cd442016de2633511f8167e8abcd b19fff947159e1e6d3d1cf136e0add3cc2c76d26 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761715556 +0530	update by push
 
 
 ----- C:/hello/portfolio\.git\refs\heads\master -----
 
-173a7e572208cd442016de2633511f8167e8abcd
+b19fff947159e1e6d3d1cf136e0add3cc2c76d26
 
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\HEAD -----
@@ -2870,7 +2883,7 @@ ref: refs/remotes/origin/master
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\master -----
 
-173a7e572208cd442016de2633511f8167e8abcd
+b19fff947159e1e6d3d1cf136e0add3cc2c76d26
 
 
 ----- C:/hello/portfolio\.vscode\launch.json -----
