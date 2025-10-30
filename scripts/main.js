@@ -9,8 +9,104 @@ import {
 
 let projectsData = new Map();
 let loadingAnimation = null;
+let themeSettings = {}; // Store fetched theme settings globally
 
-document.addEventListener("DOMContentLoaded", () => {
+// --- UTILITY FUNCTIONS ---
+function hexToLottieColor(hex) {
+  if (!hex || typeof hex !== "string" || hex.charAt(0) !== "#") {
+    return [0, 0, 0]; // Default to black if invalid hex
+  }
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  return [r, g, b, 1]; // Return as [r, g, b, alpha]
+}
+
+// Function to customize the raw Lottie JSON data before it's loaded
+function customizeLottieData(animationData, primaryColor, accentColor) {
+  const primary = hexToLottieColor(primaryColor);
+  const accent = hexToLottieColor(accentColor);
+
+  // Find and update colors in the main layers array
+  animationData.layers.forEach((layer) => {
+    // JSR Text Layer
+    if (layer.nm === "JSR Text" && layer.t?.d?.k[0]?.s) {
+      layer.t.d.k[0].s.fc = primary;
+    }
+    // Spinner Stroke
+    else if (
+      layer.nm === "Capa de formas 4" &&
+      layer.shapes?.[0]?.it?.[1]?.c?.k
+    ) {
+      layer.shapes[0].it[1].c.k = accent;
+    }
+    // Shapes that should use the primary color
+    else if (
+      ["Capa de formas 5", "Capa de formas 3", "Capa de formas 1"].includes(
+        layer.nm
+      ) &&
+      layer.shapes?.[0]?.it?.[1]?.c?.k
+    ) {
+      layer.shapes[0].it[1].c.k = primary; // Set fill color
+    }
+  });
+
+  // Find and update colors in the assets array (for pre-compositions)
+  animationData.assets.forEach((asset) => {
+    if (asset.layers) {
+      asset.layers.forEach((layer) => {
+        // Shape that should use the primary color
+        if (
+          layer.nm === "Capa de formas 12" &&
+          layer.shapes?.[0]?.it?.[1]?.c?.k
+        ) {
+          layer.shapes[0].it[1].c.k = primary;
+        }
+        // Shape that should use the accent color
+        else if (
+          layer.nm === "Capa de formas 2" &&
+          layer.shapes?.[0]?.it?.[1]?.c?.k
+        ) {
+          layer.shapes[0].it[1].c.k = accent;
+        }
+      });
+    }
+  });
+
+  return animationData;
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const loadingScreen = document.getElementById("loading-screen");
+  const portfolioContainer = document.getElementById("portfolio-container");
+
+  // --- 1. FETCH ALL THEME SETTINGS FIRST ---
+  try {
+    const themeDocRef = doc(db, "portfolio", "theme");
+    const themeDocSnap = await getDoc(themeDocRef);
+    if (themeDocSnap.exists()) {
+      themeSettings = themeDocSnap.data();
+    } else {
+      console.log("No theme document found, using defaults.");
+      themeSettings = {
+        // Default fallback
+        loadingColors: {
+          light: { bg: "#f8f9fa", primary: "#20272c", accent: "#007bff" },
+          dark: { bg: "#1a1a2e", primary: "#ffffff", accent: "#4facfe" },
+        },
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching theme settings:", error);
+    // Provide default settings on error to prevent site from breaking
+    themeSettings = {
+      loadingColors: {
+        light: { bg: "#f8f9fa", primary: "#20272c", accent: "#007bff" },
+        dark: { bg: "#1a1a2e", primary: "#ffffff", accent: "#4facfe" },
+      },
+    };
+  }
+
   // Set Contact Email
   const userEmail = "joelraphael6425@gmail.com";
   const contactEmailLink = document.getElementById("contact-email");
@@ -19,36 +115,23 @@ document.addEventListener("DOMContentLoaded", () => {
     contactEmailLink.textContent = userEmail;
   }
 
-  // --- 1. DATA FETCHING & POPULATING FUNCTIONS ---
+  // --- 2. DATA FETCHING & POPULATING FUNCTIONS ---
 
-  async function applyThemeSettings() {
-    try {
-      const docRef = doc(db, "portfolio", "theme");
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        const root = document.documentElement;
-
-        const gradients = {
-          primary: "--gradient-primary",
-          sunset: "--gradient-sunset",
-          ocean: "--gradient-ocean",
-          fire: "--gradient-fire",
-          aurora: "--gradient-aurora",
-          cosmic: "--gradient-cosmic",
-        };
-
-        for (const [key, cssVar] of Object.entries(gradients)) {
-          if (data[key]) {
-            root.style.setProperty(cssVar, data[key]);
-          }
-        }
-      } else {
-        console.log("No theme document found, using default styles.");
+  function applyThemeGradients() {
+    if (!themeSettings) return;
+    const root = document.documentElement;
+    const gradients = {
+      primary: "--gradient-primary",
+      sunset: "--gradient-sunset",
+      ocean: "--gradient-ocean",
+      fire: "--gradient-fire",
+      aurora: "--gradient-aurora",
+      cosmic: "--gradient-cosmic",
+    };
+    for (const [key, cssVar] of Object.entries(gradients)) {
+      if (themeSettings[key]) {
+        root.style.setProperty(cssVar, themeSettings[key]);
       }
-    } catch (error) {
-      console.error("Error fetching theme settings:", error);
     }
   }
 
@@ -70,33 +153,25 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("profile-bio").textContent =
           data.bio || "Your bio goes here.";
         document.getElementById("resume-button").href = data.resumeUrl || "#";
-
         if (data.backgroundUrl) {
           document.body.style.backgroundImage = `url('${data.backgroundUrl}')`;
         }
-
-        const socialLinksHTML = `
-          ${
-            data.socials?.github
-              ? `<a href="${data.socials.github}" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>`
-              : ""
-          }
-          ${
-            data.socials?.instagram
-              ? `<a href="${data.socials.instagram}" title="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>`
-              : ""
-          }
-          ${
-            data.socials?.discord
-              ? `<a href="${data.socials.discord}" title="Discord" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>`
-              : ""
-          }
-        `;
+        const socialLinksHTML = `${
+          data.socials?.github
+            ? `<a href="${data.socials.github}" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>`
+            : ""
+        } ${
+          data.socials?.instagram
+            ? `<a href="${data.socials.instagram}" title="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>`
+            : ""
+        } ${
+          data.socials?.discord
+            ? `<a href="${data.socials.discord}" title="Discord" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>`
+            : ""
+        }`;
         document.getElementById("social-links").innerHTML = socialLinksHTML;
         document.getElementById("contact-social-icons").innerHTML =
           socialLinksHTML;
-      } else {
-        console.log("No profile document found!");
       }
     } catch (error) {
       console.error("Error fetching profile data:", error);
@@ -110,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
       projectsData.clear();
       const querySnapshot = await getDocs(collection(db, "projects"));
       const placeholderImg = "https://via.placeholder.com/400x180";
-
       const truncateText = (text, maxLength) => {
         if (!text || text.length <= maxLength) return text;
         const lastSpace = text.lastIndexOf(" ", maxLength);
@@ -121,32 +195,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const project = doc.data();
         projectsData.set(doc.id, project);
         const shortDescription = truncateText(project.description, 100);
-
-        const projectCard = `
-          <div class="item-card">
-              <img src="${
-                project.imageUrl ? project.imageUrl : placeholderImg
-              }" alt="${project.title}" />
-              <div class="item-card-content">
-                <h3>${project.title}</h3>
-                <p>${shortDescription}</p>
-              </div>
-              <div class="button-group">
-                  ${
-                    project.liveUrl
-                      ? `<a href="${project.liveUrl}" class="btn-small" target="_blank" rel="noopener">Live</a>`
-                      : ""
-                  }
-                  ${
-                    project.codeUrl
-                      ? `<a href="${project.codeUrl}" class="btn-small" target="_blank" rel="noopener">Code</a>`
-                      : ""
-                  }
-                  <button class="btn-small view-details-btn" data-project-id="${
-                    doc.id
-                  }">Details</button>
-              </div>
-          </div>`;
+        const projectCard = `<div class="item-card"><img src="${
+          project.imageUrl || placeholderImg
+        }" alt="${project.title}" /><div class="item-card-content"><h3>${
+          project.title
+        }</h3><p>${shortDescription}</p></div><div class="button-group">${
+          project.liveUrl
+            ? `<a href="${project.liveUrl}" class="btn-small" target="_blank" rel="noopener">Live</a>`
+            : ""
+        } ${
+          project.codeUrl
+            ? `<a href="${project.codeUrl}" class="btn-small" target="_blank" rel="noopener">Code</a>`
+            : ""
+        } <button class="btn-small view-details-btn" data-project-id="${
+          doc.id
+        }">Details</button></div></div>`;
         projectsGrid.innerHTML += projectCard;
       });
     } catch (error) {
@@ -161,12 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const querySnapshot = await getDocs(collection(db, "skills"));
       querySnapshot.forEach((doc) => {
         const skill = doc.data();
-        const skillCard = `
-          <div class="skill-card">
-              <i class="${skill.iconClass}"></i>
-              <span>${skill.name}</span>
-          </div>
-        `;
+        const skillCard = `<div class="skill-card"><i class="${skill.iconClass}"></i><span>${skill.name}</span></div>`;
         skillsGrid.innerHTML += skillCard;
       });
     } catch (error) {
@@ -183,23 +241,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       querySnapshot.forEach((doc) => {
         const cert = doc.data();
-        const certCard = `
-          <div class="item-card">
-              <img src="${
-                cert.imageUrl ? cert.imageUrl : placeholderImg
-              }" alt="${cert.title}" />
-              <div class="item-card-content">
-                <h3>${cert.title}</h3>
-                <p>Issued by: ${cert.issuer}</p>
-              </div>
-              <div class="button-group">
-                  ${
-                    cert.verifyUrl
-                      ? `<a href="${cert.verifyUrl}" class="btn-small" target="_blank" rel="noopener">Verify</a>`
-                      : ""
-                  }
-              </div>
-          </div>`;
+        const certCard = `<div class="item-card"><img src="${
+          cert.imageUrl || placeholderImg
+        }" alt="${cert.title}" /><div class="item-card-content"><h3>${
+          cert.title
+        }</h3><p>Issued by: ${cert.issuer}</p></div><div class="button-group">${
+          cert.verifyUrl
+            ? `<a href="${cert.verifyUrl}" class="btn-small" target="_blank" rel="noopener">Verify</a>`
+            : ""
+        }</div></div>`;
         certificatesGrid.innerHTML += certCard;
       });
     } catch (error) {
@@ -207,903 +257,880 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Function to update Lottie animation colors based on theme
-  function updateLottieColors(isDarkMode) {
-    if (!loadingAnimation) return;
-
-    try {
-      const color = isDarkMode ? [1, 1, 1] : [0.125, 0.153, 0.173];
-
-      // Update all layers in the animation
-      loadingAnimation.renderer.elements.forEach((element) => {
-        if (element.data && element.data.ty === 5) {
-          // Text layer
-          if (element.textProperty && element.textProperty.currentData) {
-            element.textProperty.currentData.fc = color;
-          }
-        } else if (element.data && element.data.shapes) {
-          // Shape layers
-          element.data.shapes.forEach((shape) => {
-            if (shape.it) {
-              shape.it.forEach((item) => {
-                if (item.ty === "fl" && item.c) {
-                  // Fill color
-                  item.c.k = color;
-                } else if (item.ty === "st" && item.c) {
-                  // Stroke color
-                  item.c.k = color;
-                }
-              });
-            }
-          });
-        }
-      });
-
-      // Force re-render
-      loadingAnimation.renderer.renderFrame(loadingAnimation.currentFrame);
-    } catch (error) {
-      console.error("Error updating Lottie colors:", error);
-    }
-  }
-
-  // --- A. LOADING SCREEN & DATA INITIALIZATION ---
-  const loadingScreen = document.getElementById("loading-screen");
-  const portfolioContainer = document.getElementById("portfolio-container");
-
-  // Determine initial theme
+  // --- 3. LOADING SCREEN & LOTTIE INITIALIZATION ---
   const savedTheme = localStorage.getItem("theme") || "dark";
   const isDarkMode = savedTheme === "dark";
-  const initialColor = isDarkMode ? [1, 1, 1] : [0.125, 0.153, 0.173];
+  const loadingColors = isDarkMode
+    ? themeSettings.loadingColors?.dark || {
+        bg: "#1a1a2e",
+        primary: "#ffffff",
+        accent: "#4facfe",
+      }
+    : themeSettings.loadingColors?.light || {
+        bg: "#f8f9fa",
+        primary: "#20272c",
+        accent: "#007bff",
+      };
+
+  // Set loading screen BG color immediately
+  loadingScreen.style.backgroundColor = loadingColors.bg;
+
+  let animationJson = {
+    v: "4.10.1",
+    fr: 24,
+    ip: 0,
+    op: 72,
+    w: 400,
+    h: 400,
+    nm: "Comp 1",
+    ddd: 0,
+    assets: [
+      {
+        id: "comp_0",
+        layers: [
+          {
+            ddd: 0,
+            ind: 1,
+            ty: 4,
+            nm: "Capa de formas 12",
+            sr: 1,
+            ks: {
+              o: { a: 0, k: 100, ix: 11 },
+              r: { a: 0, k: 0, ix: 10 },
+              p: {
+                a: 1,
+                k: [
+                  {
+                    i: { x: 0.833, y: 0.833 },
+                    o: { x: 0.167, y: 0.167 },
+                    n: "0p833_0p833_0p167_0p167",
+                    t: 24,
+                    s: [81.5, 370.25, 0],
+                    e: [445.5, 199.25, 0],
+                    to: [60.6666679382324, -28.5, 0],
+                    ti: [-60.6666679382324, 28.5, 0],
+                  },
+                  { t: 48 },
+                ],
+                ix: 2,
+              },
+              a: { a: 0, k: [0, 0, 0], ix: 1 },
+              s: { a: 0, k: [43, 43, 100], ix: 6 },
+            },
+            ao: 0,
+            shapes: [
+              {
+                ty: "gr",
+                it: [
+                  {
+                    ind: 0,
+                    ty: "sh",
+                    ix: 1,
+                    ks: {
+                      a: 0,
+                      k: {
+                        i: [
+                          [28, 0],
+                          [34.935, -19.483],
+                          [31.619, 18.821],
+                          [33, -14],
+                          [57, 29],
+                          [0, 0],
+                          [0, 0],
+                          [0, 0],
+                        ],
+                        o: [
+                          [-28, 0],
+                          [-52, 29],
+                          [-42, -25],
+                          [-28.892, 12.257],
+                          [-57, -29],
+                          [0, 0],
+                          [0, 0],
+                          [0, 0],
+                        ],
+                        v: [
+                          [367.75, -97],
+                          [277, -75],
+                          [155, -82],
+                          [35, -82],
+                          [-94, -82.326],
+                          [-200, -74],
+                          [-352.07, 320.209],
+                          [499.162, 354.093],
+                        ],
+                        c: true,
+                      },
+                      ix: 2,
+                    },
+                    nm: "Trazado 1",
+                    mn: "ADBE Vector Shape - Group",
+                    hd: false,
+                  },
+                  {
+                    ty: "fl",
+                    c: { a: 0, k: [1, 1, 1, 1], ix: 4 },
+                    o: { a: 0, k: 100, ix: 5 },
+                    r: 1,
+                    nm: "Relleno 1",
+                    mn: "ADBE Vector Graphic - Fill",
+                    hd: false,
+                  },
+                  {
+                    ty: "tr",
+                    p: { a: 0, k: [0, 0], ix: 2 },
+                    a: { a: 0, k: [0, 0], ix: 1 },
+                    s: { a: 0, k: [100, 100], ix: 3 },
+                    r: { a: 0, k: 0, ix: 6 },
+                    o: { a: 0, k: 100, ix: 7 },
+                    sk: { a: 0, k: 0, ix: 4 },
+                    sa: { a: 0, k: 0, ix: 5 },
+                    nm: "Transformar",
+                  },
+                ],
+                nm: "Forma 1",
+                np: 3,
+                cix: 2,
+                ix: 1,
+                mn: "ADBE Vector Group",
+                hd: false,
+              },
+            ],
+            ip: 0,
+            op: 144,
+            st: 0,
+            bm: 0,
+          },
+          {
+            ddd: 0,
+            ind: 2,
+            ty: 4,
+            nm: "Capa de formas 2",
+            sr: 1,
+            ks: {
+              o: { a: 0, k: 100, ix: 11 },
+              r: { a: 0, k: 0, ix: 10 },
+              p: {
+                a: 1,
+                k: [
+                  {
+                    i: { x: 0.833, y: 0.833 },
+                    o: { x: 0.167, y: 0.167 },
+                    n: "0p833_0p833_0p167_0p167",
+                    t: 24,
+                    s: [-133, 374, 0],
+                    e: [231, 203, 0],
+                    to: [60.6666679382324, -28.5, 0],
+                    ti: [-60.6666679382324, 28.5, 0],
+                  },
+                  { t: 48 },
+                ],
+                ix: 2,
+              },
+              a: { a: 0, k: [0, 0, 0], ix: 1 },
+              s: { a: 0, k: [43, 43, 100], ix: 6 },
+            },
+            ao: 0,
+            shapes: [
+              {
+                ty: "gr",
+                it: [
+                  {
+                    ind: 0,
+                    ty: "sh",
+                    ix: 1,
+                    ks: {
+                      a: 0,
+                      k: {
+                        i: [
+                          [28, 0],
+                          [34.935, -19.483],
+                          [31.619, 18.821],
+                          [33, -14],
+                          [57, 29],
+                          [0, 0],
+                          [0, 0],
+                          [0, 0],
+                        ],
+                        o: [
+                          [-28, 0],
+                          [-52, 29],
+                          [-42, -25],
+                          [-28.892, 12.257],
+                          [-57, -29],
+                          [0, 0],
+                          [0, 0],
+                          [0, 0],
+                        ],
+                        v: [
+                          [367.75, -97],
+                          [277, -75],
+                          [155, -82],
+                          [35, -82],
+                          [-94, -82.326],
+                          [-200, -74],
+                          [-352.07, 320.209],
+                          [499.162, 354.093],
+                        ],
+                        c: true,
+                      },
+                      ix: 2,
+                    },
+                    nm: "Trazado 1",
+                    mn: "ADBE Vector Shape - Group",
+                    hd: false,
+                  },
+                  {
+                    ty: "fl",
+                    c: { a: 0, k: [0.9922, 0.949, 0.9922, 1], ix: 4 },
+                    o: { a: 0, k: 100, ix: 5 },
+                    r: 1,
+                    nm: "Relleno 1",
+                    mn: "ADBE Vector Graphic - Fill",
+                    hd: false,
+                  },
+                  {
+                    ty: "tr",
+                    p: { a: 0, k: [0, 0], ix: 2 },
+                    a: { a: 0, k: [0, 0], ix: 1 },
+                    s: { a: 0, k: [100, 100], ix: 3 },
+                    r: { a: 0, k: 0, ix: 6 },
+                    o: { a: 0, k: 100, ix: 7 },
+                    sk: { a: 0, k: 0, ix: 4 },
+                    sa: { a: 0, k: 0, ix: 5 },
+                    nm: "Transformar",
+                  },
+                ],
+                nm: "Forma 1",
+                np: 3,
+                cix: 2,
+                ix: 1,
+                mn: "ADBE Vector Group",
+                hd: false,
+              },
+            ],
+            ip: 0,
+            op: 144,
+            st: 0,
+            bm: 0,
+          },
+        ],
+      },
+    ],
+    layers: [
+      {
+        ddd: 0,
+        ind: 1,
+        ty: 4,
+        nm: "Capa de formas 5",
+        sr: 1,
+        ks: {
+          o: {
+            a: 1,
+            k: [
+              {
+                i: { x: [0.833], y: [0.833] },
+                o: { x: [0.167], y: [0.167] },
+                n: ["0p833_0p833_0p167_0p167"],
+                t: 15,
+                s: [100],
+                e: [0],
+              },
+              { t: 16 },
+            ],
+            ix: 11,
+          },
+          r: { a: 0, k: 0, ix: 10 },
+          p: {
+            a: 1,
+            k: [
+              {
+                i: { x: 0.833, y: 0.833 },
+                o: { x: 0.167, y: 0.167 },
+                n: "0p833_0p833_0p167_0p167",
+                t: 0,
+                s: [199, -14, 0],
+                e: [199, 156, 0],
+                to: [0, 28.3333339691162, 0],
+                ti: [0, -28.9375, 0],
+              },
+              {
+                i: { x: 0.833, y: 0.833 },
+                o: { x: 0.167, y: 0.167 },
+                n: "0p833_0p833_0p167_0p167",
+                t: 12,
+                s: [199, 156, 0],
+                e: [199, 164.066, 0],
+                to: [0, 4.54861259460449, 0],
+                ti: [0, -2.45892143249512, 0],
+              },
+              {
+                i: { x: 0.833, y: 0.833 },
+                o: { x: 0.167, y: 0.167 },
+                n: "0p833_0p833_0p167_0p167",
+                t: 13,
+                s: [199, 164.066, 0],
+                e: [199, 166.125, 0],
+                to: [0, 13.1843204498291, 0],
+                ti: [0, -1.72074222564697, 0],
+              },
+              {
+                i: { x: 0.833, y: 0.833 },
+                o: { x: 0.167, y: 0.167 },
+                n: "0p833_0p833_0p167_0p167",
+                t: 14,
+                s: [199, 166.125, 0],
+                e: [199, 168.375, 0],
+                to: [0, 2.04166674613953, 0],
+                ti: [0, -0.04166666790843, 0],
+              },
+              { t: 15 },
+            ],
+            ix: 2,
+          },
+          a: { a: 0, k: [-1, -182.375, 0], ix: 1 },
+          s: {
+            a: 1,
+            k: [
+              {
+                i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
+                o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
+                n: [
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                ],
+                t: 0,
+                s: [50, 50, 100],
+                e: [50, 94, 100],
+              },
+              {
+                i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
+                o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
+                n: [
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                ],
+                t: 12,
+                s: [50, 94, 100],
+                e: [70, 43.333, 100],
+              },
+              {
+                i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
+                o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
+                n: [
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                ],
+                t: 13,
+                s: [70, 43.333, 100],
+                e: [104.258, 32, 100],
+              },
+              {
+                i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
+                o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
+                n: [
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                ],
+                t: 14,
+                s: [104.258, 32, 100],
+                e: [212, 18, 100],
+              },
+              { t: 15 },
+            ],
+            ix: 6,
+          },
+        },
+        ao: 0,
+        shapes: [
+          {
+            ty: "gr",
+            it: [
+              {
+                ind: 0,
+                ty: "sh",
+                ix: 1,
+                ks: {
+                  a: 0,
+                  k: {
+                    i: [
+                      [0.938, 0],
+                      [0, -5.25],
+                      [-4.563, 0.125],
+                      [0.108, 4.624],
+                    ],
+                    o: [
+                      [-0.813, 0.125],
+                      [0, 4.813],
+                      [4.563, -0.125],
+                      [-0.125, -5.375],
+                    ],
+                    v: [
+                      [-1.344, -193.078],
+                      [-8.75, -180.5],
+                      [-1.063, -172.313],
+                      [6.938, -180.188],
+                    ],
+                    c: true,
+                  },
+                  ix: 2,
+                },
+                nm: "Trazado 1",
+                mn: "ADBE Vector Shape - Group",
+                hd: false,
+              },
+              {
+                ty: "fl",
+                c: { a: 0, k: [1, 1, 1, 1], ix: 4 },
+                o: { a: 0, k: 100, ix: 5 },
+                r: 1,
+                nm: "Relleno 1",
+                mn: "ADBE Vector Graphic - Fill",
+                hd: false,
+              },
+              {
+                ty: "tr",
+                p: { a: 0, k: [0, 0], ix: 2 },
+                a: { a: 0, k: [0, 0], ix: 1 },
+                s: { a: 0, k: [100, 100], ix: 3 },
+                r: { a: 0, k: 0, ix: 6 },
+                o: { a: 0, k: 100, ix: 7 },
+                sk: { a: 0, k: 0, ix: 4 },
+                sa: { a: 0, k: 0, ix: 5 },
+                nm: "Transformar",
+              },
+            ],
+            nm: "Forma 1",
+            np: 3,
+            cix: 2,
+            ix: 1,
+            mn: "ADBE Vector Group",
+            hd: false,
+          },
+        ],
+        ip: 0,
+        op: 60,
+        st: 0,
+        bm: 0,
+      },
+      {
+        ddd: 0,
+        ind: 8,
+        ty: 4,
+        nm: "Capa de formas 3",
+        sr: 1,
+        ks: {
+          o: {
+            a: 1,
+            k: [
+              {
+                i: { x: [0.833], y: [0.833] },
+                o: { x: [0.167], y: [0.167] },
+                n: ["0p833_0p833_0p167_0p167"],
+                t: 46,
+                s: [0],
+                e: [100],
+              },
+              {
+                i: { x: [0.833], y: [0.833] },
+                o: { x: [0.167], y: [0.167] },
+                n: ["0p833_0p833_0p167_0p167"],
+                t: 47,
+                s: [100],
+                e: [100],
+              },
+              { t: 48 },
+            ],
+            ix: 11,
+          },
+          r: { a: 0, k: 0, ix: 10 },
+          p: {
+            a: 1,
+            k: [
+              {
+                i: { x: 0.833, y: 0.833 },
+                o: { x: 0.167, y: 0.167 },
+                n: "0p833_0p833_0p167_0p167",
+                t: 47,
+                s: [199.98, 168.25, 0],
+                e: [199.98, 158.037, 0],
+                to: [0, -0.20375619828701, 0],
+                ti: [0, 17.58864402771, 0],
+              },
+              {
+                i: { x: 0.833, y: 0.833 },
+                o: { x: 0.167, y: 0.167 },
+                n: "0p833_0p833_0p167_0p167",
+                t: 48,
+                s: [199.98, 158.037, 0],
+                e: [199.98, -10, 0],
+                to: [-2.8421709430404e-14, -50.4047393798828, 0],
+                ti: [0, 1.17485654354095, 0],
+              },
+              { t: 53 },
+            ],
+            ix: 2,
+          },
+          a: { a: 0, k: [-32, -31, 0], ix: 1 },
+          s: {
+            a: 1,
+            k: [
+              {
+                i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
+                o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
+                n: [
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                ],
+                t: 47,
+                s: [-4, 1, 100],
+                e: [1.5, 4, 100],
+              },
+              {
+                i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
+                o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
+                n: [
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                  "0p833_0p833_0p167_0p167",
+                ],
+                t: 48,
+                s: [1.5, 4, 100],
+                e: [2, 3, 100],
+              },
+              { t: 53 },
+            ],
+            ix: 6,
+          },
+        },
+        ao: 0,
+        shapes: [
+          {
+            ty: "gr",
+            it: [
+              {
+                d: 1,
+                ty: "el",
+                s: { a: 0, k: [308, 308], ix: 2 },
+                p: { a: 0, k: [0, 0], ix: 3 },
+                nm: "Trazado elíptico 1",
+                mn: "ADBE Vector Shape - Ellipse",
+                hd: false,
+              },
+              {
+                ty: "fl",
+                c: { a: 0, k: [1, 1, 1, 1], ix: 4 },
+                o: { a: 0, k: 100, ix: 5 },
+                r: 1,
+                nm: "Relleno 1",
+                mn: "ADBE Vector Graphic - Fill",
+                hd: false,
+              },
+              {
+                ty: "tr",
+                p: { a: 0, k: [-31, -31], ix: 2 },
+                a: { a: 0, k: [0, 0], ix: 1 },
+                s: { a: 0, k: [100, 100], ix: 3 },
+                r: { a: 0, k: 0, ix: 6 },
+                o: { a: 0, k: 100, ix: 7 },
+                sk: { a: 0, k: 0, ix: 4 },
+                sa: { a: 0, k: 0, ix: 5 },
+                nm: "Transformar",
+              },
+            ],
+            nm: "Elipse 1",
+            np: 3,
+            cix: 2,
+            ix: 1,
+            mn: "ADBE Vector Group",
+            hd: false,
+          },
+        ],
+        ip: 0,
+        op: 60,
+        st: 0,
+        bm: 0,
+      },
+      {
+        ddd: 0,
+        ind: 9,
+        ty: 4,
+        nm: "Capa de formas 4",
+        sr: 1,
+        ks: {
+          o: { a: 0, k: 100, ix: 11 },
+          r: { a: 0, k: 0, ix: 10 },
+          p: { a: 0, k: [199, 252.99999999999997, 0], ix: 2 },
+          a: { a: 0, k: [-32, -31, 0], ix: 1 },
+          s: { a: 0, k: [55, 55, 100], ix: 6 },
+        },
+        ao: 0,
+        shapes: [
+          {
+            ty: "gr",
+            it: [
+              {
+                d: 1,
+                ty: "el",
+                s: { a: 0, k: [308, 308], ix: 2 },
+                p: { a: 0, k: [0, 0], ix: 3 },
+                nm: "Trazado elíptico 1",
+                mn: "ADBE Vector Shape - Ellipse",
+                hd: false,
+              },
+              {
+                ty: "st",
+                c: { a: 0, k: [1, 1, 1, 1], ix: 3 },
+                o: { a: 0, k: 100, ix: 4 },
+                w: { a: 0, k: 10, ix: 5 },
+                lc: 1,
+                lj: 1,
+                ml: 4,
+                nm: "Trazo 1",
+                mn: "ADBE Vector Graphic - Stroke",
+                hd: false,
+              },
+              {
+                ty: "tr",
+                p: { a: 0, k: [-31, -31], ix: 2 },
+                a: { a: 0, k: [0, 0], ix: 1 },
+                s: { a: 0, k: [100, 100], ix: 3 },
+                r: { a: 0, k: 0, ix: 6 },
+                o: { a: 0, k: 100, ix: 7 },
+                sk: { a: 0, k: 0, ix: 4 },
+                sa: { a: 0, k: 0, ix: 5 },
+                nm: "Transformar",
+              },
+            ],
+            nm: "Elipse 1",
+            np: 3,
+            cix: 2,
+            ix: 1,
+            mn: "ADBE Vector Group",
+            hd: false,
+          },
+          {
+            ty: "tm",
+            s: {
+              a: 1,
+              k: [
+                {
+                  i: { x: [0.833], y: [0.833] },
+                  o: { x: [0.167], y: [0.167] },
+                  n: ["0p833_0p833_0p167_0p167"],
+                  t: 12,
+                  s: [50],
+                  e: [100],
+                },
+                {
+                  i: { x: [0.833], y: [0.833] },
+                  o: { x: [0.167], y: [0.167] },
+                  n: ["0p833_0p833_0p167_0p167"],
+                  t: 24,
+                  s: [100],
+                  e: [50],
+                },
+                { t: 48 },
+              ],
+              ix: 1,
+            },
+            e: {
+              a: 1,
+              k: [
+                {
+                  i: { x: [0.833], y: [0.833] },
+                  o: { x: [0.167], y: [0.167] },
+                  n: ["0p833_0p833_0p167_0p167"],
+                  t: 12,
+                  s: [50],
+                  e: [0],
+                },
+                {
+                  i: { x: [0.833], y: [0.833] },
+                  o: { x: [0.167], y: [0.167] },
+                  n: ["0p833_0p833_0p167_0p167"],
+                  t: 24,
+                  s: [0],
+                  e: [50],
+                },
+                { t: 48 },
+              ],
+              ix: 2,
+            },
+            o: { a: 0, k: 180, ix: 3 },
+            m: 1,
+            ix: 2,
+            nm: "Recortar trazados 1",
+            mn: "ADBE Vector Filter - Trim",
+            hd: false,
+          },
+        ],
+        ip: 0,
+        op: 60,
+        st: 0,
+        bm: 0,
+      },
+      {
+        ddd: 0,
+        ind: 10,
+        ty: 4,
+        nm: "Capa de formas 1",
+        td: 1,
+        sr: 1,
+        ks: {
+          o: { a: 0, k: 100, ix: 11 },
+          r: { a: 0, k: 0, ix: 10 },
+          p: { a: 0, k: [199, 252.99999999999997, 0], ix: 2 },
+          a: { a: 0, k: [-32, -31, 0], ix: 1 },
+          s: { a: 0, k: [50, 50, 100], ix: 6 },
+        },
+        ao: 0,
+        shapes: [
+          {
+            ty: "gr",
+            it: [
+              {
+                d: 1,
+                ty: "el",
+                s: { a: 0, k: [308, 308], ix: 2 },
+                p: { a: 0, k: [0, 0], ix: 3 },
+                nm: "Trazado elíptico 1",
+                mn: "ADBE Vector Shape - Ellipse",
+                hd: false,
+              },
+              {
+                ty: "fl",
+                c: { a: 0, k: [1, 1, 1, 1], ix: 4 },
+                o: { a: 0, k: 100, ix: 5 },
+                r: 1,
+                nm: "Relleno 1",
+                mn: "ADBE Vector Graphic - Fill",
+                hd: false,
+              },
+              {
+                ty: "tr",
+                p: { a: 0, k: [-31, -31], ix: 2 },
+                a: { a: 0, k: [0, 0], ix: 1 },
+                s: { a: 0, k: [100, 100], ix: 3 },
+                r: { a: 0, k: 0, ix: 6 },
+                o: { a: 0, k: 100, ix: 7 },
+                sk: { a: 0, k: 0, ix: 4 },
+                sa: { a: 0, k: 0, ix: 5 },
+                nm: "Transformar",
+              },
+            ],
+            nm: "Elipse 1",
+            np: 3,
+            cix: 2,
+            ix: 1,
+            mn: "ADBE Vector Group",
+            hd: false,
+          },
+        ],
+        ip: 0,
+        op: 60,
+        st: 0,
+        bm: 0,
+      },
+      {
+        ddd: 0,
+        ind: 12,
+        ty: 5,
+        nm: "JSR Text",
+        sr: 1,
+        ks: {
+          o: { a: 0, k: 100, ix: 11 },
+          r: { a: 0, k: 0, ix: 10 },
+          p: { a: 0, k: [199, 270, 0], ix: 2 },
+          a: { a: 0, k: [0, 0, 0], ix: 1 },
+          s: { a: 0, k: [100, 100, 100], ix: 6 },
+        },
+        ao: 0,
+        t: {
+          d: {
+            k: [
+              {
+                s: {
+                  s: 60,
+                  f: "Montserrat-Black",
+                  t: "JSR",
+                  j: 2,
+                  tr: 0,
+                  lh: 72,
+                  ls: 0,
+                  fc: [1, 1, 1, 1],
+                },
+                t: 0,
+              },
+            ],
+          },
+          p: {},
+          m: { g: 1, a: { a: 0, k: [0, 0], ix: 2 } },
+          a: [],
+        },
+        ip: 0,
+        op: 144,
+        st: 0,
+        bm: 0,
+      },
+      {
+        ddd: 0,
+        ind: 11,
+        ty: 0,
+        nm: "Precomp. 1",
+        tt: 1,
+        refId: "comp_0",
+        sr: 1,
+        ks: {
+          o: { a: 0, k: 100, ix: 11 },
+          r: { a: 0, k: 0, ix: 10 },
+          p: { a: 0, k: [200, 200, 0], ix: 2 },
+          a: { a: 0, k: [200, 200, 0], ix: 1 },
+          s: { a: 0, k: [100, 100, 100], ix: 6 },
+        },
+        ao: 0,
+        w: 400,
+        h: 400,
+        ip: 0,
+        op: 144,
+        st: 0,
+        bm: 0,
+      },
+    ],
+    fonts: {
+      list: [
+        {
+          fName: "Montserrat-Black",
+          fFamily: "Montserrat",
+          fStyle: "Black",
+          ascent: 96.8017578125,
+        },
+      ],
+    },
+  };
+
+  const customizedAnimationData = customizeLottieData(
+    animationJson,
+    loadingColors.primary,
+    loadingColors.accent
+  );
 
   loadingAnimation = lottie.loadAnimation({
     container: document.getElementById("loading-animation"),
     renderer: "svg",
     loop: true,
     autoplay: true,
-    animationData: {
-      v: "4.10.1",
-      fr: 24,
-      ip: 0,
-      op: 72,
-      w: 400,
-      h: 400,
-      nm: "Comp 1",
-      ddd: 0,
-      assets: [
-        {
-          id: "comp_0",
-          layers: [
-            {
-              ddd: 0,
-              ind: 1,
-              ty: 4,
-              nm: "Capa de formas 12",
-              sr: 1,
-              ks: {
-                o: { a: 0, k: 100, ix: 11 },
-                r: { a: 0, k: 0, ix: 10 },
-                p: {
-                  a: 1,
-                  k: [
-                    {
-                      i: { x: 0.833, y: 0.833 },
-                      o: { x: 0.167, y: 0.167 },
-                      n: "0p833_0p833_0p167_0p167",
-                      t: 24,
-                      s: [81.5, 370.25, 0],
-                      e: [445.5, 199.25, 0],
-                      to: [60.6666679382324, -28.5, 0],
-                      ti: [-60.6666679382324, 28.5, 0],
-                    },
-                    { t: 48 },
-                  ],
-                  ix: 2,
-                },
-                a: { a: 0, k: [0, 0, 0], ix: 1 },
-                s: { a: 0, k: [43, 43, 100], ix: 6 },
-              },
-              ao: 0,
-              shapes: [
-                {
-                  ty: "gr",
-                  it: [
-                    {
-                      ind: 0,
-                      ty: "sh",
-                      ix: 1,
-                      ks: {
-                        a: 0,
-                        k: {
-                          i: [
-                            [28, 0],
-                            [34.935, -19.483],
-                            [31.619, 18.821],
-                            [33, -14],
-                            [57, 29],
-                            [0, 0],
-                            [0, 0],
-                            [0, 0],
-                          ],
-                          o: [
-                            [-28, 0],
-                            [-52, 29],
-                            [-42, -25],
-                            [-28.892, 12.257],
-                            [-57, -29],
-                            [0, 0],
-                            [0, 0],
-                            [0, 0],
-                          ],
-                          v: [
-                            [367.75, -97],
-                            [277, -75],
-                            [155, -82],
-                            [35, -82],
-                            [-94, -82.326],
-                            [-200, -74],
-                            [-352.07, 320.209],
-                            [499.162, 354.093],
-                          ],
-                          c: true,
-                        },
-                        ix: 2,
-                      },
-                      nm: "Trazado 1",
-                      mn: "ADBE Vector Shape - Group",
-                      hd: false,
-                    },
-                    {
-                      ty: "fl",
-                      c: { a: 0, k: initialColor, ix: 4 },
-                      o: { a: 0, k: 100, ix: 5 },
-                      r: 1,
-                      nm: "Relleno 1",
-                      mn: "ADBE Vector Graphic - Fill",
-                      hd: false,
-                    },
-                    {
-                      ty: "tr",
-                      p: { a: 0, k: [0, 0], ix: 2 },
-                      a: { a: 0, k: [0, 0], ix: 1 },
-                      s: { a: 0, k: [100, 100], ix: 3 },
-                      r: { a: 0, k: 0, ix: 6 },
-                      o: { a: 0, k: 100, ix: 7 },
-                      sk: { a: 0, k: 0, ix: 4 },
-                      sa: { a: 0, k: 0, ix: 5 },
-                      nm: "Transformar",
-                    },
-                  ],
-                  nm: "Forma 1",
-                  np: 3,
-                  cix: 2,
-                  ix: 1,
-                  mn: "ADBE Vector Group",
-                  hd: false,
-                },
-              ],
-              ip: 0,
-              op: 144,
-              st: 0,
-              bm: 0,
-            },
-            {
-              ddd: 0,
-              ind: 2,
-              ty: 4,
-              nm: "Capa de formas 2",
-              sr: 1,
-              ks: {
-                o: { a: 0, k: 100, ix: 11 },
-                r: { a: 0, k: 0, ix: 10 },
-                p: {
-                  a: 1,
-                  k: [
-                    {
-                      i: { x: 0.833, y: 0.833 },
-                      o: { x: 0.167, y: 0.167 },
-                      n: "0p833_0p833_0p167_0p167",
-                      t: 24,
-                      s: [-133, 374, 0],
-                      e: [231, 203, 0],
-                      to: [60.6666679382324, -28.5, 0],
-                      ti: [-60.6666679382324, 28.5, 0],
-                    },
-                    { t: 48 },
-                  ],
-                  ix: 2,
-                },
-                a: { a: 0, k: [0, 0, 0], ix: 1 },
-                s: { a: 0, k: [43, 43, 100], ix: 6 },
-              },
-              ao: 0,
-              shapes: [
-                {
-                  ty: "gr",
-                  it: [
-                    {
-                      ind: 0,
-                      ty: "sh",
-                      ix: 1,
-                      ks: {
-                        a: 0,
-                        k: {
-                          i: [
-                            [28, 0],
-                            [34.935, -19.483],
-                            [31.619, 18.821],
-                            [33, -14],
-                            [57, 29],
-                            [0, 0],
-                            [0, 0],
-                            [0, 0],
-                          ],
-                          o: [
-                            [-28, 0],
-                            [-52, 29],
-                            [-42, -25],
-                            [-28.892, 12.257],
-                            [-57, -29],
-                            [0, 0],
-                            [0, 0],
-                            [0, 0],
-                          ],
-                          v: [
-                            [367.75, -97],
-                            [277, -75],
-                            [155, -82],
-                            [35, -82],
-                            [-94, -82.326],
-                            [-200, -74],
-                            [-352.07, 320.209],
-                            [499.162, 354.093],
-                          ],
-                          c: true,
-                        },
-                        ix: 2,
-                      },
-                      nm: "Trazado 1",
-                      mn: "ADBE Vector Shape - Group",
-                      hd: false,
-                    },
-                    {
-                      ty: "fl",
-                      c: { a: 0, k: [0.9922, 0.949, 0.9922, 1], ix: 4 },
-                      o: { a: 0, k: 100, ix: 5 },
-                      r: 1,
-                      nm: "Relleno 1",
-                      mn: "ADBE Vector Graphic - Fill",
-                      hd: false,
-                    },
-                    {
-                      ty: "tr",
-                      p: { a: 0, k: [0, 0], ix: 2 },
-                      a: { a: 0, k: [0, 0], ix: 1 },
-                      s: { a: 0, k: [100, 100], ix: 3 },
-                      r: { a: 0, k: 0, ix: 6 },
-                      o: { a: 0, k: 100, ix: 7 },
-                      sk: { a: 0, k: 0, ix: 4 },
-                      sa: { a: 0, k: 0, ix: 5 },
-                      nm: "Transformar",
-                    },
-                  ],
-                  nm: "Forma 1",
-                  np: 3,
-                  cix: 2,
-                  ix: 1,
-                  mn: "ADBE Vector Group",
-                  hd: false,
-                },
-              ],
-              ip: 0,
-              op: 144,
-              st: 0,
-              bm: 0,
-            },
-          ],
-        },
-      ],
-      layers: [
-        {
-          ddd: 0,
-          ind: 1,
-          ty: 4,
-          nm: "Capa de formas 5",
-          sr: 1,
-          ks: {
-            o: {
-              a: 1,
-              k: [
-                {
-                  i: { x: [0.833], y: [0.833] },
-                  o: { x: [0.167], y: [0.167] },
-                  n: ["0p833_0p833_0p167_0p167"],
-                  t: 15,
-                  s: [100],
-                  e: [0],
-                },
-                { t: 16 },
-              ],
-              ix: 11,
-            },
-            r: { a: 0, k: 0, ix: 10 },
-            p: {
-              a: 1,
-              k: [
-                {
-                  i: { x: 0.833, y: 0.833 },
-                  o: { x: 0.167, y: 0.167 },
-                  n: "0p833_0p833_0p167_0p167",
-                  t: 0,
-                  s: [199, -14, 0],
-                  e: [199, 156, 0],
-                  to: [0, 28.3333339691162, 0],
-                  ti: [0, -28.9375, 0],
-                },
-                {
-                  i: { x: 0.833, y: 0.833 },
-                  o: { x: 0.167, y: 0.167 },
-                  n: "0p833_0p833_0p167_0p167",
-                  t: 12,
-                  s: [199, 156, 0],
-                  e: [199, 164.066, 0],
-                  to: [0, 4.54861259460449, 0],
-                  ti: [0, -2.45892143249512, 0],
-                },
-                {
-                  i: { x: 0.833, y: 0.833 },
-                  o: { x: 0.167, y: 0.167 },
-                  n: "0p833_0p833_0p167_0p167",
-                  t: 13,
-                  s: [199, 164.066, 0],
-                  e: [199, 166.125, 0],
-                  to: [0, 13.1843204498291, 0],
-                  ti: [0, -1.72074222564697, 0],
-                },
-                {
-                  i: { x: 0.833, y: 0.833 },
-                  o: { x: 0.167, y: 0.167 },
-                  n: "0p833_0p833_0p167_0p167",
-                  t: 14,
-                  s: [199, 166.125, 0],
-                  e: [199, 168.375, 0],
-                  to: [0, 2.04166674613953, 0],
-                  ti: [0, -0.04166666790843, 0],
-                },
-                { t: 15 },
-              ],
-              ix: 2,
-            },
-            a: { a: 0, k: [-1, -182.375, 0], ix: 1 },
-            s: {
-              a: 1,
-              k: [
-                {
-                  i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
-                  o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
-                  n: [
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                  ],
-                  t: 0,
-                  s: [50, 50, 100],
-                  e: [50, 94, 100],
-                },
-                {
-                  i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
-                  o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
-                  n: [
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                  ],
-                  t: 12,
-                  s: [50, 94, 100],
-                  e: [70, 43.333, 100],
-                },
-                {
-                  i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
-                  o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
-                  n: [
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                  ],
-                  t: 13,
-                  s: [70, 43.333, 100],
-                  e: [104.258, 32, 100],
-                },
-                {
-                  i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
-                  o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
-                  n: [
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                  ],
-                  t: 14,
-                  s: [104.258, 32, 100],
-                  e: [212, 18, 100],
-                },
-                { t: 15 },
-              ],
-              ix: 6,
-            },
-          },
-          ao: 0,
-          shapes: [
-            {
-              ty: "gr",
-              it: [
-                {
-                  ind: 0,
-                  ty: "sh",
-                  ix: 1,
-                  ks: {
-                    a: 0,
-                    k: {
-                      i: [
-                        [0.938, 0],
-                        [0, -5.25],
-                        [-4.563, 0.125],
-                        [0.108, 4.624],
-                      ],
-                      o: [
-                        [-0.813, 0.125],
-                        [0, 4.813],
-                        [4.563, -0.125],
-                        [-0.125, -5.375],
-                      ],
-                      v: [
-                        [-1.344, -193.078],
-                        [-8.75, -180.5],
-                        [-1.063, -172.313],
-                        [6.938, -180.188],
-                      ],
-                      c: true,
-                    },
-                    ix: 2,
-                  },
-                  nm: "Trazado 1",
-                  mn: "ADBE Vector Shape - Group",
-                  hd: false,
-                },
-                {
-                  ty: "fl",
-                  c: { a: 0, k: initialColor, ix: 4 },
-                  o: { a: 0, k: 100, ix: 5 },
-                  r: 1,
-                  nm: "Relleno 1",
-                  mn: "ADBE Vector Graphic - Fill",
-                  hd: false,
-                },
-                {
-                  ty: "tr",
-                  p: { a: 0, k: [0, 0], ix: 2 },
-                  a: { a: 0, k: [0, 0], ix: 1 },
-                  s: { a: 0, k: [100, 100], ix: 3 },
-                  r: { a: 0, k: 0, ix: 6 },
-                  o: { a: 0, k: 100, ix: 7 },
-                  sk: { a: 0, k: 0, ix: 4 },
-                  sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transformar",
-                },
-              ],
-              nm: "Forma 1",
-              np: 3,
-              cix: 2,
-              ix: 1,
-              mn: "ADBE Vector Group",
-              hd: false,
-            },
-          ],
-          ip: 0,
-          op: 60,
-          st: 0,
-          bm: 0,
-        },
-        {
-          ddd: 0,
-          ind: 8,
-          ty: 4,
-          nm: "Capa de formas 3",
-          sr: 1,
-          ks: {
-            o: {
-              a: 1,
-              k: [
-                {
-                  i: { x: [0.833], y: [0.833] },
-                  o: { x: [0.167], y: [0.167] },
-                  n: ["0p833_0p833_0p167_0p167"],
-                  t: 46,
-                  s: [0],
-                  e: [100],
-                },
-                {
-                  i: { x: [0.833], y: [0.833] },
-                  o: { x: [0.167], y: [0.167] },
-                  n: ["0p833_0p833_0p167_0p167"],
-                  t: 47,
-                  s: [100],
-                  e: [100],
-                },
-                { t: 48 },
-              ],
-              ix: 11,
-            },
-            r: { a: 0, k: 0, ix: 10 },
-            p: {
-              a: 1,
-              k: [
-                {
-                  i: { x: 0.833, y: 0.833 },
-                  o: { x: 0.167, y: 0.167 },
-                  n: "0p833_0p833_0p167_0p167",
-                  t: 47,
-                  s: [199.98, 168.25, 0],
-                  e: [199.98, 158.037, 0],
-                  to: [0, -0.20375619828701, 0],
-                  ti: [0, 17.58864402771, 0],
-                },
-                {
-                  i: { x: 0.833, y: 0.833 },
-                  o: { x: 0.167, y: 0.167 },
-                  n: "0p833_0p833_0p167_0p167",
-                  t: 48,
-                  s: [199.98, 158.037, 0],
-                  e: [199.98, -10, 0],
-                  to: [-2.8421709430404e-14, -50.4047393798828, 0],
-                  ti: [0, 1.17485654354095, 0],
-                },
-                { t: 53 },
-              ],
-              ix: 2,
-            },
-            a: { a: 0, k: [-32, -31, 0], ix: 1 },
-            s: {
-              a: 1,
-              k: [
-                {
-                  i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
-                  o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
-                  n: [
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                  ],
-                  t: 47,
-                  s: [-4, 1, 100],
-                  e: [1.5, 4, 100],
-                },
-                {
-                  i: { x: [0.833, 0.833, 0.833], y: [0.833, 0.833, 0.833] },
-                  o: { x: [0.167, 0.167, 0.167], y: [0.167, 0.167, 0.167] },
-                  n: [
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                    "0p833_0p833_0p167_0p167",
-                  ],
-                  t: 48,
-                  s: [1.5, 4, 100],
-                  e: [2, 3, 100],
-                },
-                { t: 53 },
-              ],
-              ix: 6,
-            },
-          },
-          ao: 0,
-          shapes: [
-            {
-              ty: "gr",
-              it: [
-                {
-                  d: 1,
-                  ty: "el",
-                  s: { a: 0, k: [308, 308], ix: 2 },
-                  p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Trazado elíptico 1",
-                  mn: "ADBE Vector Shape - Ellipse",
-                  hd: false,
-                },
-                {
-                  ty: "fl",
-                  c: { a: 0, k: initialColor, ix: 4 },
-                  o: { a: 0, k: 100, ix: 5 },
-                  r: 1,
-                  nm: "Relleno 1",
-                  mn: "ADBE Vector Graphic - Fill",
-                  hd: false,
-                },
-                {
-                  ty: "tr",
-                  p: { a: 0, k: [-31, -31], ix: 2 },
-                  a: { a: 0, k: [0, 0], ix: 1 },
-                  s: { a: 0, k: [100, 100], ix: 3 },
-                  r: { a: 0, k: 0, ix: 6 },
-                  o: { a: 0, k: 100, ix: 7 },
-                  sk: { a: 0, k: 0, ix: 4 },
-                  sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transformar",
-                },
-              ],
-              nm: "Elipse 1",
-              np: 3,
-              cix: 2,
-              ix: 1,
-              mn: "ADBE Vector Group",
-              hd: false,
-            },
-          ],
-          ip: 0,
-          op: 60,
-          st: 0,
-          bm: 0,
-        },
-        {
-          ddd: 0,
-          ind: 9,
-          ty: 4,
-          nm: "Capa de formas 4",
-          sr: 1,
-          ks: {
-            o: { a: 0, k: 100, ix: 11 },
-            r: { a: 0, k: 0, ix: 10 },
-            p: { a: 0, k: [199, 252.99999999999997, 0], ix: 2 },
-            a: { a: 0, k: [-32, -31, 0], ix: 1 },
-            s: { a: 0, k: [55, 55, 100], ix: 6 },
-          },
-          ao: 0,
-          shapes: [
-            {
-              ty: "gr",
-              it: [
-                {
-                  d: 1,
-                  ty: "el",
-                  s: { a: 0, k: [308, 308], ix: 2 },
-                  p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Trazado elíptico 1",
-                  mn: "ADBE Vector Shape - Ellipse",
-                  hd: false,
-                },
-                {
-                  ty: "st",
-                  c: { a: 0, k: initialColor, ix: 3 },
-                  o: { a: 0, k: 100, ix: 4 },
-                  w: { a: 0, k: 10, ix: 5 },
-                  lc: 1,
-                  lj: 1,
-                  ml: 4,
-                  nm: "Trazo 1",
-                  mn: "ADBE Vector Graphic - Stroke",
-                  hd: false,
-                },
-                {
-                  ty: "tr",
-                  p: { a: 0, k: [-31, -31], ix: 2 },
-                  a: { a: 0, k: [0, 0], ix: 1 },
-                  s: { a: 0, k: [100, 100], ix: 3 },
-                  r: { a: 0, k: 0, ix: 6 },
-                  o: { a: 0, k: 100, ix: 7 },
-                  sk: { a: 0, k: 0, ix: 4 },
-                  sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transformar",
-                },
-              ],
-              nm: "Elipse 1",
-              np: 3,
-              cix: 2,
-              ix: 1,
-              mn: "ADBE Vector Group",
-              hd: false,
-            },
-            {
-              ty: "tm",
-              s: {
-                a: 1,
-                k: [
-                  {
-                    i: { x: [0.833], y: [0.833] },
-                    o: { x: [0.167], y: [0.167] },
-                    n: ["0p833_0p833_0p167_0p167"],
-                    t: 12,
-                    s: [50],
-                    e: [100],
-                  },
-                  {
-                    i: { x: [0.833], y: [0.833] },
-                    o: { x: [0.167], y: [0.167] },
-                    n: ["0p833_0p833_0p167_0p167"],
-                    t: 24,
-                    s: [100],
-                    e: [50],
-                  },
-                  { t: 48 },
-                ],
-                ix: 1,
-              },
-              e: {
-                a: 1,
-                k: [
-                  {
-                    i: { x: [0.833], y: [0.833] },
-                    o: { x: [0.167], y: [0.167] },
-                    n: ["0p833_0p833_0p167_0p167"],
-                    t: 12,
-                    s: [50],
-                    e: [0],
-                  },
-                  {
-                    i: { x: [0.833], y: [0.833] },
-                    o: { x: [0.167], y: [0.167] },
-                    n: ["0p833_0p833_0p167_0p167"],
-                    t: 24,
-                    s: [0],
-                    e: [50],
-                  },
-                  { t: 48 },
-                ],
-                ix: 2,
-              },
-              o: { a: 0, k: 180, ix: 3 },
-              m: 1,
-              ix: 2,
-              nm: "Recortar trazados 1",
-              mn: "ADBE Vector Filter - Trim",
-              hd: false,
-            },
-          ],
-          ip: 0,
-          op: 60,
-          st: 0,
-          bm: 0,
-        },
-        {
-          ddd: 0,
-          ind: 10,
-          ty: 4,
-          nm: "Capa de formas 1",
-          td: 1,
-          sr: 1,
-          ks: {
-            o: { a: 0, k: 100, ix: 11 },
-            r: { a: 0, k: 0, ix: 10 },
-            p: { a: 0, k: [199, 252.99999999999997, 0], ix: 2 },
-            a: { a: 0, k: [-32, -31, 0], ix: 1 },
-            s: { a: 0, k: [50, 50, 100], ix: 6 },
-          },
-          ao: 0,
-          shapes: [
-            {
-              ty: "gr",
-              it: [
-                {
-                  d: 1,
-                  ty: "el",
-                  s: { a: 0, k: [308, 308], ix: 2 },
-                  p: { a: 0, k: [0, 0], ix: 3 },
-                  nm: "Trazado elíptico 1",
-                  mn: "ADBE Vector Shape - Ellipse",
-                  hd: false,
-                },
-                {
-                  ty: "fl",
-                  c: { a: 0, k: initialColor, ix: 4 },
-                  o: { a: 0, k: 100, ix: 5 },
-                  r: 1,
-                  nm: "Relleno 1",
-                  mn: "ADBE Vector Graphic - Fill",
-                  hd: false,
-                },
-                {
-                  ty: "tr",
-                  p: { a: 0, k: [-31, -31], ix: 2 },
-                  a: { a: 0, k: [0, 0], ix: 1 },
-                  s: { a: 0, k: [100, 100], ix: 3 },
-                  r: { a: 0, k: 0, ix: 6 },
-                  o: { a: 0, k: 100, ix: 7 },
-                  sk: { a: 0, k: 0, ix: 4 },
-                  sa: { a: 0, k: 0, ix: 5 },
-                  nm: "Transformar",
-                },
-              ],
-              nm: "Elipse 1",
-              np: 3,
-              cix: 2,
-              ix: 1,
-              mn: "ADBE Vector Group",
-              hd: false,
-            },
-          ],
-          ip: 0,
-          op: 60,
-          st: 0,
-          bm: 0,
-        },
-        // JSR TEXT LAYER
-        {
-          ddd: 0,
-          ind: 12,
-          ty: 5,
-          nm: "JSR Text",
-          sr: 1,
-          ks: {
-            o: { a: 0, k: 100, ix: 11 },
-            r: { a: 0, k: 0, ix: 10 },
-            p: { a: 0, k: [199, 270, 0], ix: 2 },
-            a: { a: 0, k: [0, 0, 0], ix: 1 },
-            s: { a: 0, k: [100, 100, 100], ix: 6 },
-          },
-          ao: 0,
-          t: {
-            d: {
-              k: [
-                {
-                  s: {
-                    s: 60,
-                    f: "Montserrat-Black",
-                    t: "JSR",
-                    j: 2,
-                    tr: 0,
-                    lh: 72,
-                    ls: 0,
-                    fc: initialColor,
-                  },
-                  t: 0,
-                },
-              ],
-            },
-            p: {},
-            m: { g: 1, a: { a: 0, k: [0, 0], ix: 2 } },
-            a: [],
-          },
-          ip: 0,
-          op: 144,
-          st: 0,
-          bm: 0,
-        },
-        {
-          ddd: 0,
-          ind: 11,
-          ty: 0,
-          nm: "Precomp. 1",
-          tt: 1,
-          refId: "comp_0",
-          sr: 1,
-          ks: {
-            o: { a: 0, k: 100, ix: 11 },
-            r: { a: 0, k: 0, ix: 10 },
-            p: { a: 0, k: [200, 200, 0], ix: 2 },
-            a: { a: 0, k: [200, 200, 0], ix: 1 },
-            s: { a: 0, k: [100, 100, 100], ix: 6 },
-          },
-          ao: 0,
-          w: 400,
-          h: 400,
-          ip: 0,
-          op: 144,
-          st: 0,
-          bm: 0,
-        },
-      ],
-      fonts: {
-        list: [
-          {
-            fName: "Montserrat-Black",
-            fFamily: "Montserrat",
-            fStyle: "Black",
-            ascent: 96.8017578125,
-          },
-        ],
-      },
-    },
+    animationData: customizedAnimationData,
   });
 
   Promise.all([
     populateHomePage(),
-    applyThemeSettings(),
+    applyThemeGradients(),
     populateProjects(),
     populateSkills(),
     populateCertificates(),
@@ -1121,7 +1148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1500);
   });
 
-  // --- C. THEME TOGGLER ---
+  // --- 4. THEME TOGGLER ---
   const body = document.body;
   const mobileThemeToggle = document.getElementById("mobile-theme-toggle");
   const desktopThemeToggle = document.getElementById("desktop-theme-toggle");
@@ -1134,11 +1161,6 @@ document.addEventListener("DOMContentLoaded", () => {
     mobileThemeToggle.innerHTML = newIcon;
     if (desktopThemeToggle) {
       desktopThemeToggle.innerHTML = newIcon;
-    }
-
-    // Update loading animation colors if it exists
-    if (loadingAnimation) {
-      updateLottieColors(theme === "dark");
     }
 
     if (window.pJSDom && window.pJSDom[0]) {
@@ -1163,7 +1185,7 @@ document.addEventListener("DOMContentLoaded", () => {
     desktopThemeToggle.addEventListener("click", toggleTheme);
   }
 
-  // --- D. SECTION NAVIGATION WITH PAGE TRANSITIONS ---
+  // --- 5. SECTION NAVIGATION ---
   const allNavTriggers = document.querySelectorAll("[data-target]");
   let isTransitioning = false;
 
@@ -1176,12 +1198,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const currentActiveSection = document.querySelector(
         ".content-section.active"
       );
-
       if (
         !targetId ||
         (currentActiveSection && currentActiveSection.id === targetId)
       )
         return;
+
       isTransitioning = true;
       document
         .querySelectorAll(".nav-link")
@@ -1207,7 +1229,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // --- E. PROJECT MODAL LOGIC ---
+  // --- 6. PROJECT MODAL LOGIC ---
   const projectModal = document.getElementById("project-modal");
   const projectsGridContainer = document.getElementById("projects-grid");
   const closeModalBtn = projectModal.querySelector(".modal-close");

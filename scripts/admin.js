@@ -166,22 +166,33 @@ document
   });
 
 // Theme Helpers
+function hexToRgb(hex) {
+  let r = 0,
+    g = 0,
+    b = 0;
+  if (hex.length == 4) {
+    r = "0x" + hex[1] + hex[1];
+    g = "0x" + hex[2] + hex[2];
+    b = "0x" + hex[3] + hex[3];
+  } else if (hex.length == 7) {
+    r = "0x" + hex[1] + hex[2];
+    g = "0x" + hex[3] + hex[4];
+    b = "0x" + hex[5] + hex[6];
+  }
+  return `rgb(${+r},${+g},${+b})`;
+}
+
 function parseGradient(gradientString) {
   const defaults = { angle: "135deg", color1: "#ffffff", color2: "#000000" };
-  if (!gradientString || !gradientString.includes("gradient")) {
-    return defaults;
-  }
+  if (!gradientString || !gradientString.includes("gradient")) return defaults;
 
-  // Regex to capture angle, and all color stops. We'll just use the first two colors found.
   const regex = /linear-gradient\(([^,]+),(.+)\)/;
   const match = gradientString.match(regex);
-
   if (!match) return defaults;
 
   const angle = match[1].trim();
-  const colorStops = match[2].split(",");
+  const colorStops = match[2].split(/,(?![^\(]*\))/); // Split by comma, but not inside parentheses like rgba()
 
-  // Extract just the color hex/rgb values
   const colors = colorStops
     .map((stop) => {
       const colorMatch = stop.trim().match(/(#[0-9a-fA-F]{3,6}|rgba?\(.+\))/);
@@ -189,10 +200,19 @@ function parseGradient(gradientString) {
     })
     .filter(Boolean);
 
+  // Convert rgb to hex for color input
+  const toHex = (rgb) => {
+    if (rgb.startsWith("#")) return rgb;
+    const [r, g, b] = rgb.match(/\d+/g);
+    return `#${(+r).toString(16).padStart(2, "0")}${(+g)
+      .toString(16)
+      .padStart(2, "0")}${(+b).toString(16).padStart(2, "0")}`;
+  };
+
   return {
     angle: angle,
-    color1: colors[0] || defaults.color1,
-    color2: colors[1] || defaults.color2,
+    color1: colors[0] ? toHex(colors[0]) : defaults.color1,
+    color2: colors[1] ? toHex(colors[1]) : defaults.color2,
   };
 }
 
@@ -210,6 +230,8 @@ async function loadThemeData() {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const data = docSnap.data();
+
+      // Load Gradients
       const gradients = [
         "primary",
         "sunset",
@@ -218,7 +240,6 @@ async function loadThemeData() {
         "aurora",
         "cosmic",
       ];
-
       gradients.forEach((gradName) => {
         if (data[gradName]) {
           const { angle, color1, color2 } = parseGradient(data[gradName]);
@@ -227,6 +248,27 @@ async function loadThemeData() {
           document.getElementById(`gradient-${gradName}-color2`).value = color2;
         }
       });
+
+      // Load Loading Screen Colors
+      if (data.loadingColors) {
+        const { light, dark } = data.loadingColors;
+        if (light) {
+          document.getElementById("loading-light-bg").value =
+            light.bg || "#f8f9fa";
+          document.getElementById("loading-light-primary").value =
+            light.primary || "#20272c";
+          document.getElementById("loading-light-accent").value =
+            light.accent || "#007bff";
+        }
+        if (dark) {
+          document.getElementById("loading-dark-bg").value =
+            dark.bg || "#1a1a2e";
+          document.getElementById("loading-dark-primary").value =
+            dark.primary || "#ffffff";
+          document.getElementById("loading-dark-accent").value =
+            dark.accent || "#4facfe";
+        }
+      }
     }
   } catch (error) {
     console.error("Error loading theme data:", error);
@@ -242,6 +284,18 @@ document.getElementById("theme-form").addEventListener("submit", async (e) => {
     fire: constructGradient("gradient-fire"),
     aurora: constructGradient("gradient-aurora"),
     cosmic: constructGradient("gradient-cosmic"),
+    loadingColors: {
+      light: {
+        bg: document.getElementById("loading-light-bg").value,
+        primary: document.getElementById("loading-light-primary").value,
+        accent: document.getElementById("loading-light-accent").value,
+      },
+      dark: {
+        bg: document.getElementById("loading-dark-bg").value,
+        primary: document.getElementById("loading-dark-primary").value,
+        accent: document.getElementById("loading-dark-accent").value,
+      },
+    },
   };
   try {
     await setDoc(doc(db, "portfolio", "theme"), data);
@@ -252,7 +306,7 @@ document.getElementById("theme-form").addEventListener("submit", async (e) => {
   }
 });
 
-// Generic Item Loader
+// Generic Item Loader (no changes needed below this line)
 async function loadItems(collectionName, listElementId, editItemCallback) {
   const listElement = document.getElementById(listElementId);
   listElement.innerHTML = "";
@@ -300,13 +354,12 @@ async function loadItems(collectionName, listElementId, editItemCallback) {
   }
 }
 
-// Generic Item Deleter
 async function deleteItem(collectionName, id, listElementId, editItemCallback) {
   if (confirm("Are you sure you want to delete this item?")) {
     try {
       await deleteDoc(doc(db, collectionName, id));
       alert("Item deleted successfully.");
-      loadItems(collectionName, listElementId, editItemCallback); // Refresh list
+      loadItems(collectionName, listElementId, editItemCallback);
     } catch (error) {
       console.error("Error deleting item:", error);
       alert("Error deleting item.");
@@ -314,7 +367,6 @@ async function deleteItem(collectionName, id, listElementId, editItemCallback) {
   }
 }
 
-// --- PROJECTS ---
 const projectForm = document.getElementById("project-form");
 const projectFormTitle = document.getElementById("project-form-title");
 
@@ -359,7 +411,6 @@ document.getElementById("clear-project-form").addEventListener("click", () => {
   document.getElementById("project-id").value = "";
 });
 
-// --- CERTIFICATES ---
 const certificateForm = document.getElementById("certificate-form");
 const certificateFormTitle = document.getElementById("certificate-form-title");
 
@@ -404,7 +455,6 @@ document
     document.getElementById("certificate-id").value = "";
   });
 
-// --- SKILLS ---
 const skillForm = document.getElementById("skill-form");
 
 skillForm.addEventListener("submit", async function (e) {

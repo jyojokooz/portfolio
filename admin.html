@@ -174,33 +174,38 @@
         color: var(--white);
       }
 
-      /* Styles for the new gradient picker */
-      .gradient-picker-grid {
+      .gradient-picker-grid,
+      .loading-color-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 1.5rem;
       }
-      .gradient-picker {
+      .gradient-picker,
+      .loading-color-picker {
         border: 1px solid var(--gray);
         padding: 1rem;
         border-radius: 4px;
       }
-      .gradient-picker label {
+      .gradient-picker label,
+      .loading-color-picker label {
         font-size: 1rem;
         font-weight: bold;
         margin-bottom: 1rem;
       }
-      .gradient-controls {
+      .gradient-controls,
+      .loading-controls {
         display: flex;
         gap: 1rem;
         align-items: center;
         flex-wrap: wrap;
       }
-      .gradient-controls div {
+      .gradient-controls div,
+      .loading-controls div {
         display: flex;
         flex-direction: column;
       }
-      .gradient-controls div small {
+      .gradient-controls div small,
+      .loading-controls div small {
         font-size: 0.8rem;
         margin-bottom: 0.25rem;
         color: #6c757d;
@@ -209,7 +214,8 @@
         width: 80px;
         margin-bottom: 0;
       }
-      .gradient-controls input[type="color"] {
+      .gradient-controls input[type="color"],
+      .loading-controls input[type="color"] {
         width: 50px;
         height: 40px;
         border: 1px solid var(--gray);
@@ -217,6 +223,14 @@
         border-radius: 4px;
         cursor: pointer;
         background-color: var(--white);
+      }
+      .sub-section-title {
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--gray);
       }
 
       @media (max-width: 992px) {
@@ -408,30 +422,30 @@
         <section>
           <h2><i class="fas fa-palette"></i> Theme & Design</h2>
           <form id="theme-form">
+            <h3 class="sub-section-title">Color Gradients</h3>
             <div class="gradient-picker-grid">
-              <!-- Primary Gradient -->
               <div class="gradient-picker">
                 <label>Primary Gradient</label>
                 <div class="gradient-controls">
                   <div>
-                    <small>Angle</small>
-                    <input
+                    <small>Angle</small
+                    ><input
                       type="text"
                       id="gradient-primary-angle"
                       placeholder="135deg"
                     />
                   </div>
                   <div>
-                    <small>Start</small>
-                    <input
+                    <small>Start</small
+                    ><input
                       type="color"
                       id="gradient-primary-color1"
                       value="#667eea"
                     />
                   </div>
                   <div>
-                    <small>End</small>
-                    <input
+                    <small>End</small
+                    ><input
                       type="color"
                       id="gradient-primary-color2"
                       value="#764ba2"
@@ -439,7 +453,6 @@
                   </div>
                 </div>
               </div>
-              <!-- Sunset Gradient -->
               <div class="gradient-picker">
                 <label>Sunset Gradient</label>
                 <div class="gradient-controls">
@@ -469,7 +482,6 @@
                   </div>
                 </div>
               </div>
-              <!-- Ocean Gradient -->
               <div class="gradient-picker">
                 <label>Ocean Gradient</label>
                 <div class="gradient-controls">
@@ -499,7 +511,6 @@
                   </div>
                 </div>
               </div>
-              <!-- Fire Gradient -->
               <div class="gradient-picker">
                 <label>Fire Gradient</label>
                 <div class="gradient-controls">
@@ -529,7 +540,6 @@
                   </div>
                 </div>
               </div>
-              <!-- Aurora Gradient -->
               <div class="gradient-picker">
                 <label>Aurora Gradient</label>
                 <div class="gradient-controls">
@@ -559,7 +569,6 @@
                   </div>
                 </div>
               </div>
-              <!-- Cosmic Gradient -->
               <div class="gradient-picker">
                 <label>Cosmic Gradient</label>
                 <div class="gradient-controls">
@@ -590,6 +599,65 @@
                 </div>
               </div>
             </div>
+
+            <h3 class="sub-section-title">Loading Screen Colors</h3>
+            <div class="loading-color-grid">
+              <div class="loading-color-picker">
+                <label>Light Mode</label>
+                <div class="loading-controls">
+                  <div>
+                    <small>Background</small
+                    ><input
+                      type="color"
+                      id="loading-light-bg"
+                      value="#f8f9fa"
+                    />
+                  </div>
+                  <div>
+                    <small>Primary (Text)</small
+                    ><input
+                      type="color"
+                      id="loading-light-primary"
+                      value="#20272c"
+                    />
+                  </div>
+                  <div>
+                    <small>Accent (Spinner)</small
+                    ><input
+                      type="color"
+                      id="loading-light-accent"
+                      value="#007bff"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="loading-color-picker">
+                <label>Dark Mode</label>
+                <div class="loading-controls">
+                  <div>
+                    <small>Background</small
+                    ><input type="color" id="loading-dark-bg" value="#1a1a2e" />
+                  </div>
+                  <div>
+                    <small>Primary (Text)</small
+                    ><input
+                      type="color"
+                      id="loading-dark-primary"
+                      value="#ffffff"
+                    />
+                  </div>
+                  <div>
+                    <small>Accent (Spinner)</small
+                    ><input
+                      type="color"
+                      id="loading-dark-accent"
+                      value="#4facfe"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <button type="submit" style="margin-top: 1.5rem">Save Theme</button>
           </form>
         </section>
