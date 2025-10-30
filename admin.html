@@ -71,7 +71,6 @@
         border-radius: 8px;
         box-shadow: var(--shadow);
       }
-      /* Profile section should span full width */
       .profile-section {
         grid-column: 1 / -1;
       }
@@ -156,6 +155,7 @@
         border: 1px solid var(--gray);
         border-radius: 4px;
         margin-bottom: 0.5rem;
+        transition: background-color 0.3s ease, opacity 0.3s ease;
       }
       .item span {
         font-weight: 500;
@@ -172,6 +172,35 @@
       .btn-delete {
         background-color: var(--danger-color);
         color: var(--white);
+      }
+      .form-check {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+      .form-check input[type="checkbox"] {
+        width: auto;
+        margin: 0 0.5rem 0 0;
+        transform: scale(1.2);
+      }
+      .form-check label {
+        margin-bottom: 0;
+        font-weight: normal;
+      }
+      .item.disabled {
+        background-color: #f1f3f5;
+        opacity: 0.6;
+      }
+      .item.disabled span {
+        text-decoration: line-through;
+      }
+      .btn-toggle {
+        color: white;
+        background-color: #28a745; /* Green for "Enable" */
+      }
+      .btn-toggle.enabled {
+        background-color: #ffc107; /* Yellow for "Disable" */
+        color: var(--dark-gray);
       }
       @media (max-width: 992px) {
         .grid-container {
@@ -278,6 +307,12 @@
               <input type="text" id="project-live-url" />
               <label for="project-code-url">Code URL</label>
               <input type="text" id="project-code-url" />
+              <div class="form-check">
+                <input type="checkbox" id="project-enabled" checked />
+                <label for="project-enabled"
+                  >Enabled (Visible on public site)</label
+                >
+              </div>
               <button type="submit">Save Project</button>
               <button
                 type="button"
@@ -315,6 +350,12 @@
               </button>
               <label for="certificate-verify-url">Verification URL</label>
               <input type="text" id="certificate-verify-url" />
+              <div class="form-check">
+                <input type="checkbox" id="certificate-enabled" checked />
+                <label for="certificate-enabled"
+                  >Enabled (Visible on public site)</label
+                >
+              </div>
               <button type="submit">Save Certificate</button>
               <button
                 type="button"
@@ -345,6 +386,12 @@
               placeholder="e.g., devicon-javascript-plain"
               required
             />
+            <div class="form-check">
+              <input type="checkbox" id="skill-enabled" checked />
+              <label for="skill-enabled"
+                >Enabled (Visible on public site)</label
+              >
+            </div>
             <button type="submit">Save Skill</button>
           </form>
         </section>

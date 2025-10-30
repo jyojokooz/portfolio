@@ -108,7 +108,7 @@ function loadAllData() {
   loadProfileData();
   loadItems("projects", "projects-list", populateProjectForm);
   loadItems("certificates", "certificates-list", populateCertificateForm);
-  loadItems("skills", "skills-list", () => {}); // Skills don't need an edit form for now
+  loadItems("skills", "skills-list", () => {});
 }
 
 // Profile
@@ -171,33 +171,56 @@ async function loadItems(collectionName, listElementId, editItemCallback) {
         "<p>No items found. Add one using the form below.</p>";
       return;
     }
-    querySnapshot.forEach((doc) => {
-      const item = doc.data();
-      const itemTitle = item.title || item.name; // Use 'name' for skills, 'title' for others
+    querySnapshot.forEach((docSnap) => {
+      const item = docSnap.data();
+      const id = docSnap.id;
+      const isEnabled = item.enabled !== false; // Default to true if undefined
+
+      const itemTitle = item.title || item.name;
       const itemDiv = document.createElement("div");
-      itemDiv.className = "item";
+      itemDiv.className = `item ${isEnabled ? "" : "disabled"}`;
+
+      const toggleButtonIcon = isEnabled ? "fa-eye-slash" : "fa-eye";
+      const toggleButtonText = isEnabled ? "Disable" : "Enable";
+      const toggleButtonClass = isEnabled ? "enabled" : "";
+
       itemDiv.innerHTML = `
         <span>${itemTitle}</span>
         <div class="item-buttons">
+            <button class="btn-toggle ${toggleButtonClass}"><i class="fas ${toggleButtonIcon}"></i> ${toggleButtonText}</button>
             ${
-              collectionName !== "skills" // Skills don't have an edit button for now
-                ? `<button class="btn-edit" data-id="${doc.id}"><i class="fas fa-edit"></i> Edit</button>`
+              collectionName !== "skills"
+                ? `<button class="btn-edit"><i class="fas fa-edit"></i> Edit</button>`
                 : ""
             }
-            <button class="btn-delete" data-id="${
-              doc.id
-            }"><i class="fas fa-trash"></i> Delete</button>
+            <button class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
         </div>
       `;
-      if (collectionName !== "skills") {
-        itemDiv
-          .querySelector(".btn-edit")
-          .addEventListener("click", () => editItemCallback(doc.id, item));
+
+      // Event Listeners
+      itemDiv
+        .querySelector(".btn-toggle")
+        .addEventListener("click", async () => {
+          try {
+            await updateDoc(doc(db, collectionName, id), {
+              enabled: !isEnabled,
+            });
+            loadItems(collectionName, listElementId, editItemCallback); // Refresh list
+          } catch (error) {
+            console.error("Error toggling item visibility:", error);
+            alert("Error updating item.");
+          }
+        });
+
+      const editBtn = itemDiv.querySelector(".btn-edit");
+      if (editBtn) {
+        editBtn.addEventListener("click", () => editItemCallback(id, item));
       }
+
       itemDiv
         .querySelector(".btn-delete")
         .addEventListener("click", () =>
-          deleteItem(collectionName, doc.id, listElementId, editItemCallback)
+          deleteItem(collectionName, id, listElementId, editItemCallback)
         );
 
       listElement.appendChild(itemDiv);
@@ -234,6 +257,7 @@ function populateProjectForm(id, data) {
   document.getElementById("project-image-url").value = data.imageUrl;
   document.getElementById("project-live-url").value = data.liveUrl;
   document.getElementById("project-code-url").value = data.codeUrl;
+  document.getElementById("project-enabled").checked = data.enabled !== false;
 }
 projectForm.addEventListener("submit", async function (e) {
   e.preventDefault();
@@ -244,6 +268,7 @@ projectForm.addEventListener("submit", async function (e) {
     imageUrl: document.getElementById("project-image-url").value,
     liveUrl: document.getElementById("project-live-url").value,
     codeUrl: document.getElementById("project-code-url").value,
+    enabled: document.getElementById("project-enabled").checked,
   };
   try {
     if (id) {
@@ -278,6 +303,8 @@ function populateCertificateForm(id, data) {
   document.getElementById("certificate-issuer").value = data.issuer;
   document.getElementById("certificate-image-url").value = data.imageUrl;
   document.getElementById("certificate-verify-url").value = data.verifyUrl;
+  document.getElementById("certificate-enabled").checked =
+    data.enabled !== false;
 }
 certificateForm.addEventListener("submit", async function (e) {
   e.preventDefault();
@@ -287,6 +314,7 @@ certificateForm.addEventListener("submit", async function (e) {
     issuer: document.getElementById("certificate-issuer").value,
     imageUrl: document.getElementById("certificate-image-url").value,
     verifyUrl: document.getElementById("certificate-verify-url").value,
+    enabled: document.getElementById("certificate-enabled").checked,
   };
   try {
     if (id) {
@@ -320,6 +348,7 @@ skillForm.addEventListener("submit", async function (e) {
   const data = {
     name: document.getElementById("skill-name").value,
     iconClass: document.getElementById("skill-icon-class").value,
+    enabled: document.getElementById("skill-enabled").checked,
   };
   try {
     await addDoc(collection(db, "skills"), data);

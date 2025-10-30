@@ -757,7 +757,7 @@ export { db, auth };
         transform: scale(1.1);
       }
       .sidebar .nav-link.active {
-        color: var(--sidebar-icon-active);
+        color: #ffffff;
         background-color: var(--sidebar-active-bg);
       }
 
@@ -1756,7 +1756,7 @@ export { db, auth };
 
 ----- C:/hello/portfolio\.git\COMMIT_EDITMSG -----
 
-ha
+new changes
 
 
 ----- C:/hello/portfolio\.git\config -----
@@ -1784,7 +1784,7 @@ Unnamed repository; edit this file 'description' to name the repository.
 
 ----- C:/hello/portfolio\.git\FETCH_HEAD -----
 
-b19fff947159e1e6d3d1cf136e0add3cc2c76d26		branch 'master' of https://github.com/jyojokooz/portfolio
+520f11e9a36c8694e0def51c5e57af2502b13e4f		branch 'master' of https://github.com/jyojokooz/portfolio
 
 
 ----- C:/hello/portfolio\.git\HEAD -----
@@ -1794,7 +1794,7 @@ ref: refs/heads/master
 
 ----- C:/hello/portfolio\.git\ORIG_HEAD -----
 
-b19fff947159e1e6d3d1cf136e0add3cc2c76d26
+520f11e9a36c8694e0def51c5e57af2502b13e4f
 
 
 ----- C:/hello/portfolio\.git\hooks\applypatch-msg.sample -----
@@ -2774,6 +2774,17 @@ a6fb9962f7fc1e2eab8962d99701c44565e2d3bb 1e67d4b0dc29efe43ee560695b529d5ddb22620
 acff032c5c29dc4eff162a336f73fd86bb23bad7 b9773cc536f60c3d0bb39a317e204c62ffc9a48a JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674065 +0530	commit: ha
 b9773cc536f60c3d0bb39a317e204c62ffc9a48a 173a7e572208cd442016de2633511f8167e8abcd JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674320 +0530	commit: hd
 173a7e572208cd442016de2633511f8167e8abcd b19fff947159e1e6d3d1cf136e0add3cc2c76d26 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761715549 +0530	commit: ha
+b19fff947159e1e6d3d1cf136e0add3cc2c76d26 3a9d5f4aef032324d69c5cda075be2610eeb312f JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761732804 +0530	commit: background
+3a9d5f4aef032324d69c5cda075be2610eeb312f 4cbd914a09a886b63fd5a7f101d9db3c02684974 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761734847 +0530	commit: jsr
+4cbd914a09a886b63fd5a7f101d9db3c02684974 8451591a48883cda30296d860bf679f78c1493aa JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761742961 +0530	commit: trackers of visitors
+8451591a48883cda30296d860bf679f78c1493aa 4cbd914a09a886b63fd5a7f101d9db3c02684974 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761796309 +0530	checkout: moving from master to 4cbd914a09a886b63fd5a7f101d9db3c02684974
+4cbd914a09a886b63fd5a7f101d9db3c02684974 16a0451f821c2076d95a1c1ade381a7f8c3d97d9 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761796401 +0530	commit: hh
+16a0451f821c2076d95a1c1ade381a7f8c3d97d9 8451591a48883cda30296d860bf679f78c1493aa JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761797683 +0530	checkout: moving from 16a0451f821c2076d95a1c1ade381a7f8c3d97d9 to 8451591a48883cda30296d860bf679f78c1493aa
+8451591a48883cda30296d860bf679f78c1493aa 4cbd914a09a886b63fd5a7f101d9db3c02684974 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761797741 +0530	reset: moving to HEAD~1
+4cbd914a09a886b63fd5a7f101d9db3c02684974 b8ac69bc3350fecc696074fd39bc761362f5ede0 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761797860 +0530	commit: fff
+b8ac69bc3350fecc696074fd39bc761362f5ede0 8451591a48883cda30296d860bf679f78c1493aa JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761798102 +0530	checkout: moving from b8ac69bc3350fecc696074fd39bc761362f5ede0 to master
+8451591a48883cda30296d860bf679f78c1493aa 4cbd914a09a886b63fd5a7f101d9db3c02684974 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761798111 +0530	reset: moving to 4cbd914a09a886b63fd5a7f101d9db3c02684974
+4cbd914a09a886b63fd5a7f101d9db3c02684974 520f11e9a36c8694e0def51c5e57af2502b13e4f JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761798461 +0530	commit: new changes
 
 
 ----- C:/hello/portfolio\.git\logs\refs\heads\master -----
@@ -2819,6 +2830,11 @@ a6fb9962f7fc1e2eab8962d99701c44565e2d3bb 1e67d4b0dc29efe43ee560695b529d5ddb22620
 acff032c5c29dc4eff162a336f73fd86bb23bad7 b9773cc536f60c3d0bb39a317e204c62ffc9a48a JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674065 +0530	commit: ha
 b9773cc536f60c3d0bb39a317e204c62ffc9a48a 173a7e572208cd442016de2633511f8167e8abcd JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674320 +0530	commit: hd
 173a7e572208cd442016de2633511f8167e8abcd b19fff947159e1e6d3d1cf136e0add3cc2c76d26 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761715549 +0530	commit: ha
+b19fff947159e1e6d3d1cf136e0add3cc2c76d26 3a9d5f4aef032324d69c5cda075be2610eeb312f JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761732804 +0530	commit: background
+3a9d5f4aef032324d69c5cda075be2610eeb312f 4cbd914a09a886b63fd5a7f101d9db3c02684974 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761734847 +0530	commit: jsr
+4cbd914a09a886b63fd5a7f101d9db3c02684974 8451591a48883cda30296d860bf679f78c1493aa JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761742961 +0530	commit: trackers of visitors
+8451591a48883cda30296d860bf679f78c1493aa 4cbd914a09a886b63fd5a7f101d9db3c02684974 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761798111 +0530	reset: moving to 4cbd914a09a886b63fd5a7f101d9db3c02684974
+4cbd914a09a886b63fd5a7f101d9db3c02684974 520f11e9a36c8694e0def51c5e57af2502b13e4f JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761798461 +0530	commit: new changes
 
 
 ----- C:/hello/portfolio\.git\logs\refs\remotes\origin\HEAD -----
@@ -2869,11 +2885,16 @@ a6fb9962f7fc1e2eab8962d99701c44565e2d3bb 1e67d4b0dc29efe43ee560695b529d5ddb22620
 acff032c5c29dc4eff162a336f73fd86bb23bad7 b9773cc536f60c3d0bb39a317e204c62ffc9a48a JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674071 +0530	update by push
 b9773cc536f60c3d0bb39a317e204c62ffc9a48a 173a7e572208cd442016de2633511f8167e8abcd JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761674326 +0530	update by push
 173a7e572208cd442016de2633511f8167e8abcd b19fff947159e1e6d3d1cf136e0add3cc2c76d26 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761715556 +0530	update by push
+b19fff947159e1e6d3d1cf136e0add3cc2c76d26 3a9d5f4aef032324d69c5cda075be2610eeb312f JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761732813 +0530	update by push
+3a9d5f4aef032324d69c5cda075be2610eeb312f 4cbd914a09a886b63fd5a7f101d9db3c02684974 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761734854 +0530	update by push
+4cbd914a09a886b63fd5a7f101d9db3c02684974 8451591a48883cda30296d860bf679f78c1493aa JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761742967 +0530	update by push
+8451591a48883cda30296d860bf679f78c1493aa 4cbd914a09a886b63fd5a7f101d9db3c02684974 JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761798121 +0530	update by push
+4cbd914a09a886b63fd5a7f101d9db3c02684974 520f11e9a36c8694e0def51c5e57af2502b13e4f JOEL S RAPHAEL <joelraphael6425@gmail.com> 1761798468 +0530	update by push
 
 
 ----- C:/hello/portfolio\.git\refs\heads\master -----
 
-b19fff947159e1e6d3d1cf136e0add3cc2c76d26
+520f11e9a36c8694e0def51c5e57af2502b13e4f
 
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\HEAD -----
@@ -2883,7 +2904,7 @@ ref: refs/remotes/origin/master
 
 ----- C:/hello/portfolio\.git\refs\remotes\origin\master -----
 
-b19fff947159e1e6d3d1cf136e0add3cc2c76d26
+520f11e9a36c8694e0def51c5e57af2502b13e4f
 
 
 ----- C:/hello/portfolio\.vscode\launch.json -----
@@ -3253,6 +3274,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let projectsData = new Map();
+let loadingAnimation = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   // Set Contact Email
@@ -3416,10 +3438,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Function to update Lottie animation colors based on theme
+  function updateLottieColors(isDarkMode) {
+    if (!loadingAnimation) return;
+
+    try {
+      const color = isDarkMode ? [1, 1, 1] : [0.125, 0.153, 0.173];
+
+      // Update all layers in the animation
+      loadingAnimation.renderer.elements.forEach((element) => {
+        if (element.data && element.data.ty === 5) {
+          // Text layer
+          if (element.textProperty && element.textProperty.currentData) {
+            element.textProperty.currentData.fc = color;
+          }
+        } else if (element.data && element.data.shapes) {
+          // Shape layers
+          element.data.shapes.forEach((shape) => {
+            if (shape.it) {
+              shape.it.forEach((item) => {
+                if (item.ty === "fl" && item.c) {
+                  // Fill color
+                  item.c.k = color;
+                } else if (item.ty === "st" && item.c) {
+                  // Stroke color
+                  item.c.k = color;
+                }
+              });
+            }
+          });
+        }
+      });
+
+      // Force re-render
+      loadingAnimation.renderer.renderFrame(loadingAnimation.currentFrame);
+    } catch (error) {
+      console.error("Error updating Lottie colors:", error);
+    }
+  }
+
   // --- A. LOADING SCREEN & DATA INITIALIZATION ---
   const loadingScreen = document.getElementById("loading-screen");
   const portfolioContainer = document.getElementById("portfolio-container");
-  const loadingAnimation = lottie.loadAnimation({
+
+  // Determine initial theme
+  const savedTheme = localStorage.getItem("theme") || "dark";
+  const isDarkMode = savedTheme === "dark";
+  const initialColor = isDarkMode ? [1, 1, 1] : [0.125, 0.153, 0.173];
+
+  loadingAnimation = lottie.loadAnimation({
     container: document.getElementById("loading-animation"),
     renderer: "svg",
     loop: true,
@@ -3518,7 +3585,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     },
                     {
                       ty: "fl",
-                      c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 4 },
+                      c: { a: 0, k: initialColor, ix: 4 },
                       o: { a: 0, k: 100, ix: 5 },
                       r: 1,
                       nm: "Relleno 1",
@@ -3834,7 +3901,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 {
                   ty: "fl",
-                  c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 4 },
+                  c: { a: 0, k: initialColor, ix: 4 },
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   nm: "Relleno 1",
@@ -3973,7 +4040,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 {
                   ty: "fl",
-                  c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 4 },
+                  c: { a: 0, k: initialColor, ix: 4 },
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   nm: "Relleno 1",
@@ -4034,7 +4101,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 {
                   ty: "st",
-                  c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 3 },
+                  c: { a: 0, k: initialColor, ix: 3 },
                   o: { a: 0, k: 100, ix: 4 },
                   w: { a: 0, k: 10, ix: 5 },
                   lc: 1,
@@ -4154,7 +4221,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 {
                   ty: "fl",
-                  c: { a: 0, k: [0.1255, 0.1529, 0.1725, 1], ix: 4 },
+                  c: { a: 0, k: initialColor, ix: 4 },
                   o: { a: 0, k: 100, ix: 5 },
                   r: 1,
                   nm: "Relleno 1",
@@ -4186,6 +4253,48 @@ document.addEventListener("DOMContentLoaded", () => {
           st: 0,
           bm: 0,
         },
+        // JSR TEXT LAYER
+        {
+          ddd: 0,
+          ind: 12,
+          ty: 5,
+          nm: "JSR Text",
+          sr: 1,
+          ks: {
+            o: { a: 0, k: 100, ix: 11 },
+            r: { a: 0, k: 0, ix: 10 },
+            p: { a: 0, k: [199, 270, 0], ix: 2 },
+            a: { a: 0, k: [0, 0, 0], ix: 1 },
+            s: { a: 0, k: [100, 100, 100], ix: 6 },
+          },
+          ao: 0,
+          t: {
+            d: {
+              k: [
+                {
+                  s: {
+                    s: 60,
+                    f: "Montserrat-Black",
+                    t: "JSR",
+                    j: 2,
+                    tr: 0,
+                    lh: 72,
+                    ls: 0,
+                    fc: initialColor,
+                  },
+                  t: 0,
+                },
+              ],
+            },
+            p: {},
+            m: { g: 1, a: { a: 0, k: [0, 0], ix: 2 } },
+            a: [],
+          },
+          ip: 0,
+          op: 144,
+          st: 0,
+          bm: 0,
+        },
         {
           ddd: 0,
           ind: 11,
@@ -4210,6 +4319,16 @@ document.addEventListener("DOMContentLoaded", () => {
           bm: 0,
         },
       ],
+      fonts: {
+        list: [
+          {
+            fName: "Montserrat-Black",
+            fFamily: "Montserrat",
+            fStyle: "Black",
+            ascent: 96.8017578125,
+          },
+        ],
+      },
     },
   });
 
@@ -4223,7 +4342,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       loadingScreen.classList.add("hide");
       portfolioContainer.classList.add("show");
-      setTimeout(() => loadingAnimation.destroy(), 500);
+      setTimeout(() => {
+        if (loadingAnimation) {
+          loadingAnimation.destroy();
+          loadingAnimation = null;
+        }
+      }, 500);
     }, 1500);
   });
 
@@ -4242,6 +4366,11 @@ document.addEventListener("DOMContentLoaded", () => {
       desktopThemeToggle.innerHTML = newIcon;
     }
 
+    // Update loading animation colors if it exists
+    if (loadingAnimation) {
+      updateLottieColors(theme === "dark");
+    }
+
     if (window.pJSDom && window.pJSDom[0]) {
       const particlesInstance = window.pJSDom[0].pJS;
       const newColor = theme === "dark" ? "#ffffff" : "#1a1a1a";
@@ -4251,7 +4380,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  const savedTheme = localStorage.getItem("theme") || "dark";
   applyTheme(savedTheme);
 
   const toggleTheme = () => {

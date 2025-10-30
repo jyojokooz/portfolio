@@ -5,6 +5,8 @@ import {
   getDoc,
   collection,
   getDocs,
+  query,
+  where,
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let projectsData = new Map();
@@ -73,7 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const projectsGrid = document.getElementById("projects-grid");
       projectsGrid.innerHTML = "";
       projectsData.clear();
-      const querySnapshot = await getDocs(collection(db, "projects"));
+      const q = query(collection(db, "projects"), where("enabled", "==", true));
+      const querySnapshot = await getDocs(q);
       const placeholderImg = "https://via.placeholder.com/400x180";
 
       const truncateText = (text, maxLength) => {
@@ -123,7 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const skillsGrid = document.getElementById("skills-grid");
       skillsGrid.innerHTML = "";
-      const querySnapshot = await getDocs(collection(db, "skills"));
+      const q = query(collection(db, "skills"), where("enabled", "==", true));
+      const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         const skill = doc.data();
         const skillCard = `
@@ -143,7 +147,11 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const certificatesGrid = document.getElementById("certificates-grid");
       certificatesGrid.innerHTML = "";
-      const querySnapshot = await getDocs(collection(db, "certificates"));
+      const q = query(
+        collection(db, "certificates"),
+        where("enabled", "==", true)
+      );
+      const querySnapshot = await getDocs(q);
       const placeholderImg = "https://via.placeholder.com/400x180";
 
       querySnapshot.forEach((doc) => {
