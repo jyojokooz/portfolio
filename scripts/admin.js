@@ -108,7 +108,8 @@ function loadAllData() {
   loadProfileData();
   loadItems("projects", "projects-list", populateProjectForm);
   loadItems("certificates", "certificates-list", populateCertificateForm);
-  loadItems("skills", "skills-list", () => {});
+  // FIXED: Pass the correct callback to enable skill editing
+  loadItems("skills", "skills-list", populateSkillForm);
 }
 
 // Profile
@@ -188,11 +189,7 @@ async function loadItems(collectionName, listElementId, editItemCallback) {
         <span>${itemTitle}</span>
         <div class="item-buttons">
             <button class="btn-toggle ${toggleButtonClass}"><i class="fas ${toggleButtonIcon}"></i> ${toggleButtonText}</button>
-            ${
-              collectionName !== "skills"
-                ? `<button class="btn-edit"><i class="fas fa-edit"></i> Edit</button>`
-                : ""
-            }
+            <button class="btn-edit"><i class="fas fa-edit"></i> Edit</button>
             <button class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
         </div>
       `;
@@ -212,10 +209,9 @@ async function loadItems(collectionName, listElementId, editItemCallback) {
           }
         });
 
-      const editBtn = itemDiv.querySelector(".btn-edit");
-      if (editBtn) {
-        editBtn.addEventListener("click", () => editItemCallback(id, item));
-      }
+      itemDiv
+        .querySelector(".btn-edit")
+        .addEventListener("click", () => editItemCallback(id, item));
 
       itemDiv
         .querySelector(".btn-delete")
@@ -255,8 +251,8 @@ function populateProjectForm(id, data) {
   document.getElementById("project-title").value = data.title;
   document.getElementById("project-description").value = data.description;
   document.getElementById("project-image-url").value = data.imageUrl;
-  document.getElementById("project-live-url").value = data.liveUrl;
-  document.getElementById("project-code-url").value = data.codeUrl;
+  document.getElementById("project-live-url").value = data.liveUrl || "";
+  document.getElementById("project-code-url").value = data.codeUrl || "";
   document.getElementById("project-enabled").checked = data.enabled !== false;
 }
 projectForm.addEventListener("submit", async function (e) {
@@ -302,7 +298,8 @@ function populateCertificateForm(id, data) {
   document.getElementById("certificate-title").value = data.title;
   document.getElementById("certificate-issuer").value = data.issuer;
   document.getElementById("certificate-image-url").value = data.imageUrl;
-  document.getElementById("certificate-verify-url").value = data.verifyUrl;
+  document.getElementById("certificate-verify-url").value =
+    data.verifyUrl || "";
   document.getElementById("certificate-enabled").checked =
     data.enabled !== false;
 }
@@ -342,21 +339,46 @@ document
 
 // --- SKILLS ---
 const skillForm = document.getElementById("skill-form");
+const skillFormTitle = document.getElementById("skill-form-title");
+
+// FIXED: Added function to populate the skill form for editing
+function populateSkillForm(id, data) {
+  skillFormTitle.textContent = "Edit Skill";
+  document.getElementById("skill-id").value = id;
+  document.getElementById("skill-name").value = data.name;
+  document.getElementById("skill-icon-class").value = data.iconClass;
+  document.getElementById("skill-enabled").checked = data.enabled !== false;
+}
 
 skillForm.addEventListener("submit", async function (e) {
   e.preventDefault();
+  // FIXED: Check for an ID to determine if we are creating or updating
+  const id = document.getElementById("skill-id").value;
   const data = {
     name: document.getElementById("skill-name").value,
     iconClass: document.getElementById("skill-icon-class").value,
     enabled: document.getElementById("skill-enabled").checked,
   };
   try {
-    await addDoc(collection(db, "skills"), data);
+    if (id) {
+      await updateDoc(doc(db, "skills", id), data);
+    } else {
+      await addDoc(collection(db, "skills"), data);
+    }
     alert("Skill saved successfully!");
     skillForm.reset();
-    loadItems("skills", "skills-list", () => {});
+    skillFormTitle.textContent = "Add New Skill";
+    document.getElementById("skill-id").value = "";
+    loadItems("skills", "skills-list", populateSkillForm);
   } catch (error) {
     console.error("Error saving skill:", error);
     alert("Error saving skill.");
   }
+});
+
+// FIXED: Added a clear button listener for the skill form
+document.getElementById("clear-skill-form").addEventListener("click", () => {
+  skillForm.reset();
+  skillFormTitle.textContent = "Add New Skill";
+  document.getElementById("skill-id").value = "";
 });

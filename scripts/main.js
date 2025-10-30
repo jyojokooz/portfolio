@@ -6,7 +6,7 @@ import {
   collection,
   getDocs,
   query,
-  where,
+  where, // <-- Import 'query' and 'where'
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let projectsData = new Map();
@@ -75,7 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const projectsGrid = document.getElementById("projects-grid");
       projectsGrid.innerHTML = "";
       projectsData.clear();
-      const q = query(collection(db, "projects"), where("enabled", "==", true));
+      // FIXED: Use '!=' to include old items without the 'enabled' field
+      const q = query(
+        collection(db, "projects"),
+        where("enabled", "!=", false)
+      );
       const querySnapshot = await getDocs(q);
       const placeholderImg = "https://via.placeholder.com/400x180";
 
@@ -126,7 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const skillsGrid = document.getElementById("skills-grid");
       skillsGrid.innerHTML = "";
-      const q = query(collection(db, "skills"), where("enabled", "==", true));
+      // FIXED: Use '!=' to include old items without the 'enabled' field
+      const q = query(collection(db, "skills"), where("enabled", "!=", false));
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
         const skill = doc.data();
@@ -147,9 +152,10 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const certificatesGrid = document.getElementById("certificates-grid");
       certificatesGrid.innerHTML = "";
+      // FIXED: Use '!=' to include old items without the 'enabled' field
       const q = query(
         collection(db, "certificates"),
-        where("enabled", "==", true)
+        where("enabled", "!=", false)
       );
       const querySnapshot = await getDocs(q);
       const placeholderImg = "https://via.placeholder.com/400x180";
