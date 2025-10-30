@@ -72,7 +72,6 @@
         box-shadow: var(--shadow);
         margin-bottom: 2rem;
       }
-      /* Profile section should span full width */
       .profile-section {
         grid-column: 1 / -1;
       }
@@ -174,6 +173,52 @@
         background-color: var(--danger-color);
         color: var(--white);
       }
+
+      /* Styles for the new gradient picker */
+      .gradient-picker-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+      .gradient-picker {
+        border: 1px solid var(--gray);
+        padding: 1rem;
+        border-radius: 4px;
+      }
+      .gradient-picker label {
+        font-size: 1rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+      .gradient-controls {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .gradient-controls div {
+        display: flex;
+        flex-direction: column;
+      }
+      .gradient-controls div small {
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+        color: #6c757d;
+      }
+      .gradient-controls input[type="text"] {
+        width: 80px;
+        margin-bottom: 0;
+      }
+      .gradient-controls input[type="color"] {
+        width: 50px;
+        height: 40px;
+        border: 1px solid var(--gray);
+        padding: 2px;
+        border-radius: 4px;
+        cursor: pointer;
+        background-color: var(--white);
+      }
+
       @media (max-width: 992px) {
         .grid-container {
           grid-template-columns: 1fr;
@@ -363,30 +408,189 @@
         <section>
           <h2><i class="fas fa-palette"></i> Theme & Design</h2>
           <form id="theme-form">
-            <p>
-              Enter the full CSS linear-gradient value. E.g.,
-              <code>linear-gradient(135deg, #667eea 0%, #764ba2 100%)</code>
-            </p>
-
-            <label for="gradient-primary">Primary Gradient</label>
-            <input type="text" id="gradient-primary" />
-
-            <label for="gradient-sunset">Sunset Gradient</label>
-            <input type="text" id="gradient-sunset" />
-
-            <label for="gradient-ocean">Ocean Gradient</label>
-            <input type="text" id="gradient-ocean" />
-
-            <label for="gradient-fire">Fire Gradient</label>
-            <input type="text" id="gradient-fire" />
-
-            <label for="gradient-aurora">Aurora Gradient</label>
-            <input type="text" id="gradient-aurora" />
-
-            <label for="gradient-cosmic">Cosmic Gradient</label>
-            <input type="text" id="gradient-cosmic" />
-
-            <button type="submit">Save Theme</button>
+            <div class="gradient-picker-grid">
+              <!-- Primary Gradient -->
+              <div class="gradient-picker">
+                <label>Primary Gradient</label>
+                <div class="gradient-controls">
+                  <div>
+                    <small>Angle</small>
+                    <input
+                      type="text"
+                      id="gradient-primary-angle"
+                      placeholder="135deg"
+                    />
+                  </div>
+                  <div>
+                    <small>Start</small>
+                    <input
+                      type="color"
+                      id="gradient-primary-color1"
+                      value="#667eea"
+                    />
+                  </div>
+                  <div>
+                    <small>End</small>
+                    <input
+                      type="color"
+                      id="gradient-primary-color2"
+                      value="#764ba2"
+                    />
+                  </div>
+                </div>
+              </div>
+              <!-- Sunset Gradient -->
+              <div class="gradient-picker">
+                <label>Sunset Gradient</label>
+                <div class="gradient-controls">
+                  <div>
+                    <small>Angle</small
+                    ><input
+                      type="text"
+                      id="gradient-sunset-angle"
+                      placeholder="135deg"
+                    />
+                  </div>
+                  <div>
+                    <small>Start</small
+                    ><input
+                      type="color"
+                      id="gradient-sunset-color1"
+                      value="#f093fb"
+                    />
+                  </div>
+                  <div>
+                    <small>End</small
+                    ><input
+                      type="color"
+                      id="gradient-sunset-color2"
+                      value="#f5576c"
+                    />
+                  </div>
+                </div>
+              </div>
+              <!-- Ocean Gradient -->
+              <div class="gradient-picker">
+                <label>Ocean Gradient</label>
+                <div class="gradient-controls">
+                  <div>
+                    <small>Angle</small
+                    ><input
+                      type="text"
+                      id="gradient-ocean-angle"
+                      placeholder="135deg"
+                    />
+                  </div>
+                  <div>
+                    <small>Start</small
+                    ><input
+                      type="color"
+                      id="gradient-ocean-color1"
+                      value="#4facfe"
+                    />
+                  </div>
+                  <div>
+                    <small>End</small
+                    ><input
+                      type="color"
+                      id="gradient-ocean-color2"
+                      value="#00f2fe"
+                    />
+                  </div>
+                </div>
+              </div>
+              <!-- Fire Gradient -->
+              <div class="gradient-picker">
+                <label>Fire Gradient</label>
+                <div class="gradient-controls">
+                  <div>
+                    <small>Angle</small
+                    ><input
+                      type="text"
+                      id="gradient-fire-angle"
+                      placeholder="135deg"
+                    />
+                  </div>
+                  <div>
+                    <small>Start</small
+                    ><input
+                      type="color"
+                      id="gradient-fire-color1"
+                      value="#fa709a"
+                    />
+                  </div>
+                  <div>
+                    <small>End</small
+                    ><input
+                      type="color"
+                      id="gradient-fire-color2"
+                      value="#fee140"
+                    />
+                  </div>
+                </div>
+              </div>
+              <!-- Aurora Gradient -->
+              <div class="gradient-picker">
+                <label>Aurora Gradient</label>
+                <div class="gradient-controls">
+                  <div>
+                    <small>Angle</small
+                    ><input
+                      type="text"
+                      id="gradient-aurora-angle"
+                      placeholder="135deg"
+                    />
+                  </div>
+                  <div>
+                    <small>Start</small
+                    ><input
+                      type="color"
+                      id="gradient-aurora-color1"
+                      value="#a8edea"
+                    />
+                  </div>
+                  <div>
+                    <small>End</small
+                    ><input
+                      type="color"
+                      id="gradient-aurora-color2"
+                      value="#fed6e3"
+                    />
+                  </div>
+                </div>
+              </div>
+              <!-- Cosmic Gradient -->
+              <div class="gradient-picker">
+                <label>Cosmic Gradient</label>
+                <div class="gradient-controls">
+                  <div>
+                    <small>Angle</small
+                    ><input
+                      type="text"
+                      id="gradient-cosmic-angle"
+                      placeholder="135deg"
+                    />
+                  </div>
+                  <div>
+                    <small>Start</small
+                    ><input
+                      type="color"
+                      id="gradient-cosmic-color1"
+                      value="#ff0844"
+                    />
+                  </div>
+                  <div>
+                    <small>End</small
+                    ><input
+                      type="color"
+                      id="gradient-cosmic-color2"
+                      value="#ffb199"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="submit" style="margin-top: 1.5rem">Save Theme</button>
           </form>
         </section>
       </main>

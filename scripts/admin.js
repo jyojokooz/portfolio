@@ -110,7 +110,7 @@ function loadAllData() {
   loadThemeData();
   loadItems("projects", "projects-list", populateProjectForm);
   loadItems("certificates", "certificates-list", populateCertificateForm);
-  loadItems("skills", "skills-list", () => {}); // Skills don't need an edit form
+  loadItems("skills", "skills-list", () => {});
 }
 
 // Profile
@@ -157,13 +157,51 @@ document
       },
     };
     try {
-      await setDoc(doc(db, "portfolio", "profile"), data);
+      await setDoc(doc(db, "portfolio", "profile"), data, { merge: true });
       alert("Profile saved successfully!");
     } catch (error) {
       console.error("Error saving profile:", error);
       alert("Error saving profile.");
     }
   });
+
+// Theme Helpers
+function parseGradient(gradientString) {
+  const defaults = { angle: "135deg", color1: "#ffffff", color2: "#000000" };
+  if (!gradientString || !gradientString.includes("gradient")) {
+    return defaults;
+  }
+
+  // Regex to capture angle, and all color stops. We'll just use the first two colors found.
+  const regex = /linear-gradient\(([^,]+),(.+)\)/;
+  const match = gradientString.match(regex);
+
+  if (!match) return defaults;
+
+  const angle = match[1].trim();
+  const colorStops = match[2].split(",");
+
+  // Extract just the color hex/rgb values
+  const colors = colorStops
+    .map((stop) => {
+      const colorMatch = stop.trim().match(/(#[0-9a-fA-F]{3,6}|rgba?\(.+\))/);
+      return colorMatch ? colorMatch[0] : null;
+    })
+    .filter(Boolean);
+
+  return {
+    angle: angle,
+    color1: colors[0] || defaults.color1,
+    color2: colors[1] || defaults.color2,
+  };
+}
+
+function constructGradient(baseId) {
+  const angle = document.getElementById(`${baseId}-angle`).value || "135deg";
+  const color1 = document.getElementById(`${baseId}-color1`).value;
+  const color2 = document.getElementById(`${baseId}-color2`).value;
+  return `linear-gradient(${angle}, ${color1}, ${color2})`;
+}
 
 // Theme
 async function loadThemeData() {
@@ -172,12 +210,23 @@ async function loadThemeData() {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const data = docSnap.data();
-      document.getElementById("gradient-primary").value = data.primary || "";
-      document.getElementById("gradient-sunset").value = data.sunset || "";
-      document.getElementById("gradient-ocean").value = data.ocean || "";
-      document.getElementById("gradient-fire").value = data.fire || "";
-      document.getElementById("gradient-aurora").value = data.aurora || "";
-      document.getElementById("gradient-cosmic").value = data.cosmic || "";
+      const gradients = [
+        "primary",
+        "sunset",
+        "ocean",
+        "fire",
+        "aurora",
+        "cosmic",
+      ];
+
+      gradients.forEach((gradName) => {
+        if (data[gradName]) {
+          const { angle, color1, color2 } = parseGradient(data[gradName]);
+          document.getElementById(`gradient-${gradName}-angle`).value = angle;
+          document.getElementById(`gradient-${gradName}-color1`).value = color1;
+          document.getElementById(`gradient-${gradName}-color2`).value = color2;
+        }
+      });
     }
   } catch (error) {
     console.error("Error loading theme data:", error);
@@ -187,12 +236,12 @@ async function loadThemeData() {
 document.getElementById("theme-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const data = {
-    primary: document.getElementById("gradient-primary").value,
-    sunset: document.getElementById("gradient-sunset").value,
-    ocean: document.getElementById("gradient-ocean").value,
-    fire: document.getElementById("gradient-fire").value,
-    aurora: document.getElementById("gradient-aurora").value,
-    cosmic: document.getElementById("gradient-cosmic").value,
+    primary: constructGradient("gradient-primary"),
+    sunset: constructGradient("gradient-sunset"),
+    ocean: constructGradient("gradient-ocean"),
+    fire: constructGradient("gradient-fire"),
+    aurora: constructGradient("gradient-aurora"),
+    cosmic: constructGradient("gradient-cosmic"),
   };
   try {
     await setDoc(doc(db, "portfolio", "theme"), data);
@@ -216,7 +265,7 @@ async function loadItems(collectionName, listElementId, editItemCallback) {
     }
     querySnapshot.forEach((doc) => {
       const item = doc.data();
-      const itemTitle = item.title || item.name; // Use 'name' for skills, 'title' for others
+      const itemTitle = item.title || item.name;
       const itemDiv = document.createElement("div");
       itemDiv.className = "item";
       itemDiv.innerHTML = `
