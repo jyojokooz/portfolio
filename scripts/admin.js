@@ -92,6 +92,7 @@ function setupImageUploadButton(buttonId, inputId) {
 }
 
 setupImageUploadButton("upload-profile-pic", "profile-pic-url");
+setupImageUploadButton("upload-background-image", "background-image-url");
 setupImageUploadButton("upload-project-image", "project-image-url");
 setupImageUploadButton("upload-certificate-image", "certificate-image-url");
 
@@ -106,10 +107,10 @@ document.getElementById("upload-resume-button").addEventListener(
 // --- DATA LOADING & SAVING ---
 function loadAllData() {
   loadProfileData();
+  loadThemeData();
   loadItems("projects", "projects-list", populateProjectForm);
   loadItems("certificates", "certificates-list", populateCertificateForm);
-  // FIXED: Pass the correct callback to enable skill editing
-  loadItems("skills", "skills-list", populateSkillForm);
+  loadItems("skills", "skills-list", () => {}); // Skills don't need an edit form
 }
 
 // Profile
@@ -124,6 +125,8 @@ async function loadProfileData() {
       document.getElementById("profile-bio").value = data.bio || "";
       document.getElementById("profile-pic-url").value =
         data.profilePicUrl || "";
+      document.getElementById("background-image-url").value =
+        data.backgroundUrl || "";
       document.getElementById("resume-url").value = data.resumeUrl || "";
       document.getElementById("github-url").value = data.socials?.github || "";
       document.getElementById("instagram-url").value =
@@ -145,6 +148,7 @@ document
       jobTitle: document.getElementById("profile-job-title").value,
       bio: document.getElementById("profile-bio").value,
       profilePicUrl: document.getElementById("profile-pic-url").value,
+      backgroundUrl: document.getElementById("background-image-url").value,
       resumeUrl: document.getElementById("resume-url").value,
       socials: {
         github: document.getElementById("github-url").value,
@@ -161,6 +165,44 @@ document
     }
   });
 
+// Theme
+async function loadThemeData() {
+  try {
+    const docRef = doc(db, "portfolio", "theme");
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      document.getElementById("gradient-primary").value = data.primary || "";
+      document.getElementById("gradient-sunset").value = data.sunset || "";
+      document.getElementById("gradient-ocean").value = data.ocean || "";
+      document.getElementById("gradient-fire").value = data.fire || "";
+      document.getElementById("gradient-aurora").value = data.aurora || "";
+      document.getElementById("gradient-cosmic").value = data.cosmic || "";
+    }
+  } catch (error) {
+    console.error("Error loading theme data:", error);
+    alert("Could not load theme data.");
+  }
+}
+document.getElementById("theme-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = {
+    primary: document.getElementById("gradient-primary").value,
+    sunset: document.getElementById("gradient-sunset").value,
+    ocean: document.getElementById("gradient-ocean").value,
+    fire: document.getElementById("gradient-fire").value,
+    aurora: document.getElementById("gradient-aurora").value,
+    cosmic: document.getElementById("gradient-cosmic").value,
+  };
+  try {
+    await setDoc(doc(db, "portfolio", "theme"), data);
+    alert("Theme saved successfully!");
+  } catch (error) {
+    console.error("Error saving theme:", error);
+    alert("Error saving theme.");
+  }
+});
+
 // Generic Item Loader
 async function loadItems(collectionName, listElementId, editItemCallback) {
   const listElement = document.getElementById(listElementId);
@@ -172,51 +214,33 @@ async function loadItems(collectionName, listElementId, editItemCallback) {
         "<p>No items found. Add one using the form below.</p>";
       return;
     }
-    querySnapshot.forEach((docSnap) => {
-      const item = docSnap.data();
-      const id = docSnap.id;
-      const isEnabled = item.enabled !== false; // Default to true if undefined
-
-      const itemTitle = item.title || item.name;
+    querySnapshot.forEach((doc) => {
+      const item = doc.data();
+      const itemTitle = item.title || item.name; // Use 'name' for skills, 'title' for others
       const itemDiv = document.createElement("div");
-      itemDiv.className = `item ${isEnabled ? "" : "disabled"}`;
-
-      const toggleButtonIcon = isEnabled ? "fa-eye-slash" : "fa-eye";
-      const toggleButtonText = isEnabled ? "Disable" : "Enable";
-      const toggleButtonClass = isEnabled ? "enabled" : "";
-
+      itemDiv.className = "item";
       itemDiv.innerHTML = `
         <span>${itemTitle}</span>
         <div class="item-buttons">
-            <button class="btn-toggle ${toggleButtonClass}"><i class="fas ${toggleButtonIcon}"></i> ${toggleButtonText}</button>
-            <button class="btn-edit"><i class="fas fa-edit"></i> Edit</button>
-            <button class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
+            ${
+              collectionName !== "skills"
+                ? `<button class="btn-edit" data-id="${doc.id}"><i class="fas fa-edit"></i> Edit</button>`
+                : ""
+            }
+            <button class="btn-delete" data-id="${
+              doc.id
+            }"><i class="fas fa-trash"></i> Delete</button>
         </div>
       `;
-
-      // Event Listeners
-      itemDiv
-        .querySelector(".btn-toggle")
-        .addEventListener("click", async () => {
-          try {
-            await updateDoc(doc(db, collectionName, id), {
-              enabled: !isEnabled,
-            });
-            loadItems(collectionName, listElementId, editItemCallback); // Refresh list
-          } catch (error) {
-            console.error("Error toggling item visibility:", error);
-            alert("Error updating item.");
-          }
-        });
-
-      itemDiv
-        .querySelector(".btn-edit")
-        .addEventListener("click", () => editItemCallback(id, item));
-
+      if (collectionName !== "skills") {
+        itemDiv
+          .querySelector(".btn-edit")
+          .addEventListener("click", () => editItemCallback(doc.id, item));
+      }
       itemDiv
         .querySelector(".btn-delete")
         .addEventListener("click", () =>
-          deleteItem(collectionName, id, listElementId, editItemCallback)
+          deleteItem(collectionName, doc.id, listElementId, editItemCallback)
         );
 
       listElement.appendChild(itemDiv);
@@ -251,9 +275,8 @@ function populateProjectForm(id, data) {
   document.getElementById("project-title").value = data.title;
   document.getElementById("project-description").value = data.description;
   document.getElementById("project-image-url").value = data.imageUrl;
-  document.getElementById("project-live-url").value = data.liveUrl || "";
-  document.getElementById("project-code-url").value = data.codeUrl || "";
-  document.getElementById("project-enabled").checked = data.enabled !== false;
+  document.getElementById("project-live-url").value = data.liveUrl;
+  document.getElementById("project-code-url").value = data.codeUrl;
 }
 projectForm.addEventListener("submit", async function (e) {
   e.preventDefault();
@@ -264,7 +287,6 @@ projectForm.addEventListener("submit", async function (e) {
     imageUrl: document.getElementById("project-image-url").value,
     liveUrl: document.getElementById("project-live-url").value,
     codeUrl: document.getElementById("project-code-url").value,
-    enabled: document.getElementById("project-enabled").checked,
   };
   try {
     if (id) {
@@ -298,10 +320,7 @@ function populateCertificateForm(id, data) {
   document.getElementById("certificate-title").value = data.title;
   document.getElementById("certificate-issuer").value = data.issuer;
   document.getElementById("certificate-image-url").value = data.imageUrl;
-  document.getElementById("certificate-verify-url").value =
-    data.verifyUrl || "";
-  document.getElementById("certificate-enabled").checked =
-    data.enabled !== false;
+  document.getElementById("certificate-verify-url").value = data.verifyUrl;
 }
 certificateForm.addEventListener("submit", async function (e) {
   e.preventDefault();
@@ -311,7 +330,6 @@ certificateForm.addEventListener("submit", async function (e) {
     issuer: document.getElementById("certificate-issuer").value,
     imageUrl: document.getElementById("certificate-image-url").value,
     verifyUrl: document.getElementById("certificate-verify-url").value,
-    enabled: document.getElementById("certificate-enabled").checked,
   };
   try {
     if (id) {
@@ -339,46 +357,20 @@ document
 
 // --- SKILLS ---
 const skillForm = document.getElementById("skill-form");
-const skillFormTitle = document.getElementById("skill-form-title");
-
-// FIXED: Added function to populate the skill form for editing
-function populateSkillForm(id, data) {
-  skillFormTitle.textContent = "Edit Skill";
-  document.getElementById("skill-id").value = id;
-  document.getElementById("skill-name").value = data.name;
-  document.getElementById("skill-icon-class").value = data.iconClass;
-  document.getElementById("skill-enabled").checked = data.enabled !== false;
-}
 
 skillForm.addEventListener("submit", async function (e) {
   e.preventDefault();
-  // FIXED: Check for an ID to determine if we are creating or updating
-  const id = document.getElementById("skill-id").value;
   const data = {
     name: document.getElementById("skill-name").value,
     iconClass: document.getElementById("skill-icon-class").value,
-    enabled: document.getElementById("skill-enabled").checked,
   };
   try {
-    if (id) {
-      await updateDoc(doc(db, "skills", id), data);
-    } else {
-      await addDoc(collection(db, "skills"), data);
-    }
+    await addDoc(collection(db, "skills"), data);
     alert("Skill saved successfully!");
     skillForm.reset();
-    skillFormTitle.textContent = "Add New Skill";
-    document.getElementById("skill-id").value = "";
-    loadItems("skills", "skills-list", populateSkillForm);
+    loadItems("skills", "skills-list", () => {});
   } catch (error) {
     console.error("Error saving skill:", error);
     alert("Error saving skill.");
   }
-});
-
-// FIXED: Added a clear button listener for the skill form
-document.getElementById("clear-skill-form").addEventListener("click", () => {
-  skillForm.reset();
-  skillFormTitle.textContent = "Add New Skill";
-  document.getElementById("skill-id").value = "";
 });

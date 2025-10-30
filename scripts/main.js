@@ -5,8 +5,6 @@ import {
   getDoc,
   collection,
   getDocs,
-  query,
-  where, // <-- Import 'query' and 'where'
 } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
 let projectsData = new Map();
@@ -22,6 +20,37 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- 1. DATA FETCHING & POPULATING FUNCTIONS ---
+
+  async function applyThemeSettings() {
+    try {
+      const docRef = doc(db, "portfolio", "theme");
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const root = document.documentElement;
+
+        const gradients = {
+          primary: "--gradient-primary",
+          sunset: "--gradient-sunset",
+          ocean: "--gradient-ocean",
+          fire: "--gradient-fire",
+          aurora: "--gradient-aurora",
+          cosmic: "--gradient-cosmic",
+        };
+
+        for (const [key, cssVar] of Object.entries(gradients)) {
+          if (data[key]) {
+            root.style.setProperty(cssVar, data[key]);
+          }
+        }
+      } else {
+        console.log("No theme document found, using default styles.");
+      }
+    } catch (error) {
+      console.error("Error fetching theme settings:", error);
+    }
+  }
 
   async function populateHomePage() {
     try {
@@ -41,6 +70,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("profile-bio").textContent =
           data.bio || "Your bio goes here.";
         document.getElementById("resume-button").href = data.resumeUrl || "#";
+
+        if (data.backgroundUrl) {
+          document.body.style.backgroundImage = `url('${data.backgroundUrl}')`;
+        }
 
         const socialLinksHTML = `
           ${
@@ -75,12 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const projectsGrid = document.getElementById("projects-grid");
       projectsGrid.innerHTML = "";
       projectsData.clear();
-      // FIXED: Use '!=' to include old items without the 'enabled' field
-      const q = query(
-        collection(db, "projects"),
-        where("enabled", "!=", false)
-      );
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(collection(db, "projects"));
       const placeholderImg = "https://via.placeholder.com/400x180";
 
       const truncateText = (text, maxLength) => {
@@ -130,9 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const skillsGrid = document.getElementById("skills-grid");
       skillsGrid.innerHTML = "";
-      // FIXED: Use '!=' to include old items without the 'enabled' field
-      const q = query(collection(db, "skills"), where("enabled", "!=", false));
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(collection(db, "skills"));
       querySnapshot.forEach((doc) => {
         const skill = doc.data();
         const skillCard = `
@@ -152,12 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const certificatesGrid = document.getElementById("certificates-grid");
       certificatesGrid.innerHTML = "";
-      // FIXED: Use '!=' to include old items without the 'enabled' field
-      const q = query(
-        collection(db, "certificates"),
-        where("enabled", "!=", false)
-      );
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(collection(db, "certificates"));
       const placeholderImg = "https://via.placeholder.com/400x180";
 
       querySnapshot.forEach((doc) => {
@@ -1082,6 +1103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   Promise.all([
     populateHomePage(),
+    applyThemeSettings(),
     populateProjects(),
     populateSkills(),
     populateCertificates(),

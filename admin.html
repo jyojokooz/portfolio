@@ -70,7 +70,9 @@
         padding: 2rem;
         border-radius: 8px;
         box-shadow: var(--shadow);
+        margin-bottom: 2rem;
       }
+      /* Profile section should span full width */
       .profile-section {
         grid-column: 1 / -1;
       }
@@ -155,7 +157,6 @@
         border: 1px solid var(--gray);
         border-radius: 4px;
         margin-bottom: 0.5rem;
-        transition: background-color 0.3s ease, opacity 0.3s ease;
       }
       .item span {
         font-weight: 500;
@@ -172,35 +173,6 @@
       .btn-delete {
         background-color: var(--danger-color);
         color: var(--white);
-      }
-      .form-check {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      .form-check input[type="checkbox"] {
-        width: auto;
-        margin: 0 0.5rem 0 0;
-        transform: scale(1.2);
-      }
-      .form-check label {
-        margin-bottom: 0;
-        font-weight: normal;
-      }
-      .item.disabled {
-        background-color: #f1f3f5;
-        opacity: 0.6;
-      }
-      .item.disabled span {
-        text-decoration: line-through;
-      }
-      .btn-toggle {
-        color: white;
-        background-color: #28a745; /* Green for "Enable" */
-      }
-      .btn-toggle.enabled {
-        background-color: #ffc107; /* Yellow for "Disable" */
-        color: var(--dark-gray);
       }
       @media (max-width: 992px) {
         .grid-container {
@@ -262,6 +234,16 @@
               Upload Picture
             </button>
 
+            <label for="background-image-url">Background Image URL</label>
+            <input type="text" id="background-image-url" readonly />
+            <button
+              type="button"
+              class="btn-upload"
+              id="upload-background-image"
+            >
+              Upload Background
+            </button>
+
             <label for="resume-url">Resume PDF URL</label>
             <input
               type="text"
@@ -307,12 +289,6 @@
               <input type="text" id="project-live-url" />
               <label for="project-code-url">Code URL</label>
               <input type="text" id="project-code-url" />
-              <div class="form-check">
-                <input type="checkbox" id="project-enabled" checked />
-                <label for="project-enabled"
-                  >Enabled (Visible on public site)</label
-                >
-              </div>
               <button type="submit">Save Project</button>
               <button
                 type="button"
@@ -350,12 +326,6 @@
               </button>
               <label for="certificate-verify-url">Verification URL</label>
               <input type="text" id="certificate-verify-url" />
-              <div class="form-check">
-                <input type="checkbox" id="certificate-enabled" checked />
-                <label for="certificate-enabled"
-                  >Enabled (Visible on public site)</label
-                >
-              </div>
               <button type="submit">Save Certificate</button>
               <button
                 type="button"
@@ -370,9 +340,8 @@
         <section>
           <h2><i class="fas fa-code"></i> Skills</h2>
           <div id="skills-list" class="items-list"></div>
-          <h3 id="skill-form-title">Add New Skill</h3>
+          <h3>Add New Skill</h3>
           <form id="skill-form">
-            <input type="hidden" id="skill-id" />
             <label for="skill-name">Skill Name</label>
             <input
               type="text"
@@ -387,16 +356,37 @@
               placeholder="e.g., devicon-javascript-plain"
               required
             />
-            <div class="form-check">
-              <input type="checkbox" id="skill-enabled" checked />
-              <label for="skill-enabled"
-                >Enabled (Visible on public site)</label
-              >
-            </div>
             <button type="submit">Save Skill</button>
-            <button type="button" id="clear-skill-form" class="btn-secondary">
-              Clear
-            </button>
+          </form>
+        </section>
+
+        <section>
+          <h2><i class="fas fa-palette"></i> Theme & Design</h2>
+          <form id="theme-form">
+            <p>
+              Enter the full CSS linear-gradient value. E.g.,
+              <code>linear-gradient(135deg, #667eea 0%, #764ba2 100%)</code>
+            </p>
+
+            <label for="gradient-primary">Primary Gradient</label>
+            <input type="text" id="gradient-primary" />
+
+            <label for="gradient-sunset">Sunset Gradient</label>
+            <input type="text" id="gradient-sunset" />
+
+            <label for="gradient-ocean">Ocean Gradient</label>
+            <input type="text" id="gradient-ocean" />
+
+            <label for="gradient-fire">Fire Gradient</label>
+            <input type="text" id="gradient-fire" />
+
+            <label for="gradient-aurora">Aurora Gradient</label>
+            <input type="text" id="gradient-aurora" />
+
+            <label for="gradient-cosmic">Cosmic Gradient</label>
+            <input type="text" id="gradient-cosmic" />
+
+            <button type="submit">Save Theme</button>
           </form>
         </section>
       </main>
