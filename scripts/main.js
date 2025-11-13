@@ -11,6 +11,40 @@ let projectsData = new Map();
 let loadingAnimation = null;
 let themeSettings = {}; // Store fetched theme settings globally
 
+// --- NEW UTILITY FUNCTION for Cloudinary Optimization ---
+/**
+ * Injects Cloudinary optimization transformations into a URL.
+ * @param {string} url - The original Cloudinary media URL.
+ * @param {('image'|'video')} resourceType - The type of media.
+ * @returns {string} The new URL with optimization parameters.
+ */
+function getOptimizedCloudinaryUrl(url, resourceType) {
+  if (!url || !url.includes("res.cloudinary.com")) {
+    return url; // Not a Cloudinary URL, return as is.
+  }
+
+  const videoTransformations = "q_auto,f_auto,vc_auto";
+  const imageTransformations = "q_auto,f_auto";
+
+  const transformations =
+    resourceType === "video" ? videoTransformations : imageTransformations;
+
+  // Split the URL at the 'upload/' part to inject transformations
+  const urlParts = url.split("/upload/");
+  if (urlParts.length !== 2) {
+    return url; // URL format is unexpected, return original.
+  }
+
+  // Check if transformations are already present
+  const existingTransforms = urlParts[1].split("/")[0];
+  if (existingTransforms.includes("q_auto")) {
+    return url; // Transformations likely already exist
+  }
+
+  const optimizedUrl = `${urlParts[0]}/upload/${transformations}/${urlParts[1]}`;
+  return optimizedUrl;
+}
+
 // --- UTILITY FUNCTIONS ---
 function hexToLottieColor(hex) {
   if (!hex || typeof hex !== "string" || hex.charAt(0) !== "#") {
@@ -153,9 +187,57 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("profile-bio").textContent =
           data.bio || "Your bio goes here.";
         document.getElementById("resume-button").href = data.resumeUrl || "#";
-        if (data.backgroundUrl) {
-          document.body.style.backgroundImage = `url('${data.backgroundUrl}')`;
+
+        // --- UPDATED BACKGROUND LOGIC WITH OPTIMIZATION ---
+        const videoContainer = document.querySelector(
+          ".video-background-container"
+        );
+        const videoEl = document.getElementById("background-video");
+        const backgroundImageUrl =
+          data.backgroundImageUrl || data.backgroundUrl;
+        const backgroundVideoUrl = data.backgroundVideoUrl;
+
+        // Clear previous backgrounds to avoid conflicts
+        videoContainer.style.display = "none";
+        videoEl.src = "";
+        document.body.style.backgroundImage = "none";
+
+        // **MODIFICATION**: Removed the mobile check. Always try video first.
+        if (backgroundVideoUrl) {
+          videoContainer.style.display = "block";
+          if (backgroundImageUrl) {
+            videoEl.poster = getOptimizedCloudinaryUrl(
+              backgroundImageUrl,
+              "image"
+            );
+          }
+          videoEl.src = getOptimizedCloudinaryUrl(backgroundVideoUrl, "video");
+          videoEl.load();
+          videoEl.play().catch((error) => {
+            console.error(
+              "Video autoplay failed, falling back to image:",
+              error
+            );
+            // Fallback to image if video fails to play for any reason
+            videoContainer.style.display = "none";
+            if (backgroundImageUrl) {
+              const optimizedImgUrl = getOptimizedCloudinaryUrl(
+                backgroundImageUrl,
+                "image"
+              );
+              document.body.style.backgroundImage = `url('${optimizedImgUrl}')`;
+            }
+          });
+        } else if (backgroundImageUrl) {
+          // If no video, use the image.
+          const optimizedImgUrl = getOptimizedCloudinaryUrl(
+            backgroundImageUrl,
+            "image"
+          );
+          document.body.style.backgroundImage = `url('${optimizedImgUrl}')`;
         }
+        // --- END UPDATED BACKGROUND LOGIC ---
+
         const socialLinksHTML = `${
           data.socials?.github
             ? `<a href="${data.socials.github}" title="GitHub" target="_blank" rel="noopener"><i class="fab fa-github"></i></a>`

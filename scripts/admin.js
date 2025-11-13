@@ -52,12 +52,30 @@ const imageWidget = cloudinary.createUploadWidget(
   {
     cloudName: config.cloudinary.cloudName,
     uploadPreset: config.cloudinary.uploadPreset,
+    resource_type: "image", // Explicitly set for images
   },
   (error, result) => {
     if (!error && result && result.event === "success") {
       if (currentImageInput) {
         currentImageInput.value = result.info.secure_url;
       }
+    }
+  }
+);
+
+// --- NEW: Video Upload Widget ---
+const videoWidget = cloudinary.createUploadWidget(
+  {
+    cloudName: config.cloudinary.cloudName,
+    uploadPreset: config.cloudinary.uploadPreset,
+    resource_type: "video", // Crucial for video handling
+    clientAllowedFormats: ["mp4", "webm", "mov"],
+  },
+  (error, result) => {
+    if (!error && result && result.event === "success") {
+      document.getElementById("background-video-url").value =
+        result.info.secure_url;
+      alert("Video uploaded successfully!");
     }
   }
 );
@@ -96,6 +114,15 @@ setupImageUploadButton("upload-background-image", "background-image-url");
 setupImageUploadButton("upload-project-image", "project-image-url");
 setupImageUploadButton("upload-certificate-image", "certificate-image-url");
 
+// --- NEW: Event listener for the video upload button ---
+document.getElementById("upload-background-video").addEventListener(
+  "click",
+  function () {
+    videoWidget.open();
+  },
+  false
+);
+
 document.getElementById("upload-resume-button").addEventListener(
   "click",
   function () {
@@ -125,8 +152,10 @@ async function loadProfileData() {
       document.getElementById("profile-bio").value = data.bio || "";
       document.getElementById("profile-pic-url").value =
         data.profilePicUrl || "";
+      document.getElementById("background-video-url").value =
+        data.backgroundVideoUrl || "";
       document.getElementById("background-image-url").value =
-        data.backgroundUrl || "";
+        data.backgroundImageUrl || data.backgroundUrl || ""; // For backwards compatibility
       document.getElementById("resume-url").value = data.resumeUrl || "";
       document.getElementById("github-url").value = data.socials?.github || "";
       document.getElementById("instagram-url").value =
@@ -148,7 +177,8 @@ document
       jobTitle: document.getElementById("profile-job-title").value,
       bio: document.getElementById("profile-bio").value,
       profilePicUrl: document.getElementById("profile-pic-url").value,
-      backgroundUrl: document.getElementById("background-image-url").value,
+      backgroundVideoUrl: document.getElementById("background-video-url").value,
+      backgroundImageUrl: document.getElementById("background-image-url").value,
       resumeUrl: document.getElementById("resume-url").value,
       socials: {
         github: document.getElementById("github-url").value,
