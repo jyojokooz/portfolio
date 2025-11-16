@@ -11,93 +11,66 @@ let projectsData = new Map();
 let loadingAnimation = null;
 let themeSettings = {}; // Store fetched theme settings globally
 
-// --- NEW UTILITY FUNCTION for Cloudinary Optimization ---
-/**
- * Injects Cloudinary optimization transformations into a URL.
- * @param {string} url - The original Cloudinary media URL.
- * @param {('image'|'video')} resourceType - The type of media.
- * @returns {string} The new URL with optimization parameters.
- */
+// --- UTILITY FUNCTION for Cloudinary Optimization ---
 function getOptimizedCloudinaryUrl(url, resourceType) {
   if (!url || !url.includes("res.cloudinary.com")) {
-    return url; // Not a Cloudinary URL, return as is.
+    return url;
   }
-
   const videoTransformations = "q_auto,f_auto,vc_auto";
   const imageTransformations = "q_auto,f_auto";
-
   const transformations =
     resourceType === "video" ? videoTransformations : imageTransformations;
-
-  // Split the URL at the 'upload/' part to inject transformations
   const urlParts = url.split("/upload/");
   if (urlParts.length !== 2) {
-    return url; // URL format is unexpected, return original.
+    return url;
   }
-
-  // Check if transformations are already present
   const existingTransforms = urlParts[1].split("/")[0];
   if (existingTransforms.includes("q_auto")) {
-    return url; // Transformations likely already exist
+    return url;
   }
-
-  const optimizedUrl = `${urlParts[0]}/upload/${transformations}/${urlParts[1]}`;
-  return optimizedUrl;
+  return `${urlParts[0]}/upload/${transformations}/${urlParts[1]}`;
 }
 
-// --- UTILITY FUNCTIONS ---
+// ... (hexToLottieColor and customizeLottieData functions remain unchanged)
 function hexToLottieColor(hex) {
   if (!hex || typeof hex !== "string" || hex.charAt(0) !== "#") {
-    return [0, 0, 0]; // Default to black if invalid hex
+    return [0, 0, 0];
   }
   const r = parseInt(hex.slice(1, 3), 16) / 255;
   const g = parseInt(hex.slice(3, 5), 16) / 255;
   const b = parseInt(hex.slice(5, 7), 16) / 255;
-  return [r, g, b, 1]; // Return as [r, g, b, alpha]
+  return [r, g, b, 1];
 }
 
-// Function to customize the raw Lottie JSON data before it's loaded
 function customizeLottieData(animationData, primaryColor, accentColor) {
   const primary = hexToLottieColor(primaryColor);
   const accent = hexToLottieColor(accentColor);
-
-  // Find and update colors in the main layers array
   animationData.layers.forEach((layer) => {
-    // JSR Text Layer
     if (layer.nm === "JSR Text" && layer.t?.d?.k[0]?.s) {
       layer.t.d.k[0].s.fc = primary;
-    }
-    // Spinner Stroke
-    else if (
+    } else if (
       layer.nm === "Capa de formas 4" &&
       layer.shapes?.[0]?.it?.[1]?.c?.k
     ) {
       layer.shapes[0].it[1].c.k = accent;
-    }
-    // Shapes that should use the primary color
-    else if (
+    } else if (
       ["Capa de formas 5", "Capa de formas 3", "Capa de formas 1"].includes(
         layer.nm
       ) &&
       layer.shapes?.[0]?.it?.[1]?.c?.k
     ) {
-      layer.shapes[0].it[1].c.k = primary; // Set fill color
+      layer.shapes[0].it[1].c.k = primary;
     }
   });
-
-  // Find and update colors in the assets array (for pre-compositions)
   animationData.assets.forEach((asset) => {
     if (asset.layers) {
       asset.layers.forEach((layer) => {
-        // Shape that should use the primary color
         if (
           layer.nm === "Capa de formas 12" &&
           layer.shapes?.[0]?.it?.[1]?.c?.k
         ) {
           layer.shapes[0].it[1].c.k = primary;
-        }
-        // Shape that should use the accent color
-        else if (
+        } else if (
           layer.nm === "Capa de formas 2" &&
           layer.shapes?.[0]?.it?.[1]?.c?.k
         ) {
@@ -106,7 +79,6 @@ function customizeLottieData(animationData, primaryColor, accentColor) {
       });
     }
   });
-
   return animationData;
 }
 
@@ -123,7 +95,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     } else {
       console.log("No theme document found, using defaults.");
       themeSettings = {
-        // Default fallback
         loadingColors: {
           light: { bg: "#f8f9fa", primary: "#20272c", accent: "#007bff" },
           dark: { bg: "#1a1a2e", primary: "#ffffff", accent: "#4facfe" },
@@ -132,7 +103,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   } catch (error) {
     console.error("Error fetching theme settings:", error);
-    // Provide default settings on error to prevent site from breaking
     themeSettings = {
       loadingColors: {
         light: { bg: "#f8f9fa", primary: "#20272c", accent: "#007bff" },
@@ -188,55 +158,74 @@ document.addEventListener("DOMContentLoaded", async () => {
           data.bio || "Your bio goes here.";
         document.getElementById("resume-button").href = data.resumeUrl || "#";
 
-        // --- UPDATED BACKGROUND LOGIC WITH OPTIMIZATION ---
+        // --- NEW BACKGROUND LOGIC WITH USER CHOICE ---
         const videoContainer = document.querySelector(
           ".video-background-container"
         );
         const videoEl = document.getElementById("background-video");
+
+        const backgroundType = data.backgroundType || "video"; // Default to 'video'
         const backgroundImageUrl =
           data.backgroundImageUrl || data.backgroundUrl;
         const backgroundVideoUrl = data.backgroundVideoUrl;
+        const isMobile = window.innerWidth <= 768;
 
-        // Clear previous backgrounds to avoid conflicts
+        // Reset backgrounds first
         videoContainer.style.display = "none";
         videoEl.src = "";
         document.body.style.backgroundImage = "none";
 
-        // **MODIFICATION**: Removed the mobile check. Always try video first.
-        if (backgroundVideoUrl) {
-          videoContainer.style.display = "block";
-          if (backgroundImageUrl) {
-            videoEl.poster = getOptimizedCloudinaryUrl(
-              backgroundImageUrl,
-              "image"
-            );
-          }
-          videoEl.src = getOptimizedCloudinaryUrl(backgroundVideoUrl, "video");
-          videoEl.load();
-          videoEl.play().catch((error) => {
-            console.error(
-              "Video autoplay failed, falling back to image:",
-              error
-            );
-            // Fallback to image if video fails to play for any reason
-            videoContainer.style.display = "none";
-            if (backgroundImageUrl) {
-              const optimizedImgUrl = getOptimizedCloudinaryUrl(
+        switch (backgroundType) {
+          case "video":
+            // Smart mode: Video on desktop, image on mobile/fallback
+            if (backgroundVideoUrl && !isMobile) {
+              videoContainer.style.display = "block";
+              if (backgroundImageUrl) {
+                videoEl.poster = getOptimizedCloudinaryUrl(
+                  backgroundImageUrl,
+                  "image"
+                );
+              }
+              videoEl.src = getOptimizedCloudinaryUrl(
+                backgroundVideoUrl,
+                "video"
+              );
+              videoEl.load();
+              videoEl.play().catch(() => {
+                // If video fails, fall back to image
+                videoContainer.style.display = "none";
+                if (backgroundImageUrl) {
+                  document.body.style.backgroundImage = `url('${getOptimizedCloudinaryUrl(
+                    backgroundImageUrl,
+                    "image"
+                  )}')`;
+                }
+              });
+            } else if (backgroundImageUrl) {
+              // On mobile or no video URL, use the image
+              document.body.style.backgroundImage = `url('${getOptimizedCloudinaryUrl(
                 backgroundImageUrl,
                 "image"
-              );
-              document.body.style.backgroundImage = `url('${optimizedImgUrl}')`;
+              )}')`;
             }
-          });
-        } else if (backgroundImageUrl) {
-          // If no video, use the image.
-          const optimizedImgUrl = getOptimizedCloudinaryUrl(
-            backgroundImageUrl,
-            "image"
-          );
-          document.body.style.backgroundImage = `url('${optimizedImgUrl}')`;
+            break;
+
+          case "image":
+            // Force image on all devices
+            if (backgroundImageUrl) {
+              document.body.style.backgroundImage = `url('${getOptimizedCloudinaryUrl(
+                backgroundImageUrl,
+                "image"
+              )}')`;
+            }
+            break;
+
+          case "none":
+          default:
+            // Do nothing, solid color background will show
+            break;
         }
-        // --- END UPDATED BACKGROUND LOGIC ---
+        // --- END NEW BACKGROUND LOGIC ---
 
         const socialLinksHTML = `${
           data.socials?.github
@@ -260,6 +249,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // ... (The rest of the file is unchanged, including populateProjects, populateSkills, etc.)
   async function populateProjects() {
     try {
       const projectsGrid = document.getElementById("projects-grid");

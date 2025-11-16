@@ -63,7 +63,6 @@ const imageWidget = cloudinary.createUploadWidget(
   }
 );
 
-// --- NEW: Video Upload Widget ---
 const videoWidget = cloudinary.createUploadWidget(
   {
     cloudName: config.cloudinary.cloudName,
@@ -114,7 +113,6 @@ setupImageUploadButton("upload-background-image", "background-image-url");
 setupImageUploadButton("upload-project-image", "project-image-url");
 setupImageUploadButton("upload-certificate-image", "certificate-image-url");
 
-// --- NEW: Event listener for the video upload button ---
 document.getElementById("upload-background-video").addEventListener(
   "click",
   function () {
@@ -152,10 +150,15 @@ async function loadProfileData() {
       document.getElementById("profile-bio").value = data.bio || "";
       document.getElementById("profile-pic-url").value =
         data.profilePicUrl || "";
+
+      // Load background settings
+      document.getElementById("background-type").value =
+        data.backgroundType || "video"; // Default to "video"
       document.getElementById("background-video-url").value =
         data.backgroundVideoUrl || "";
       document.getElementById("background-image-url").value =
-        data.backgroundImageUrl || data.backgroundUrl || ""; // For backwards compatibility
+        data.backgroundImageUrl || data.backgroundUrl || "";
+
       document.getElementById("resume-url").value = data.resumeUrl || "";
       document.getElementById("github-url").value = data.socials?.github || "";
       document.getElementById("instagram-url").value =
@@ -177,8 +180,12 @@ document
       jobTitle: document.getElementById("profile-job-title").value,
       bio: document.getElementById("profile-bio").value,
       profilePicUrl: document.getElementById("profile-pic-url").value,
+
+      // Save background settings
+      backgroundType: document.getElementById("background-type").value,
       backgroundVideoUrl: document.getElementById("background-video-url").value,
       backgroundImageUrl: document.getElementById("background-image-url").value,
+
       resumeUrl: document.getElementById("resume-url").value,
       socials: {
         github: document.getElementById("github-url").value,
@@ -195,6 +202,9 @@ document
     }
   });
 
+// ... (The rest of the file is unchanged)
+// Theme Helpers, Theme loading/saving, Generic Item Loader, Projects, Certificates, Skills...
+// ... (The rest of the file is unchanged)
 // Theme Helpers
 function hexToRgb(hex) {
   let r = 0,
